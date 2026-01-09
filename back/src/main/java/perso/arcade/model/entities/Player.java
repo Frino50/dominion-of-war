@@ -1,10 +1,8 @@
 package perso.arcade.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "player")
@@ -18,10 +16,6 @@ public class Player {
 
     @Column(nullable = false)
     private String password;
-
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private Set<Record> records;
 
     public Player() {
     }
@@ -48,11 +42,11 @@ public class Player {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(id, player.id) && Objects.equals(pseudo, player.pseudo) && Objects.equals(password, player.password) && Objects.equals(records, player.records);
+        return Objects.equals(id, player.id) && Objects.equals(pseudo, player.pseudo) && Objects.equals(password, player.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pseudo, password, records);
+        return Objects.hash(id, pseudo, password);
     }
 }

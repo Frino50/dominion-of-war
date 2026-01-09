@@ -2,10 +2,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { localStore } from "./store/local.ts";
 
 import Accueil from "@/views/Accueil.vue";
-import Demineur from "@/views/Demineur.vue";
-import DeuxMilleQuaranteHuit from "@/views/2048.vue";
-import Boids from "@/views/Boids.vue";
-import Bacterie from "@/views/Bacterie.vue";
 import Territory from "@/views/Territory.vue";
 
 import Login from "@/views/Login.vue";
@@ -16,30 +12,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "/",
         name: "Accueil",
         component: Accueil,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: "/demineur",
-        name: "Demineur",
-        component: Demineur,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: "/2048",
-        name: "2048",
-        component: DeuxMilleQuaranteHuit,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: "/boids",
-        name: "Boids",
-        component: Boids,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: "/bacterie",
-        name: "Bacterie",
-        component: Bacterie,
         meta: { requiresAuth: true },
     },
     {

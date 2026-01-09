@@ -3,7 +3,6 @@ import { reactive } from "vue";
 export interface LocalState {
     pseudo: string;
     token: string;
-    theme: string;
 }
 
 const storedState = JSON.parse(localStorage.getItem("localState") || "{}");
@@ -11,7 +10,6 @@ const storedState = JSON.parse(localStorage.getItem("localState") || "{}");
 const state = reactive<LocalState>({
     pseudo: storedState.pseudo || "",
     token: storedState.token || "",
-    theme: storedState.theme || "cyan",
 });
 
 export const localStore = new Proxy(state, {

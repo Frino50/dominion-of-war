@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
+    public ResponseEntity<Map<String, String>> handleAllExceptions() {
         Map<String, String> body = new HashMap<>();
         body.put("error", "INTERNAL_ERROR");
         body.put("message", "Erreur dans le back");

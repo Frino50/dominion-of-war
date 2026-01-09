@@ -52,13 +52,7 @@ interface MenuItem {
     link: string;
 }
 
-const hexagonItems: MenuItem[] = [
-    { title: "Démineur", link: "Demineur" },
-    { title: "2048", link: "2048" },
-    { title: "Boids", link: "Boids" },
-    { title: "Bactérie", link: "Bacterie" },
-    { title: "Territory", link: "Territory" },
-];
+const hexagonItems: MenuItem[] = [{ title: "Territory", link: "Territory" }];
 
 const router = useRouter();
 const navigateTo = (link: string) => {
@@ -110,11 +104,7 @@ const cardStyle = computed(() => ({
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: radial-gradient(
-        circle at center,
-        var(--futurist-bg-mid) 0%,
-        var(--futurist-bg-dark) 100%
-    );
+    background: rgba(30, 41, 59, 0.8);
     color: var(--futurist-text-light);
     font-family: "Droid Sans Mono", "Consolas", monospace;
     padding: 30px;
