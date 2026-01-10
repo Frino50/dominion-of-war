@@ -127,7 +127,7 @@ async function load() {
     try {
         const players = await playerService.getAll();
         roles.value = await roleService.getAll();
-        users.value = players.map((user: any) => ({
+        users.value = players.map((user: PlayerRolesDto) => ({
             id: user.id,
             pseudo: user.pseudo,
             roleNames: user.roleNames || [],

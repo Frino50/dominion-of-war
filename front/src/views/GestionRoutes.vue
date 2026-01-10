@@ -240,7 +240,7 @@ function startEdit(r: RouteDto) {
     form.value.name = r.name;
     form.value.componentPath = r.componentPath;
     form.value.needAuth = r.needAuth;
-    form.value.roleName = (r as any).roleName || "";
+    form.value.roleName = r.roleName || "";
 }
 
 function cancelEdit() {
