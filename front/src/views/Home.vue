@@ -39,6 +39,12 @@
                                     <span class="route-name">{{
                                         normalizePath(r.name)
                                     }}</span>
+                                    <span
+                                        v-if="r.needAuth"
+                                        class="badge badge-warning"
+                                    >
+                                        Auth requise
+                                    </span>
                                 </div>
                                 <span class="route-path"
                                     >→ {{ r.componentPath }}</span
