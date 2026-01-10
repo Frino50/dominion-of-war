@@ -1,5 +1,9 @@
 <template>
     <div class="route-manager-container">
+        <div class="header">
+            <h1>{{ editing ? "Modifier la route" : "Gestion des routes" }}</h1>
+        </div>
+
         <div class="card form-card">
             <div class="card-header">
                 <h2>
@@ -19,7 +23,7 @@
                             id="routeName"
                             v-model="form.name"
                             required
-                            class="input-field"
+                            placeholder="Entrez le nom de la route"
                         />
                     </div>
 
@@ -29,7 +33,6 @@
                             id="compPath"
                             v-model="form.componentPath"
                             required
-                            class="input-field select-field"
                         >
                             <option disabled value="">Choisir une page</option>
                             <option
@@ -59,7 +62,6 @@
                             v-model="form.roleName"
                             :required="form.needAuth"
                             :disabled="!form.needAuth"
-                            class="input-field select-field"
                             :class="{ 'disabled-field': !form.needAuth }"
                         >
                             <option disabled value="">
@@ -101,9 +103,11 @@
         </div>
 
         <div class="card list-card">
-            <h3>Routes existantes</h3>
+            <div class="card-header">
+                <h3>Routes existantes</h3>
+            </div>
             <div class="table-wrapper">
-                <table class="styled-table">
+                <table>
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
@@ -118,13 +122,16 @@
                         <tr v-for="r in routes" :key="r.id!">
                             <td class="col-id">#{{ r.id }}</td>
                             <td class="font-bold">{{ r.name }}</td>
-                            <td class="text-small">{{ r.componentPath }}</td>
+                            <td class="text-small component-path">
+                                {{ r.componentPath }}
+                            </td>
                             <td>
                                 <span
-                                    class="badge role-badge"
+                                    class="badge badge-primary"
                                     v-if="r.roleName"
-                                    >{{ r.roleName }}</span
                                 >
+                                    {{ r.roleName }}
+                                </span>
                                 <span class="text-muted" v-else>-</span>
                             </td>
                             <td class="col-center">
@@ -136,20 +143,22 @@
                                 ></span>
                             </td>
                             <td class="col-actions">
-                                <button
-                                    class="btn-icon"
-                                    @click="startEdit(r)"
-                                    title="Modifier"
-                                >
-                                    ✏️
-                                </button>
-                                <button
-                                    class="btn-icon danger"
-                                    @click="remove(r)"
-                                    title="Supprimer"
-                                >
-                                    🗑️
-                                </button>
+                                <div class="action-buttons">
+                                    <button
+                                        class="btn-icon"
+                                        @click="startEdit(r)"
+                                        title="Modifier"
+                                    >
+                                        ✏️
+                                    </button>
+                                    <button
+                                        class="btn-icon danger"
+                                        @click="remove(r)"
+                                        title="Supprimer"
+                                    >
+                                        🗑️
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="routes.length === 0">
@@ -189,21 +198,26 @@ const editing = ref(false);
 const editingId = ref<number | null>(null);
 
 const viewOptions = computed(() => {
-    const counts = new Map<string, number>();
-    allViewPaths.forEach((p) => {
-        const name = p.split("/").pop() || p;
-        counts.set(name, (counts.get(name) || 0) + 1);
-    });
-    return allViewPaths
+    const options = allViewPaths
         .filter((p) => !p.endsWith("/Home.vue"))
         .map((p) => {
             const file = p.split("/").pop() || p;
-            const duplicate = (counts.get(file) || 0) > 1;
             const label = p.replace(/^\/src\//, "");
-            const value = duplicate ? p : file;
-            return { label, value };
-        })
-        .sort((a, b) => a.label.localeCompare(b.label));
+            return { label, value: file };
+        });
+
+    const hasGestionRoutes = options.some(
+        (opt) => opt.value === "GestionRoutes.vue"
+    );
+
+    if (!hasGestionRoutes) {
+        options.push({
+            label: "views/GestionRoutes.vue",
+            value: "GestionRoutes.vue",
+        });
+    }
+
+    return options.sort((a, b) => a.label.localeCompare(b.label));
 });
 
 async function loadData() {
@@ -266,38 +280,33 @@ onMounted(loadData);
 
 <style scoped>
 .route-manager-container {
-    max-width: 900px;
-    margin: 3rem auto;
+    max-width: 1200px;
+    margin: 2rem auto;
     padding: 0 1.5rem;
-    font-family: "Inter", sans-serif;
-    color: #334155;
 }
 
-.card {
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 2rem;
+.header {
     margin-bottom: 2rem;
-    border: 1px solid #e2e8f0;
 }
 
-.card-header {
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 1rem;
+.header h1 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-bright);
 }
 
-h2 {
+.form-card,
+.list-card {
+    margin-bottom: 2rem;
+}
+
+.card-header h2,
+.card-header h3 {
     margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1e293b;
+    color: var(--text-bright);
 }
 
 .route-form {
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -309,7 +318,7 @@ h2 {
     gap: 1.5rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .form-row {
         grid-template-columns: 1fr;
     }
@@ -321,36 +330,15 @@ h2 {
     gap: 0.5rem;
 }
 
-label {
+.form-group label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #475569;
+    color: var(--text-secondary);
 }
 
-.input-field {
-    padding: 0.75rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
-    background-color: #f8fafc;
-}
-
-.input-field:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    background-color: #fff;
-}
-
-.select-field {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
+.disabled-field {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .checkbox-group {
@@ -364,8 +352,8 @@ label {
 .switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    height: 24px;
+    width: 48px;
+    height: 26px;
 }
 
 .switch input {
@@ -381,8 +369,8 @@ label {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cbd5e1;
-    transition: 0.4s;
+    background-color: var(--border-base);
+    transition: 0.3s;
 }
 
 .slider.round {
@@ -396,25 +384,26 @@ label {
 .slider:before {
     position: absolute;
     content: "";
-    height: 18px;
-    width: 18px;
+    height: 20px;
+    width: 20px;
     left: 3px;
     bottom: 3px;
     background-color: white;
-    transition: 0.4s;
+    transition: 0.3s;
 }
 
 input:checked + .slider {
-    background-color: #6366f1;
+    background-color: var(--primary);
 }
 
 input:checked + .slider:before {
-    transform: translateX(20px);
+    transform: translateX(22px);
 }
 
 .label-text {
     font-size: 0.9rem;
     font-weight: 500;
+    color: var(--text-primary);
 }
 
 .form-actions {
@@ -424,96 +413,34 @@ input:checked + .slider:before {
     margin-top: 1rem;
 }
 
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-}
-
-.btn-primary {
-    background-color: #6366f1;
-    color: white;
-}
-.btn-primary:hover {
-    background-color: #4f46e5;
-}
-
-.btn-secondary {
-    background-color: #e2e8f0;
-    color: #475569;
-}
-.btn-secondary:hover {
-    background-color: #cbd5e1;
-}
-
 .table-wrapper {
     overflow-x: auto;
 }
 
-.styled-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-}
-
-.styled-table th,
-.styled-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.styled-table th {
-    background-color: #f8fafc;
-    color: #64748b;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-}
-
-.styled-table tr:hover {
-    background-color: #f8fafc;
-}
-
 .col-id {
-    width: 60px;
-    color: #94a3b8;
-}
-
-.text-small {
-    font-size: 0.85rem;
-    color: #64748b;
+    width: 80px;
+    color: var(--text-secondary);
     font-family: monospace;
 }
 
-.font-bold {
-    font-weight: 600;
-}
-
-.role-badge {
-    background-color: #e0e7ff;
-    color: #4338ca;
-    padding: 0.25rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
+.component-path {
+    font-family: "Courier New", monospace;
+    color: var(--text-muted);
+    font-size: 0.85rem;
 }
 
 .status-dot {
-    height: 10px;
-    width: 10px;
-    background-color: #cbd5e1;
+    height: 12px;
+    width: 12px;
+    background-color: var(--border-base);
     border-radius: 50%;
     display: inline-block;
+    transition: all var(--transition-base);
 }
 
 .status-dot.active {
-    background-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    background-color: var(--success);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
 }
 
 .col-center {
@@ -521,25 +448,16 @@ input:checked + .slider:before {
 }
 
 .col-actions {
-    text-align: right;
-    width: 100px;
+    width: 120px;
 }
 
-.btn-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 0.4rem;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.btn-icon:hover {
-    background-color: #f1f5f9;
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
 }
 
 .btn-icon.danger:hover {
-    background-color: #fee2e2;
+    background-color: rgba(220, 38, 38, 0.1);
 }
 </style>

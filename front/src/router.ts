@@ -15,28 +15,6 @@ const staticRoutes: Array<RouteRecordRaw> = [
         name: "Home",
         component: () => import("@/views/Home.vue"),
     },
-    {
-        path: "/admin/users",
-        name: "GestionPlayers",
-        component: () => import("@/views/GestionPlayers.vue"),
-        meta: { requiresAuth: true },
-    },
-    {
-        path: "/admin/routes",
-        name: "GestionRoutes",
-        component: () => import("@/views/GestionRoutes.vue"),
-        meta: { requiresAuth: true },
-    },
-    {
-        path: "/login",
-        name: "Login",
-        component: () => import("@/views/Login.vue"),
-    },
-    {
-        path: "/register",
-        name: "Register",
-        component: () => import("@/views/Register.vue"),
-    },
 ];
 
 const router = createRouter({
@@ -46,8 +24,7 @@ const router = createRouter({
 
 function resolveComponentPath(componentPath: string): string {
     const path = componentPath.trim();
-
-    return "/@/views/" + path;
+    return "/src/views/" + path;
 }
 
 async function loadDynamicRoutes() {
@@ -62,10 +39,9 @@ async function loadDynamicRoutes() {
                 : `/${route.name}`;
             const componentPath = resolveComponentPath(route.componentPath);
             const componentLoader = viewModules[componentPath];
-
             const component = componentLoader
                 ? () => componentLoader().then((m: any) => m.default ?? m)
-                : () => import("@/views/Accueil.vue");
+                : () => import("@/views/Home.vue");
 
             router.addRoute({
                 path: routePath,
