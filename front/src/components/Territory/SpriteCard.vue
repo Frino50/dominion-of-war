@@ -3,12 +3,12 @@
         <div class="visual-stage">
             <Animation
                 :key="animationKey"
+                :frame-rate="Number(sprite.frameRate)"
+                :frames="sprite.frames"
+                :height="sprite.height"
+                :scale="Number(sprite.scale)"
                 :sprite-src="sprite.imageUrl"
                 :width="sprite.width"
-                :height="sprite.height"
-                :frames="sprite.frames"
-                :scale="Number(sprite.scale)"
-                :frame-rate="Number(sprite.frameRate)"
             />
         </div>
 
@@ -16,37 +16,37 @@
             <div class="info-group">
                 <div class="input-row">
                     <label>Scale:</label>
-                    <input v-model.number="sprite.scale" class="dark-input" />
+                    <input v-model.number="sprite.scale" class="dark-input"/>
                 </div>
 
                 <div class="input-row">
                     <label>Nom:</label>
                     <input
-                        type="text"
                         v-model="sprite.newName"
                         class="dark-input"
+                        type="text"
                     />
                 </div>
 
-                <button class="btn-icon btn-view" @click="searchAllSprites">
+                <button @click="searchAllSprites">
                     Voir tous les sprites
                 </button>
-                <button class="btn-icon btn-view" @click="jouer">Jouer</button>
+                <button @click="jouer">Jouer</button>
             </div>
         </div>
 
         <div class="card-footer">
             <button
-                class="btn-icon btn-save"
-                @click="renameSprite()"
                 :disabled="!sprite.scale"
+                class=" btn-save"
+                @click="renameSprite()"
             >
                 💾
             </button>
             <button
-                class="btn-icon btn-delete"
-                @click="$emit('delete')"
+                class=" btn-delete"
                 title="Supprimer l'unité"
+                @click="$emit('delete')"
             >
                 🗑️
             </button>
@@ -56,29 +56,29 @@
             v-model="listSpriteInfo"
             v-model:sprite="sprite"
             :visible="showModal"
-            @frame-rate="(value) => (sprite.frameRate = value)"
             @close="
                 showModal = false;
                 animationKey++;
             "
+            @frame-rate="(value) => (sprite.frameRate = value)"
         />
-        <Test v-if="showModal2" :sprite-play="spritePlay!" />
+        <Test v-if="showModal2" :sprite-play="spritePlay!"/>
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import Animation from "@/components/Territory/Animation.vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import ModifSpriteDto from "@/models/dtos/modifSpriteDto.ts";
 import spriteService from "@/services/spriteService.ts";
-import { ref, computed, onMounted } from "vue";
+import {computed, onMounted, ref} from "vue";
 import SpriteModal from "@/components/Territory/SpriteModal.vue";
 import SpritePlay from "@/models/SpritePlay.ts";
 import Test from "@/components/Territory/Test.vue";
 
 defineEmits(["delete"]);
 
-const sprite = defineModel<SpriteInfo>({ required: true });
+const sprite = defineModel<SpriteInfo>({required: true});
 
 const listSpriteInfo = ref<SpriteInfo[]>([]);
 const showModal = ref(false);
@@ -90,6 +90,7 @@ async function jouer() {
     spritePlay.value = await spriteService.getSpritePlay(sprite.value.name);
     showModal2.value = true;
 }
+
 onMounted(() => {
     if (!sprite.value.newName) {
         sprite.value.newName = sprite.value.name;
@@ -133,9 +134,8 @@ async function renameSprite() {
     border: 1px solid #334155;
     border-radius: 16px;
     overflow: hidden;
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    transition: transform 0.3s ease,
+    box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
 }
@@ -194,16 +194,8 @@ async function renameSprite() {
     margin-top: 1rem;
 }
 
-.btn-icon {
-    flex: 1;
-    padding: 0.6rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
 .btn-save {
+    flex: 1;
     background: #059669;
     color: white;
 }
@@ -219,6 +211,7 @@ async function renameSprite() {
 }
 
 .btn-delete {
+    flex: 1;
     background: #be123c;
     color: white;
 }
@@ -238,13 +231,5 @@ async function renameSprite() {
     border: 1px dashed #334155;
     position: relative;
     overflow: hidden;
-}
-
-.btn-view {
-    background: #3b82f6;
-}
-
-.btn-view:hover {
-    background: #2563eb;
 }
 </style>

@@ -2,6 +2,7 @@ package perso.arcade.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -28,8 +29,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
-    @ExceptionHandler(SpriteNameAlreadyExist.class)
-    public ResponseEntity<Map<String, String>> handleSpriteNameAlreadyExist(SpriteNameAlreadyExist ex) {
+    @ExceptionHandler(AlreadyExist.class)
+    public ResponseEntity<Map<String, String>> handleSpriteNameAlreadyExist(AlreadyExist ex) {
         Map<String, String> body = new HashMap<>();
         body.put("error", "SPRITE_NAME_ALREADY_EXIST");
         body.put("message", ex.getMessage());
@@ -43,5 +44,12 @@ public class GlobalExceptionHandler {
         body.put("message", "Erreur dans le back");
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Accès refusé : vous n'avez pas le rôle requis pour cette action.");
     }
 }

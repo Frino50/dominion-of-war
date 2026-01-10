@@ -5,21 +5,41 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import perso.arcade.model.entities.Player;
+import perso.arcade.model.entities.Role;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
 
     private final Player player;
+    private final List<GrantedAuthority> authorities;
 
     public CustomUserDetails(Player player) {
         this.player = player;
+        this.authorities = buildAuthorities(player.getRoles());
+    }
+
+    private static List<GrantedAuthority> buildAuthorities(Set<Role> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return List.of(new SimpleGrantedAuthority("ROLE_PLAYER"));
+        }
+        return roles.stream()
+                .filter(Objects::nonNull)
+                .map(Role::getName)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(name -> new SimpleGrantedAuthority("ROLE_" + name))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
     }
 
     @Override

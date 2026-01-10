@@ -2,7 +2,9 @@ package perso.arcade.model.entities;
 
 import jakarta.persistence.*;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "player")
@@ -17,6 +19,12 @@ public class Player {
     @Column(nullable = false)
     private String password;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "player_roles",
+            joinColumns = @JoinColumn(name = "player_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new LinkedHashSet<>();
+
     public Player() {
     }
 
@@ -24,6 +32,10 @@ public class Player {
         this.id = id;
         this.pseudo = pseudo;
         this.password = hashedPassword;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getPseudo() {
@@ -36,6 +48,14 @@ public class Player {
 
     public String getPassword() {
         return password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override

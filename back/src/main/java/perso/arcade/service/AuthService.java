@@ -12,19 +12,26 @@ import perso.arcade.exception.UsernameAlreadyTakenException;
 import perso.arcade.model.dto.ConnexionDto;
 import perso.arcade.model.dto.LoginResponseDto;
 import perso.arcade.model.entities.Player;
+import perso.arcade.model.entities.Role;
 import perso.arcade.repository.PlayerRepository;
+import perso.arcade.repository.RoleRepository;
 import perso.arcade.security.JwtUtils;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Service
 public class AuthService {
 
     private final PlayerRepository playerRepository;
+    private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthService(PlayerRepository playerRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(PlayerRepository playerRepository, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, BCryptPasswordEncoder passwordEncoder) {
         this.playerRepository = playerRepository;
+        this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
@@ -36,6 +43,10 @@ public class AuthService {
         }
         String hashedPassword = passwordEncoder.encode(connexionDto.getPassword());
         Player player = new Player(null, connexionDto.getPseudo(), hashedPassword);
+        Role playerRole = roleRepository.findByName("PLAYER").orElseGet(() -> roleRepository.save(new Role(null, "PLAYER")));
+        Set<Role> roles = new LinkedHashSet<>();
+        roles.add(playerRole);
+        player.setRoles(roles);
         return playerRepository.save(player);
     }
 

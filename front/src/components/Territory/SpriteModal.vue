@@ -30,7 +30,7 @@
                         >
                             <div class="card-header">
                                 <span class="badge"
-                                    >ID: {{ spriteInfo.animationId }}</span
+                                >ID: {{ spriteInfo.animationId }}</span
                                 >
                                 <span
                                     v-if="
@@ -38,7 +38,7 @@
                                         spriteInfo.hitboxX !== null
                                     "
                                     class="badge badge-hitbox"
-                                    >Hitbox définie</span
+                                >Hitbox définie</span
                                 >
                             </div>
 
@@ -75,13 +75,11 @@
 
                             <div class="card-footer">
                                 <button
-                                    class="action-btn btn-hitbox"
                                     @click="openHitboxEditor(spriteInfo)"
                                 >
                                     <span>Éditer Hitbox</span>
                                 </button>
                                 <button
-                                    class="action-btn"
                                     @click="
                                         reBuildImage(
                                             spriteInfo.animationId,
@@ -92,7 +90,6 @@
                                     <span>Améliorer le sprite</span>
                                 </button>
                                 <button
-                                    class="action-btn"
                                     @click="
                                         flipHorizontal(
                                             spriteInfo.animationId,
@@ -154,8 +151,8 @@ import Animation from "@/components/Territory/Animation.vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import spriteService from "@/services/spriteService.ts";
 import SpriteSheet from "@/components/Territory/SpriteSheet.vue";
-import { ref } from "vue";
-import type { Hitbox } from "@/models/SpriteInfos.ts";
+import {ref} from "vue";
+import type {Hitbox} from "@/models/SpriteInfos.ts";
 import HitboxEditor from "@/components/Territory/HitboxEditor.vue";
 
 defineProps<{
@@ -291,6 +288,7 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     padding: 0;
     box-shadow: none;
 }
+
 .close-btn:hover {
     color: #fff;
 }
@@ -312,9 +310,11 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     transition: transform 0.2s;
     height: clamp(30rem, 40vh, 32rem);
 }
+
 .sprite-card.small {
     height: clamp(25rem, 32vh, 26rem);
 }
+
 .sprite-card:hover {
     border-color: #475569;
 }
@@ -405,40 +405,6 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     gap: 1rem;
 }
 
-.action-btn {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.action-btn:hover:not(:disabled) {
-    background: #2563eb;
-    transform: translateY(-1px);
-}
-
-.btn-hitbox {
-    background: #8b5cf6;
-}
-
-.btn-hitbox:hover:not(:disabled) {
-    background: #7c3aed;
-}
-
-.action-btn:disabled {
-    background: #475569;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
 .empty-state {
     text-align: center;
     color: #94a3b8;
@@ -449,6 +415,7 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 .fade-leave-active {
     transition: opacity 0.3s;
 }
+
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;

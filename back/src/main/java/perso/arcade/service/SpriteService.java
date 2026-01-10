@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
-import perso.arcade.exception.SpriteNameAlreadyExist;
+import perso.arcade.exception.AlreadyExist;
 import perso.arcade.model.dto.HitboxDto;
 import perso.arcade.model.dto.ModifSpriteDto;
 import perso.arcade.model.dto.SpriteInfos;
@@ -111,7 +111,7 @@ public class SpriteService {
 
             return spriteRepository.getSpritesInfosByTypeAndName(AnimationType.IDLE, spriteName);
 
-        } catch (SpriteNameAlreadyExist e) {
+        } catch (AlreadyExist e) {
             log.warn("Sprite déjà existant: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
@@ -135,7 +135,7 @@ public class SpriteService {
 
     private void validateSpriteNotExists(String spriteName) {
         if (spriteRepository.findByName(spriteName).isPresent()) {
-            throw new SpriteNameAlreadyExist(
+            throw new AlreadyExist(
                     "Sprite déjà existant: '" + spriteName + "'"
             );
         }

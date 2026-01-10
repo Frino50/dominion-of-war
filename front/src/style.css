@@ -1,21 +1,64 @@
 :root {
-    font-family: "Inter", "Orbitron", system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family:
+        "Inter", "Orbitron", system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     user-select: none;
+
+    --futurist-accent: #3b82f6;
+    --futurist-accent-hover: #2563eb;
+    --futurist-accent-alt: #8b5cf6;
+
+    --background-gradient-start: #0b1020;
+    --background-gradient-mid: #0f172a;
+    --background-gradient-end: #182336;
+
+    --text-color: #e2e8f0;
+    --futurist-text-light: #f1f5f9;
+    --muted-text: #94a3b8;
+
+    --futurist-border: #334155;
+    --futurist-input-bg: #0f172a;
+    --surface-elevated: #182336;
+
+    --button-gradient-end: var(--futurist-accent-alt);
+    --button-text-color: #ffffff;
+    --button-shadow: rgba(59, 130, 246, 0.6);
+
+    --scrollbar-track: #0f172a;
+    --selection-color: #0b1020;
+}
+
+a {
+    color: var(--futurist-accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--futurist-accent-hover);
+    text-decoration: underline;
+}
+
+.card {
+    background: var(--surface-elevated);
+    border: 1px solid var(--futurist-border);
+    border-radius: 12px;
+    color: var(--text-color);
 }
 
 body {
     margin: 0;
     height: 100vh;
-    background: radial-gradient(circle , var(--background-gradient-start), var(--background-gradient-mid), var(--background-gradient-end));
+    background: radial-gradient(
+        circle,
+        var(--background-gradient-start),
+        var(--background-gradient-mid),
+        var(--background-gradient-end)
+    );
     color: var(--text-color);
 }
 
 button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 30px;
-    background: linear-gradient(90deg, var(--futurist-accent), var(--button-gradient-end));
+    background: #3b82f6;
     color: var(--button-text-color);
     font-weight: bold;
     cursor: pointer;
@@ -24,11 +67,14 @@ button {
     letter-spacing: 0.05em;
     transition: all 0.25s ease;
     position: relative;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
 }
 
 button:hover {
     transform: scale(1.08);
-    box-shadow: 0 0 25px var(--button-shadow);
+    background: #2563eb;
 }
 
 input {
@@ -39,8 +85,8 @@ input {
     outline: none;
     font-size: 1rem;
     transition:
-            border-color 0.3s,
-            box-shadow 0.3s;
+        border-color 0.3s,
+        box-shadow 0.3s;
     background-color: var(--futurist-input-bg);
     color: var(--futurist-text-light);
 }

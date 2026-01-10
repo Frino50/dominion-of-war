@@ -41,21 +41,33 @@ apiService.interceptors.response.use(
 
         if (error.response) {
             const { status, data } = error.response;
-            const message = data?.message || "Erreur inconnue";
+            const message = data?.message || data || "Erreur inconnue";
 
-            if (status === 401 && data?.error === "INVALID_OR_EXPIRED_TOKEN") {
-                handleInvalidToken(localStore);
-                return Promise.reject(error);
+            switch (status) {
+                case 401:
+                    if (data?.error === "INVALID_OR_EXPIRED_TOKEN") {
+                        handleInvalidToken(localStore);
+                    } else {
+                        showError("Vous devez vous authentifier.");
+                    }
+                    break;
+
+                case 403:
+                    showError(
+                        data?.message ||
+                            "Accès refusé : vous n'avez pas le rôle requis pour cette action."
+                    );
+                    break;
+
+                case 500:
+                    showError(
+                        "Une erreur serveur est survenue. Veuillez réessayer plus tard."
+                    );
+                    break;
+
+                default:
+                    showError(message);
             }
-
-            if (status === 500) {
-                showError(
-                    "Une erreur serveur est survenue. Veuillez réessayer plus tard."
-                );
-                return Promise.reject(error);
-            }
-
-            showError(message);
         } else {
             showError("Erreur inconnue");
         }

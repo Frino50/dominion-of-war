@@ -1,12 +1,25 @@
 package perso.arcade.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import perso.arcade.model.entities.Player;
 
+import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface PlayerRepository extends JpaRepository<Player, Long> {
+
     Optional<Player> findByPseudo(String pseudo);
+
+    @EntityGraph(attributePaths = "roles")
+    @Query("SELECT p FROM Player p WHERE p.pseudo = :pseudo")
+    Optional<Player> findWithRolesByPseudo(String pseudo);
+
+    @Query("SELECT DISTINCT p FROM Player p LEFT JOIN FETCH p.roles ORDER BY p.pseudo")
+    List<Player> findAllWithRoles();
+
+    @Query("SELECT p FROM Player p LEFT JOIN FETCH p.roles WHERE p.id = :id")
+    Optional<Player> findByIdWithRoles(@Param("id") Long id);
 }
