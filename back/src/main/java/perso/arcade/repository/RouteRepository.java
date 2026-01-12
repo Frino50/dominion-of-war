@@ -4,9 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import perso.arcade.model.dto.RouteDto;
+import perso.arcade.model.entities.Role;
 import perso.arcade.model.entities.Route;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RouteRepository extends JpaRepository<Route, Long> {
 
@@ -16,6 +18,16 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
             "LEFT JOIN r.role role " +
             "ORDER BY r.id")
     List<RouteDto> findAllRoutesAsDto();
+
+    @Query("SELECT new perso.arcade.model.dto.RouteDto(" +
+            "r.id, r.name, r.componentPath, role.name, r.needAuth) " +
+            "FROM Route r " +
+            "LEFT JOIN r.role role " +
+            "WHERE r.needAuth = false " +
+            "OR (r.needAuth = true AND r.role IS NULL) " +
+            "OR (r.needAuth = true AND r.role IN :userRoles) " +
+            "ORDER BY r.id")
+    List<RouteDto> findAvailableRoutesAsDto(@Param("userRoles") Set<Role> userRoles);
 
     boolean existsByName(String name);
 

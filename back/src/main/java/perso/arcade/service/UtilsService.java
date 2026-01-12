@@ -25,4 +25,11 @@ public class UtilsService {
         return playerRepository.findByPseudo(pseudo)
                 .orElseThrow(() -> new RuntimeException("Joueur non trouvé : " + pseudo));
     }
+    
+    public boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication.getPrincipal() instanceof String && "anonymousUser".equals(authentication.getPrincipal()));
+    }
 }

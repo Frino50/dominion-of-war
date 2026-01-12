@@ -2,9 +2,6 @@
     <div class="players-management">
         <div class="header">
             <h1>Gestion des utilisateurs</h1>
-            <p class="subtitle">
-                Gérez les rôles et permissions des utilisateurs
-            </p>
         </div>
 
         <div v-if="loading" class="loading-state">
@@ -178,17 +175,6 @@ onMounted(load);
 
 .header {
     margin-bottom: 2rem;
-}
-
-.header h1 {
-    margin: 0 0 0.5rem 0;
-    color: var(--text-bright);
-}
-
-.subtitle {
-    color: var(--text-secondary);
-    margin: 0;
-    font-size: 0.95rem;
 }
 
 .table-wrapper {

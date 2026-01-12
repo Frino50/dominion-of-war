@@ -6,12 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import perso.arcade.exception.AlreadyExist;
 import perso.arcade.model.dto.RouteDto;
+import perso.arcade.model.entities.Player;
 import perso.arcade.model.entities.Role;
 import perso.arcade.model.entities.Route;
 import perso.arcade.repository.RoleRepository;
 import perso.arcade.repository.RouteRepository;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -19,14 +22,27 @@ public class RouteService {
 
     private final RouteRepository routeRepository;
     private final RoleRepository roleRepository;
+    private final UtilsService utilsService;
 
-    public RouteService(RouteRepository routeRepository, RoleRepository roleRepository) {
+    public RouteService(RouteRepository routeRepository, RoleRepository roleRepository, UtilsService utilsService) {
         this.routeRepository = routeRepository;
         this.roleRepository = roleRepository;
+        this.utilsService = utilsService;
     }
 
     public List<RouteDto> getAvailableRoutes() {
-        return routeRepository.findAllRoutesAsDto();
+        Set<Role> userRoles = new LinkedHashSet<>();
+
+        try {
+            Player player = utilsService.getPlayer();
+            if (player != null && player.getRoles() != null) {
+                userRoles = player.getRoles();
+            }
+        } catch (Exception e) {
+            // Utilisateur non connecté ou non trouvé : userRoles reste vide
+        }
+
+        return routeRepository.findAvailableRoutesAsDto(userRoles);
     }
 
     public List<RouteDto> getAll() {

@@ -111,8 +111,8 @@
                     <thead>
                         <tr>
                             <th class="col-id">ID</th>
-                            <th>Nom / URL</th>
-                            <th>Composant</th>
+                            <th>Nom</th>
+                            <th>Page</th>
                             <th>Rôle</th>
                             <th class="col-center">Auth</th>
                             <th class="col-actions">Actions</th>
