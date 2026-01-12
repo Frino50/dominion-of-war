@@ -4,12 +4,7 @@
             <h1>Gestion des utilisateurs</h1>
         </div>
 
-        <div v-if="loading" class="loading-state">
-            <div class="spinner"></div>
-            <p>Chargement des données...</p>
-        </div>
-
-        <div v-else class="content">
+        <div class="content">
             <div class="card">
                 <div class="table-wrapper">
                     <table class="users-table">
@@ -121,24 +116,18 @@ import PlayerRolesDto from "@/models/dtos/PlayerRolesDto.ts";
 const toast = useToast();
 const roles = ref<string[]>([]);
 const users = ref<PlayerRolesDto[]>([]);
-const loading = ref(true);
 const saving = ref<number | null>(null);
 
 async function load() {
-    loading.value = true;
-    try {
-        const players = await playerService.getAll();
-        roles.value = await roleService.getAll();
-        users.value = players.map((user: PlayerRolesDto) => ({
-            id: user.id,
-            pseudo: user.pseudo,
-            roleNames: user.roleNames || [],
-            editRoles: [...(user.roleNames || [])],
-            isEditing: false,
-        }));
-    } finally {
-        loading.value = false;
-    }
+    const players = await playerService.getAll();
+    roles.value = await roleService.getAll();
+    users.value = players.map((user: PlayerRolesDto) => ({
+        id: user.id,
+        pseudo: user.pseudo,
+        roleNames: user.roleNames || [],
+        editRoles: [...(user.roleNames || [])],
+        isEditing: false,
+    }));
 }
 
 function hasRoleChanged(user: PlayerRolesDto, role: string): boolean {
