@@ -29,7 +29,6 @@ class SpriteCache {
                 this.blobCache.set(key, blobUrl);
                 return blobUrl;
             } catch (error) {
-                console.error(`[SpriteCache] Erreur pour ${key}:`, error);
                 return "";
             } finally {
                 this.loadingPromises.delete(key);

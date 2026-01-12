@@ -5,15 +5,66 @@
         </div>
 
         <div class="content">
-            <div class="card">
+            <div v-if="editing" class="card form-card">
+                <div class="card-header">
+                    <h2>Modifier les rôles de {{ editingUser?.pseudo }}</h2>
+                </div>
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label>Sélectionner les rôles</label>
+                        <div class="role-checkboxes">
+                            <label
+                                v-for="role in roles"
+                                :key="role"
+                                class="role-checkbox"
+                                :class="{
+                                    checked:
+                                        editingUser?.editRoles.includes(role),
+                                    changed: hasRoleChanged(editingUser!, role),
+                                }"
+                            >
+                                <input
+                                    v-model="editingUser!.editRoles"
+                                    :value="role"
+                                    type="checkbox"
+                                />
+                                <span class="checkbox-label">{{ role }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            @click="cancelEdit"
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            @click="save"
+                            :disabled="saving"
+                        >
+                            <span v-if="saving">💾 Enregistrement...</span>
+                            <span v-else>Enregistrer les modifications</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des utilisateurs -->
+            <div class="card list-card">
+                <div class="card-header">
+                    <h3>Utilisateurs existants</h3>
+                </div>
                 <div class="table-wrapper">
                     <table class="users-table">
                         <thead>
                             <tr>
                                 <th class="col-id">ID</th>
                                 <th>Pseudo</th>
-                                <th>Rôles actuels</th>
-                                <th>Modifier les rôles</th>
+                                <th>Rôles</th>
                                 <th class="col-actions">Actions</th>
                             </tr>
                         </thead>
@@ -21,7 +72,10 @@
                             <tr
                                 v-for="user in users"
                                 :key="user.id"
-                                :class="{ editing: user.isEditing }"
+                                :class="{
+                                    editing:
+                                        editing && editingUser?.id === user.id,
+                                }"
                             >
                                 <td class="col-id">#{{ user.id }}</td>
                                 <td class="user-pseudo">
@@ -46,56 +100,21 @@
                                         >Aucun rôle</span
                                     >
                                 </td>
-                                <td class="edit-roles">
-                                    <div class="role-checkboxes">
-                                        <label
-                                            v-for="role in roles"
-                                            :key="role"
-                                            class="role-checkbox"
-                                            :class="{
-                                                checked:
-                                                    user.editRoles.includes(
-                                                        role
-                                                    ),
-                                                changed: hasRoleChanged(
-                                                    user,
-                                                    role
-                                                ),
-                                            }"
-                                        >
-                                            <input
-                                                v-model="user.editRoles"
-                                                :value="role"
-                                                type="checkbox"
-                                                @change="user.isEditing = true"
-                                            />
-                                            <span class="checkbox-label">{{
-                                                role
-                                            }}</span>
-                                        </label>
-                                    </div>
-                                </td>
                                 <td class="col-actions">
                                     <div class="action-buttons">
                                         <button
-                                            v-if="user.isEditing"
-                                            class="btn btn-success btn-sm"
-                                            @click="save(user)"
-                                            :disabled="saving === user.id"
+                                            class="btn-icon"
+                                            @click="startEdit(user)"
+                                            title="Modifier les rôles"
                                         >
-                                            <span v-if="saving === user.id"
-                                                >💾</span
-                                            >
-                                            <span v-else>Enregistrer</span>
-                                        </button>
-                                        <button
-                                            v-if="user.isEditing"
-                                            class="btn btn-secondary btn-sm"
-                                            @click="cancelEdit(user)"
-                                        >
-                                            Annuler
+                                            ✏️
                                         </button>
                                     </div>
+                                </td>
+                            </tr>
+                            <tr v-if="users.length === 0">
+                                <td colspan="4" class="empty-state">
+                                    Aucun utilisateur.
                                 </td>
                             </tr>
                         </tbody>
@@ -116,7 +135,9 @@ import PlayerRolesDto from "@/models/dtos/PlayerRolesDto.ts";
 const toast = useToast();
 const roles = ref<string[]>([]);
 const users = ref<PlayerRolesDto[]>([]);
-const saving = ref<number | null>(null);
+const saving = ref(false);
+const editing = ref(false);
+const editingUser = ref<PlayerRolesDto | null>(null);
 
 async function load() {
     const players = await playerService.getAll();
@@ -130,25 +151,43 @@ async function load() {
     }));
 }
 
+function startEdit(user: PlayerRolesDto) {
+    editing.value = true;
+    editingUser.value = {
+        ...user,
+        editRoles: [...user.roleNames],
+    };
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function cancelEdit() {
+    editing.value = false;
+    editingUser.value = null;
+}
+
 function hasRoleChanged(user: PlayerRolesDto, role: string): boolean {
     const hadRole = user.roleNames.includes(role);
     const hasRole = user.editRoles.includes(role);
     return hadRole !== hasRole;
 }
 
-function cancelEdit(user: PlayerRolesDto) {
-    user.editRoles = [...user.roleNames];
-    user.isEditing = false;
-}
+async function save() {
+    if (!editingUser.value) return;
 
-async function save(user: PlayerRolesDto) {
-    saving.value = user.id;
+    saving.value = true;
     try {
-        await playerService.updateRoles(user.id, user.editRoles);
-        toast.show(`Rôles de ${user.pseudo} mis à jour`, "success");
+        await playerService.updateRoles(
+            editingUser.value.id,
+            editingUser.value.editRoles
+        );
+        toast.show(
+            `Rôles de ${editingUser.value.pseudo} mis à jour avec succès`,
+            "success"
+        );
+        cancelEdit();
         await load();
     } finally {
-        saving.value = null;
+        saving.value = false;
     }
 }
 
@@ -157,7 +196,7 @@ onMounted(load);
 
 <style scoped>
 .players-management {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1.5rem;
 }
@@ -166,51 +205,38 @@ onMounted(load);
     margin-bottom: 2rem;
 }
 
-.table-wrapper {
-    overflow-x: auto;
+.form-card,
+.list-card {
+    margin-bottom: 2rem;
 }
 
-.users-table tbody tr.editing {
-    background-color: rgba(245, 158, 11, 0.1);
-    border-left: 3px solid var(--warning);
+.edit-form {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.col-id {
-    width: 80px;
-    color: var(--text-secondary);
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
     font-weight: 500;
-    font-family: monospace;
-}
-
-.user-pseudo {
-    font-weight: 600;
-    color: var(--text-bright);
-}
-
-.pseudo-text {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.current-roles {
-    min-width: 200px;
-}
-
-.role-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.edit-roles {
-    min-width: 300px;
+    color: var(--text-secondary);
 }
 
 .role-checkboxes {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: 8px;
+    border: 1px solid var(--border-base);
 }
 
 .role-checkbox {
@@ -222,7 +248,7 @@ onMounted(load);
     border-radius: 8px;
     cursor: pointer;
     transition: all var(--transition-base);
-    background-color: var(--bg-input);
+    background-color: var(--bg-elevated);
     user-select: none;
 }
 
@@ -259,8 +285,52 @@ onMounted(load);
     color: var(--primary-light);
 }
 
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.users-table tbody tr.editing {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid var(--primary);
+}
+
+.col-id {
+    width: 80px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-family: monospace;
+}
+
+.user-pseudo {
+    font-weight: 600;
+    color: var(--text-bright);
+}
+
+.pseudo-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.current-roles {
+    min-width: 200px;
+}
+
+.role-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 .col-actions {
-    width: 200px;
+    width: 100px;
 }
 
 .action-buttons {
@@ -269,9 +339,31 @@ onMounted(load);
     justify-content: flex-end;
 }
 
+.btn-icon:hover {
+    background-color: var(--bg-hover);
+}
+
 @media (max-width: 1200px) {
     .users-table {
         font-size: 0.85rem;
+    }
+
+    .role-checkboxes {
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .players-management {
+        padding: 0 1rem;
+    }
+
+    .edit-form {
+        padding: 1.5rem;
+    }
+
+    .role-checkboxes {
+        padding: 0.75rem;
     }
 }
 </style>

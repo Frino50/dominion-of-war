@@ -145,12 +145,8 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(async () => {
-    try {
-        if (stompClient) {
-            await stompClient.deactivate();
-        }
-    } catch (err) {
-        console.error("Erreur lors de la déconnexion STOMP :", err);
+    if (stompClient) {
+        await stompClient.deactivate();
     }
 });
 </script>

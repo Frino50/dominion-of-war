@@ -169,17 +169,13 @@ watch(zoom, () => {
 });
 
 async function loadSprite() {
-    try {
-        const blobUrl = await spriteService.getImage(props.sprite.imageUrl);
-        spriteImage = new Image();
-        spriteImage.onload = () => {
-            updateCanvasSize();
-            requestDraw();
-        };
-        spriteImage.src = blobUrl;
-    } catch (e) {
-        console.error("Erreur chargement sprite", e);
-    }
+    const blobUrl = await spriteService.getImage(props.sprite.imageUrl);
+    spriteImage = new Image();
+    spriteImage.onload = () => {
+        updateCanvasSize();
+        requestDraw();
+    };
+    spriteImage.src = blobUrl;
 }
 
 function updateCanvasSize() {
