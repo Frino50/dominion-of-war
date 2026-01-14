@@ -23,14 +23,14 @@
                             class="sprite-card"
                             :class="{
                                 small:
-                                    spriteInfo.height * spriteInfo.scale < 80,
+                                    spriteInfo.height * spriteInfo.scale < 50,
                             }"
                             v-for="spriteInfo in listSprites"
                             :key="spriteInfo.animationId"
                         >
                             <div class="card-header">
                                 <span class="badge"
-                                >ID: {{ spriteInfo.animationId }}</span
+                                    >ID: {{ spriteInfo.animationId }}</span
                                 >
                                 <span
                                     v-if="
@@ -38,7 +38,7 @@
                                         spriteInfo.hitboxX !== null
                                     "
                                     class="badge badge-hitbox"
-                                >Hitbox définie</span
+                                    >Hitbox définie</span
                                 >
                             </div>
 
@@ -74,9 +74,7 @@
                             </div>
 
                             <div class="card-footer">
-                                <button
-                                    @click="openHitboxEditor(spriteInfo)"
-                                >
+                                <button @click="openHitboxEditor(spriteInfo)">
                                     <span>Éditer Hitbox</span>
                                 </button>
                                 <button
@@ -151,8 +149,8 @@ import Animation from "@/components/Territory/Animation.vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import spriteService from "@/services/spriteService.ts";
 import SpriteSheet from "@/components/Territory/SpriteSheet.vue";
-import {ref} from "vue";
-import type {Hitbox} from "@/models/SpriteInfos.ts";
+import { ref } from "vue";
+import type { Hitbox } from "@/models/SpriteInfos.ts";
 import HitboxEditor from "@/components/Territory/HitboxEditor.vue";
 
 defineProps<{
@@ -251,15 +249,15 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 }
 
 .modal-content {
-    background: #0f172a;
+    background: var(--bg-elevated);
     width: 90%;
     max-width: 1200px;
     height: 90%;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid #334155;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-base);
     overflow: hidden;
 }
 
@@ -268,29 +266,31 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 2rem;
-    background: #1e293b;
-    border-bottom: 1px solid #334155;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-base);
 }
 
 .modal-header h2 {
     margin: 0;
-    color: #e2e8f0;
+    color: var(--text-bright);
     font-size: 1.5rem;
 }
 
 .close-btn {
     background: transparent;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 2rem;
     line-height: 1;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color var(--transition-base);
     padding: 0;
     box-shadow: none;
+    border: none;
 }
 
 .close-btn:hover {
-    color: #fff;
+    color: var(--text-bright);
+    transform: none;
 }
 
 .sprites-grid {
@@ -301,13 +301,13 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 }
 
 .sprite-card {
-    background: #1e293b;
+    background: var(--bg-surface);
     border-radius: 12px;
-    border: 1px solid #334155;
+    border: 1px solid var(--border-base);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: transform 0.2s;
+    transition: transform var(--transition-base);
     height: clamp(30rem, 40vh, 32rem);
 }
 
@@ -316,29 +316,29 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 }
 
 .sprite-card:hover {
-    border-color: #475569;
+    border-color: var(--border-light);
 }
 
 .card-header {
     padding: 0.75rem 1rem;
-    background: #253146;
-    border-bottom: 1px solid #334155;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-base);
     display: flex;
     gap: 0.5rem;
 }
 
 .badge {
-    background: #334155;
-    color: #94a3b8;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.75rem;
-    font-weight: bold;
+    font-weight: 600;
     font-family: monospace;
 }
 
 .badge-hitbox {
-    background: #059669;
+    background: var(--success);
     color: white;
 }
 
@@ -363,7 +363,7 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
@@ -397,23 +397,28 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 
 .card-footer {
     padding: 1rem;
-    background: #182336;
-    border-top: 1px solid #334155;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-base);
     display: flex;
     justify-content: center;
     flex-direction: column;
     gap: 1rem;
 }
 
+.card-footer button {
+    text-transform: none;
+    letter-spacing: normal;
+}
+
 .empty-state {
     text-align: center;
-    color: #94a3b8;
+    color: var(--text-secondary);
     margin-top: 4rem;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.3s;
+    transition: opacity var(--transition-slow);
 }
 
 .fade-enter-from,
@@ -422,20 +427,21 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 }
 
 .dark-input {
-    background: #0f172a;
-    border: 1px solid #334155;
-    color: white;
+    background: var(--bg-input);
+    border: 1px solid var(--border-base);
+    color: var(--text-bright);
     padding: 0.6rem;
     border-radius: 6px;
     font-size: 1rem;
     flex: 1;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-base);
 }
 
 .dark-input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .btn-icon {
@@ -444,13 +450,18 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     margin-left: 1.2rem;
 }
 
 .btn-save {
-    background: #059669;
+    background: var(--success);
     color: white;
+    box-shadow: 0 0 15px rgba(5, 150, 105, 0.4);
+}
+
+.btn-save:hover:not(:disabled) {
+    background: #10b981;
 }
 
 .input-row {
@@ -460,7 +471,28 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 }
 
 .input-row label {
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-align: right;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        height: 95%;
+    }
+
+    .sprites-grid {
+        padding: 1rem;
+    }
+
+    .card-body {
+        flex-direction: column;
+    }
+
+    .card-body .preview-box:first-child,
+    .card-body .preview-box:last-child {
+        flex: 1 1 auto;
+    }
 }
 </style>

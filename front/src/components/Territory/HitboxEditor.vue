@@ -496,8 +496,8 @@ function resetHitbox() {
 }
 
 .hitbox-editor {
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-base);
     border-radius: 16px;
     width: 90%;
     max-width: 1200px;
@@ -505,47 +505,55 @@ function resetHitbox() {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    color: #f8fafc;
+    box-shadow: var(--shadow-xl);
+    color: var(--text-primary);
 }
 
 .editor-header {
-    background: #1e293b;
+    background: var(--bg-surface);
     padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #334155;
+    border-bottom: 1px solid var(--border-base);
 }
+
 .header-title h2 {
     margin: 0;
-    color: #e2e8f0;
+    color: var(--text-bright);
     font-size: 1.5rem;
 }
+
 .header-actions {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
+
 .zoom-info {
     font-family: monospace;
-    background: #0f172a;
+    background: var(--bg-input);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    color: #94a3b8;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-base);
 }
+
 .close-btn {
     background: transparent;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 2rem;
     line-height: 1;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color var(--transition-base);
     padding: 0;
     box-shadow: none;
+    border: none;
 }
+
 .close-btn:hover {
-    color: #fff;
+    color: var(--text-bright);
+    transform: none;
 }
 
 .editor-layout {
@@ -560,10 +568,9 @@ function resetHitbox() {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-
-    background-color: #0f172a;
+    background-color: var(--bg-base);
     background-image: repeating-conic-gradient(
-        #1e293b 0 25%,
+        var(--bg-surface) 0 25%,
         transparent 0 50%
     );
     background-size: 20px 20px;
@@ -577,7 +584,7 @@ function resetHitbox() {
     align-items: center;
     padding: 0;
     scrollbar-width: thin;
-    scrollbar-color: #475569 #0f172a;
+    scrollbar-color: var(--border-light) var(--bg-elevated);
 }
 
 .hitbox-canvas {
@@ -590,31 +597,36 @@ function resetHitbox() {
     bottom: 1.5rem;
     left: 50%;
     transform: translateX(-50%);
-    background: #1e293b;
-    border: 1px solid #475569;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
     border-radius: 999px;
     padding: 0.25rem;
     display: flex;
     gap: 0.25rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
 }
+
 .canvas-toolbar button {
     background: transparent;
     border: none;
-    color: #e2e8f0;
+    color: var(--text-bright);
     padding: 0.5rem 1rem;
     cursor: pointer;
     font-weight: 600;
     border-radius: 999px;
-    transition: background 0.2s;
+    transition: background var(--transition-base);
+    box-shadow: none;
+    text-transform: none;
 }
+
 .canvas-toolbar button:hover {
-    background: #334155;
+    background: var(--bg-hover);
+    transform: none;
 }
 
 .sidebar {
-    background: #1e293b;
-    border-left: 1px solid #334155;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-base);
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -622,48 +634,58 @@ function resetHitbox() {
     overflow-y: auto;
     z-index: 10;
 }
+
 .form-section h4 {
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     margin: 0 0 1rem 0;
     font-weight: 700;
 }
+
 .input-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
 }
+
 .input-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
+
 .input-group label {
     font-size: 0.875rem;
-    color: #cbd5e1;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
+
 .input-group input {
-    background: #0f172a;
-    border: 1px solid #334155;
-    color: white;
+    background: var(--bg-input);
+    border: 1px solid var(--border-base);
+    color: var(--text-bright);
     padding: 0.6rem;
     border-radius: 6px;
     font-size: 1rem;
     font-family: monospace;
+    transition: border-color var(--transition-base);
 }
+
 .input-group input:focus {
     outline: none;
-    border-color: #06b6d4;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .info-box {
-    background: #334155;
+    background: var(--bg-hover);
     padding: 1rem;
     border-radius: 8px;
-    color: #cbd5e1;
+    color: var(--text-secondary);
     font-size: 0.875rem;
+    border: 1px solid var(--border-base);
 }
 
 .sidebar-footer {
@@ -672,41 +694,78 @@ function resetHitbox() {
     flex-direction: column;
     gap: 1rem;
 }
+
 .btn-row {
     display: flex;
     gap: 0.75rem;
 }
+
 .btn {
     padding: 0.75rem 1rem;
     border: none;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all var(--transition-base);
     font-size: 0.95rem;
 }
+
 .btn-primary {
-    background: #06b6d4;
+    background: var(--primary);
     color: white;
     width: 100%;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
+
 .btn-primary:hover {
-    background: #0891b2;
+    background: var(--primary-hover);
 }
+
 .btn-secondary {
-    background: #475569;
-    color: white;
+    background: var(--bg-hover);
+    color: var(--text-bright);
     flex: 1;
 }
+
 .btn-secondary:hover {
-    background: #64748b;
+    background: var(--border-light);
 }
+
 .btn-danger {
-    background: rgba(239, 68, 68, 0.2);
+    background: rgba(220, 38, 38, 0.2);
     color: #ef4444;
     flex: 1;
+    border: 1px solid rgba(220, 38, 38, 0.3);
 }
+
 .btn-danger:hover {
-    background: rgba(239, 68, 68, 0.3);
+    background: rgba(220, 38, 38, 0.3);
+}
+
+@media (max-width: 1024px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        border-left: none;
+        border-top: 1px solid var(--border-base);
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hitbox-editor {
+        width: 95%;
+        height: 95%;
+    }
+
+    .editor-header {
+        padding: 1rem;
+    }
+
+    .sidebar {
+        padding: 1rem;
+    }
 }
 </style>

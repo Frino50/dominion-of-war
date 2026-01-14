@@ -30,12 +30,13 @@ onMounted(async () => {
 
 <style scoped>
 .checkerboard {
-    background-color: #0f172a;
+    background-color: var(--bg-base);
     background-image: repeating-conic-gradient(
-        #1e293b 0 25%,
+        var(--bg-surface) 0 25%,
         transparent 0 50%
     );
     background-size: 20px 20px;
     image-rendering: pixelated;
+    border-radius: 4px;
 }
 </style>

@@ -41,14 +41,14 @@ async function onFileSelected(event: Event) {
 </script>
 <style scoped>
 .library-header {
-    background: rgba(30, 41, 59, 0.8);
+    background: var(--bg-surface);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid #334155;
-    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-base);
+    padding: 1.5rem 2rem;
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
 }
 
 .header-content {
@@ -63,18 +63,19 @@ async function onFileSelected(event: Event) {
 
 h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.5px;
-    color: white;
+    color: var(--text-bright);
 }
 
 .accent {
-    color: #3b82f6;
+    color: var(--primary-light);
     font-size: 0.9rem;
     background: rgba(59, 130, 246, 0.1);
-    padding: 2px 8px;
+    padding: 0.25rem 0.75rem;
     border-radius: 12px;
+    border: 1px solid var(--border-base);
 }
 
 .actions-bar {
@@ -83,25 +84,17 @@ h1 {
     gap: 1rem;
 }
 
-.btn {
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+.icon {
+    font-size: 1.1rem;
 }
 
-.btn-secondary {
-    background: #334155;
-    color: #f1f5f9;
-}
+@media (max-width: 768px) {
+    .library-header {
+        padding: 1rem;
+    }
 
-.btn-secondary:hover {
-    background: #475569;
+    h1 {
+        font-size: 1.25rem;
+    }
 }
 </style>

@@ -16,7 +16,7 @@
             <div class="info-group">
                 <div class="input-row">
                     <label>Scale:</label>
-                    <input v-model.number="sprite.scale" class="dark-input"/>
+                    <input v-model.number="sprite.scale" class="dark-input" />
                 </div>
 
                 <div class="input-row">
@@ -28,9 +28,7 @@
                     />
                 </div>
 
-                <button @click="searchAllSprites">
-                    Voir tous les sprites
-                </button>
+                <button @click="searchAllSprites">Voir tous les sprites</button>
                 <button @click="jouer">Jouer</button>
             </div>
         </div>
@@ -38,13 +36,13 @@
         <div class="card-footer">
             <button
                 :disabled="!sprite.scale"
-                class=" btn-save"
+                class="btn-save"
                 @click="renameSprite()"
             >
                 💾
             </button>
             <button
-                class=" btn-delete"
+                class="btn-delete"
                 title="Supprimer l'unité"
                 @click="$emit('delete')"
             >
@@ -62,7 +60,7 @@
             "
             @frame-rate="(value) => (sprite.frameRate = value)"
         />
-        <Test v-if="showModal2" :sprite-play="spritePlay!"/>
+        <Test v-if="showModal2" :sprite-play="spritePlay!" />
     </div>
 </template>
 
@@ -71,14 +69,14 @@ import Animation from "@/components/Territory/Animation.vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import ModifSpriteDto from "@/models/dtos/modifSpriteDto.ts";
 import spriteService from "@/services/spriteService.ts";
-import {computed, onMounted, ref} from "vue";
+import { computed, onMounted, ref } from "vue";
 import SpriteModal from "@/components/Territory/SpriteModal.vue";
 import SpritePlay from "@/models/SpritePlay.ts";
 import Test from "@/components/Territory/Test.vue";
 
 defineEmits(["delete"]);
 
-const sprite = defineModel<SpriteInfo>({required: true});
+const sprite = defineModel<SpriteInfo>({ required: true });
 
 const listSpriteInfo = ref<SpriteInfo[]>([]);
 const showModal = ref(false);
@@ -130,19 +128,22 @@ async function renameSprite() {
 
 <style scoped>
 .sprite-card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-base);
+    border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.3s ease,
-    box-shadow 0.3s ease;
+    transition:
+        transform var(--transition-slow),
+        box-shadow var(--transition-slow);
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow-md);
 }
 
 .sprite-card:hover {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border-color: #3b82f6;
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+    transform: translateY(-2px);
 }
 
 .card-body {
@@ -164,40 +165,48 @@ async function renameSprite() {
 
 .input-row label {
     min-width: 50px;
-    color: #94a3b8;
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
     text-align: right;
+    font-weight: 500;
 }
 
 .dark-input {
-    background: #0f172a;
-    border: 1px solid #334155;
-    color: white;
+    background: var(--bg-input);
+    border: 1px solid var(--border-base);
+    color: var(--text-bright);
     padding: 0.6rem;
     border-radius: 6px;
     font-size: 1rem;
     flex: 1;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-base);
 }
 
 .dark-input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .card-footer {
     padding: 1rem;
     display: flex;
     gap: 0.5rem;
-    border-top: 1px solid #334155;
+    border-top: 1px solid var(--border-base);
     margin-top: 1rem;
+}
+
+.card-footer button {
+    text-transform: none;
+    letter-spacing: normal;
 }
 
 .btn-save {
     flex: 1;
-    background: #059669;
+    background: var(--success);
     color: white;
+    box-shadow: 0 0 15px rgba(5, 150, 105, 0.4);
 }
 
 .btn-save:hover:not(:disabled) {
@@ -205,15 +214,17 @@ async function renameSprite() {
 }
 
 .btn-save:disabled {
-    background: #334155;
+    background: var(--bg-hover);
     opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 .btn-delete {
     flex: 1;
-    background: #be123c;
+    background: var(--danger);
     color: white;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
 }
 
 .btn-delete:hover {
@@ -221,15 +232,32 @@ async function renameSprite() {
 }
 
 .visual-stage {
-    background: #0f172a;
+    background: var(--bg-base);
     min-height: 150px;
     display: flex;
     align-items: end;
     justify-content: center;
     margin: 1rem 1rem 1rem 1rem;
     border-radius: 8px;
-    border: 1px dashed #334155;
+    border: 1px dashed var(--border-base);
     position: relative;
     overflow: hidden;
+    transition: border-color var(--transition-base);
+}
+
+.visual-stage:hover {
+    border-color: var(--border-light);
+}
+
+@media (max-width: 768px) {
+    .input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .input-row label {
+        text-align: left;
+        min-width: unset;
+    }
 }
 </style>

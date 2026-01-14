@@ -42,7 +42,7 @@ onMounted(getAllSpritesInfos);
 </script>
 <style scoped>
 .page-container {
-    background-color: #0f172a;
+    background: var(--bg-base);
     min-height: 100vh;
 }
 
@@ -56,5 +56,16 @@ onMounted(getAllSpritesInfos);
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .sprite-library {
+        padding: 1rem;
+    }
+
+    .sprite-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 </style>
