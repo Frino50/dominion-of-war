@@ -17,9 +17,11 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("SELECT p FROM Player p WHERE p.pseudo = :pseudo")
     Optional<Player> findWithRolesByPseudo(String pseudo);
 
-    @Query("SELECT DISTINCT p FROM Player p LEFT JOIN FETCH p.roles ORDER BY p.pseudo")
+    @EntityGraph(attributePaths = "roles")
+    @Query("SELECT p FROM Player p ORDER BY p.pseudo")
     List<Player> findAllWithRoles();
-
-    @Query("SELECT p FROM Player p LEFT JOIN FETCH p.roles WHERE p.id = :id")
+    
+    @EntityGraph(attributePaths = "roles")
+    @Query("SELECT p FROM Player p WHERE p.id = :id")
     Optional<Player> findByIdWithRoles(@Param("id") Long id);
 }

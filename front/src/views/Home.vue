@@ -23,7 +23,7 @@
             </button>
         </section>
 
-        <div v-if="pseudo" class="routes-section">
+        <div v-if="pseudo" class="routes-section" :key="routesKey">
             <div class="card">
                 <div class="card-header">
                     <h2>Routes :</h2>
@@ -63,12 +63,15 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import routeService from "@/services/routeService";
 import { localStore } from "@/store/local";
 import RouteDto from "@/models/dtos/RouteDto.ts";
 
+const router = useRouter();
 const routes = ref<RouteDto[]>([]);
 const pseudo = computed(() => localStore.pseudo);
+const routesKey = ref(0);
 
 function normalizePath(name: string) {
     return name.startsWith("/") ? name : `/${name}`;
@@ -76,11 +79,15 @@ function normalizePath(name: string) {
 
 async function loadRoutes() {
     routes.value = await routeService.getAvailable();
+    await router.isReady();
+    routesKey.value++;
 }
 
 function logout() {
     localStore.pseudo = "";
     localStore.token = "";
+    routes.value = [];
+    routesKey.value++;
 }
 
 onMounted(loadRoutes);

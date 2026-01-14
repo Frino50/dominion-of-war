@@ -15,6 +15,16 @@ const staticRoutes: Array<RouteRecordRaw> = [
         name: "Home",
         component: () => import("@/views/Home.vue"),
     },
+    {
+        path: "/login",
+        name: "Login",
+        component: () => import("@/views/Login.vue"),
+    },
+    {
+        path: "/register",
+        name: "Register",
+        component: () => import("@/views/Register.vue"),
+    },
 ];
 
 const router = createRouter({
@@ -52,9 +62,10 @@ async function loadDynamicRoutes() {
 
     dynamicRoutesLoaded = true;
 }
-
 router.beforeEach(async (to, _from, next) => {
-    await loadDynamicRoutes();
+    if (!dynamicRoutesLoaded && localStore.pseudo) {
+        await loadDynamicRoutes();
+    }
 
     // Si la route n'existe toujours pas après le chargement, rediriger vers home
     if (to.matched.length === 0) {

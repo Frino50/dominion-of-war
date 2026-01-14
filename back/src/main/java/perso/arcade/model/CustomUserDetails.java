@@ -24,9 +24,6 @@ public class CustomUserDetails implements UserDetails {
     }
 
     private static List<GrantedAuthority> buildAuthorities(Set<Role> roles) {
-        if (roles == null || roles.isEmpty()) {
-            return List.of(new SimpleGrantedAuthority("ROLE_PLAYER"));
-        }
         return roles.stream()
                 .filter(Objects::nonNull)
                 .map(Role::getName)
