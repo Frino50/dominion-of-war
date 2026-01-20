@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    @Query("SELECT new perso.dow.model.dto.RoleDto(r.id, r.name) FROM Role r ORDER BY r.name")
+    @Query("SELECT new dow.model.dto.RoleDto(r.id, r.name) FROM Role r ORDER BY r.name")
     List<RoleDto> findAllAsDto();
 
     @Query("SELECT r.name FROM Role r ORDER BY r.name")

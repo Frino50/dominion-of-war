@@ -12,14 +12,14 @@ import java.util.Set;
 
 public interface RouteRepository extends JpaRepository<Route, Long> {
 
-    @Query("SELECT new perso.dow.model.dto.RouteDto(" +
+    @Query("SELECT new dow.model.dto.RouteDto(" +
             "r.id, r.name, r.componentPath, role.name, r.needAuth) " +
             "FROM Route r " +
             "LEFT JOIN r.role role " +
             "ORDER BY r.id")
     List<RouteDto> findAllRoutesAsDto();
 
-    @Query("SELECT new perso.dow.model.dto.RouteDto(" +
+    @Query("SELECT new dow.model.dto.RouteDto(" +
             "r.id, r.name, r.componentPath, role.name, r.needAuth) " +
             "FROM Route r " +
             "LEFT JOIN r.role role " +

@@ -13,7 +13,7 @@ import java.util.List;
 public class SpriteRepositoryImpl implements SpriteRepositoryCustom {
 
     private static final String BASE_SELECT = """
-            SELECT new perso.dow.model.dto.SpriteInfos(
+            SELECT new dow.model.dto.SpriteInfos(
                     a.id,
                     s.name,
                     s.name || '/' || a.type || '/' || a.indice || '.png',
