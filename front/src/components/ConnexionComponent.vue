@@ -116,6 +116,7 @@ function redirection() {
     align-items: center;
     z-index: 1;
     overflow: hidden;
+    background-color: var(--bg-card);
 }
 
 .title {

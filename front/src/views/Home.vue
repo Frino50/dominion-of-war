@@ -147,11 +147,12 @@ onMounted(loadRoutes);
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .route-item {
     border-bottom: 1px solid var(--border-base);
+    padding-bottom: 0.25rem;
 }
 
 .route-item:last-child {

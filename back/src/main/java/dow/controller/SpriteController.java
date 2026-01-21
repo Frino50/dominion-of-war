@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,23 +28,27 @@ public class SpriteController {
         this.spriteService = spriteService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public SpriteInfos uploadSprite(@RequestParam("file") MultipartFile zipFile) {
         return spriteService.processSpriteZip(zipFile);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<SpriteInfos>> getAllSpritesInfos() {
         List<SpriteInfos> spriteInfos = spriteService.getAllSpritesInfos();
         return ResponseEntity.ok(spriteInfos);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{spriteName}")
     public ResponseEntity<Void> deleteSpriteByName(@PathVariable String spriteName) {
         spriteService.deleteSpriteByName(spriteName);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rename")
     public SpriteInfos renameSprite(@RequestBody ModifSpriteDto modifSpriteDto) {
         return spriteService.renameSprite(modifSpriteDto);
@@ -59,11 +64,13 @@ public class SpriteController {
         return spriteService.getAllAnimationsBySpriteName(spriteName);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/normalize-sprite-sheet/{animationId}")
     public SpriteInfos normalizeSpriteSheet(@PathVariable Long animationId) throws IOException {
         return spriteService.normalizeSpriteSheet(animationId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/flip-horizontal/{animationId}")
     public ResponseEntity<Void> flipHorizontal(@PathVariable Long animationId) {
         spriteService.flipHorizontal(animationId);
@@ -75,11 +82,13 @@ public class SpriteController {
         return spriteService.getSpritePlay(spriteName);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/save-frame-rate/{animationId}/{frameRate}")
     public Animation saveFrameRate(@PathVariable Long animationId, @PathVariable int frameRate) {
         return spriteService.saveFrameRate(animationId, frameRate);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/hitbox/{animationId}")
     public ResponseEntity<Void> saveHitbox(
             @PathVariable Long animationId,
@@ -88,6 +97,7 @@ public class SpriteController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/hitbox/{animationId}")
     public ResponseEntity<Void> deleteHitbox(@PathVariable Long animationId) {
         spriteService.deleteHitbox(animationId);
