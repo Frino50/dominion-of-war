@@ -65,14 +65,14 @@
 </template>
 
 <script lang="ts" setup>
-import Animation from "@/components/Territory/Animation.vue";
+import Animation from "@/components/GestionSprites/Animation.vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import ModifSpriteDto from "@/models/dtos/modifSpriteDto.ts";
 import spriteService from "@/services/spriteService.ts";
 import { computed, onMounted, ref } from "vue";
-import SpriteModal from "@/components/Territory/SpriteModal.vue";
+import SpriteModal from "@/components/GestionSprites/SpriteModal.vue";
 import SpritePlay from "@/models/SpritePlay.ts";
-import Test from "@/components/Territory/Test.vue";
+import Test from "@/components/GestionSprites/Test.vue";
 
 defineEmits(["delete"]);
 

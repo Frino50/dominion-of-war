@@ -145,13 +145,13 @@
 </template>
 
 <script setup lang="ts">
-import Animation from "@/components/Territory/Animation.vue";
+import Animation from "@/components/GestionSprites/Animation.vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import spriteService from "@/services/spriteService.ts";
-import SpriteSheet from "@/components/Territory/SpriteSheet.vue";
+import SpriteSheet from "@/components/GestionSprites/SpriteSheet.vue";
 import { ref } from "vue";
 import type { Hitbox } from "@/models/SpriteInfos.ts";
-import HitboxEditor from "@/components/Territory/HitboxEditor.vue";
+import HitboxEditor from "@/components/GestionSprites/HitboxEditor.vue";
 
 defineProps<{
     visible: boolean;

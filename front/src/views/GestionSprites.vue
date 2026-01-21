@@ -20,9 +20,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import TerritoryHeader from "../components/Territory/GestionSpritesHeader.vue";
-import SpriteCard from "../components/Territory/SpriteCard.vue";
-import EmptyState from "../components/Territory/EmptyState.vue";
+import TerritoryHeader from "../components/GestionSprites/GestionSpritesHeader.vue";
+import SpriteCard from "../components/GestionSprites/SpriteCard.vue";
+import EmptyState from "../components/GestionSprites/EmptyState.vue";
 import spriteService from "@/services/spriteService.ts";
 import SpriteInfo from "@/models/SpriteInfos.ts";
 

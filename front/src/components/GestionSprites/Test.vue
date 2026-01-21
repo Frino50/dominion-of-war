@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type CSSProperties } from "vue";
-import Animation from "@/components/Territory/Animation.vue";
+import Animation from "@/components/GestionSprites/Animation.vue";
 import SpritePlay from "@/models/SpritePlay.ts";
 
 const props = defineProps<{ spritePlay: SpritePlay }>();
