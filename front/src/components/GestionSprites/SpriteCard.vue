@@ -29,7 +29,6 @@
                 </div>
 
                 <button @click="searchAllSprites">Voir tous les sprites</button>
-                <button @click="jouer">Jouer</button>
             </div>
         </div>
 
@@ -60,7 +59,6 @@
             "
             @frame-rate="(value) => (sprite.frameRate = value)"
         />
-        <Test v-if="showModal2" :sprite-play="spritePlay!" />
     </div>
 </template>
 
@@ -71,8 +69,6 @@ import ModifSpriteDto from "@/models/dtos/modifSpriteDto.ts";
 import spriteService from "@/services/spriteService.ts";
 import { computed, onMounted, ref } from "vue";
 import SpriteModal from "@/components/GestionSprites/SpriteModal.vue";
-import SpritePlay from "@/models/SpritePlay.ts";
-import Test from "@/components/GestionSprites/Test.vue";
 
 defineEmits(["delete"]);
 
@@ -81,13 +77,6 @@ const sprite = defineModel<SpriteInfo>({ required: true });
 const listSpriteInfo = ref<SpriteInfo[]>([]);
 const showModal = ref(false);
 const animationKey = ref(0);
-const showModal2 = ref(false);
-const spritePlay = ref<SpritePlay>();
-
-async function jouer() {
-    spritePlay.value = await spriteService.getSpritePlay(sprite.value.name);
-    showModal2.value = true;
-}
 
 onMounted(() => {
     if (!sprite.value.newName) {

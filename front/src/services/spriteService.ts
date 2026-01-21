@@ -40,11 +40,6 @@ export default {
         return response.data;
     },
 
-    async getSpritePlay(spriteName: string) {
-        const response = await apiService.get(`/sprite/play/${spriteName}`);
-        return response.data;
-    },
-
     async normalizeSpriteSheet(animationId: number, spriteUrl: string) {
         spriteCache.delete(spriteUrl);
         const response = await apiService.get(

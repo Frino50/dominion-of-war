@@ -1,6 +1,6 @@
 <template>
     <div class="page-container">
-        <TerritoryHeader
+        <GestionSpritesHeader
             @add-to-list="(addedSprite) => sprites.push(addedSprite)"
         />
 
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import TerritoryHeader from "../components/GestionSprites/GestionSpritesHeader.vue";
+import GestionSpritesHeader from "../components/GestionSprites/GestionSpritesHeader.vue";
 import SpriteCard from "../components/GestionSprites/SpriteCard.vue";
 import EmptyState from "../components/GestionSprites/EmptyState.vue";
 import spriteService from "@/services/spriteService.ts";

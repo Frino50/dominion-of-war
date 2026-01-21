@@ -4,7 +4,6 @@ import dow.exception.AlreadyExist;
 import dow.model.dto.HitboxDto;
 import dow.model.dto.ModifSpriteDto;
 import dow.model.dto.SpriteInfos;
-import dow.model.dto.SpritePlay;
 import dow.model.entities.Animation;
 import dow.model.entities.Sprite;
 import dow.model.enumeration.AnimationType;
@@ -676,23 +675,6 @@ public class SpriteService {
 
     private void logSeparator() {
         log.info(SEPARATOR);
-    }
-
-    public SpritePlay getSpritePlay(String spriteName) {
-        List<SpriteInfos> listSpritesInfos = spriteRepository.getAllAnimationsBySpriteName(spriteName);
-        SpritePlay spritePlay = new SpritePlay();
-
-        spritePlay.setIdle(findFirstByType(listSpritesInfos, "/IDLE/"));
-        spritePlay.setWalk(findFirstByType(listSpritesInfos, "/WALK/"));
-        spritePlay.setAttack(findFirstByType(listSpritesInfos, "/ATTACK/"));
-        return spritePlay;
-    }
-
-    private SpriteInfos findFirstByType(List<SpriteInfos> infos, String typeFolder) {
-        return infos.stream()
-                .filter(i -> i.getImageUrl().contains(typeFolder))
-                .findFirst()
-                .orElse(null);
     }
 
     public Animation saveFrameRate(Long animationId, int frameRate) {

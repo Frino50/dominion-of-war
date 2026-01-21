@@ -3,7 +3,6 @@ package dow.controller;
 import dow.model.dto.HitboxDto;
 import dow.model.dto.ModifSpriteDto;
 import dow.model.dto.SpriteInfos;
-import dow.model.dto.SpritePlay;
 import dow.model.entities.Animation;
 import dow.service.SpriteService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,11 +74,6 @@ public class SpriteController {
     public ResponseEntity<Void> flipHorizontal(@PathVariable Long animationId) {
         spriteService.flipHorizontal(animationId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/play/{spriteName}")
-    public SpritePlay getSpritePlay(@PathVariable String spriteName) {
-        return spriteService.getSpritePlay(spriteName);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
