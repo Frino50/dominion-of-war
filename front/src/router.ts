@@ -36,32 +36,38 @@ function resolveComponentPath(componentPath: string): string {
     const path = componentPath.trim();
     return "/src/views/" + path;
 }
-
 async function loadDynamicRoutes() {
     if (dynamicRoutesLoaded) return;
 
-    const routes = await routeService.getAvailable();
+    try {
+        const routes = await routeService.getAvailable();
 
-    routes.forEach((route) => {
-        const routePath = route.name.startsWith("/")
-            ? route.name
-            : `/${route.name}`;
-        const componentPath = resolveComponentPath(route.componentPath);
-        const componentLoader = viewModules[componentPath];
-        const component = componentLoader
-            ? () => componentLoader().then((m: any) => m.default ?? m)
-            : () => import("@/views/Home.vue");
+        routes.forEach((route) => {
+            const routePath = route.name.startsWith("/")
+                ? route.name
+                : `/${route.name}`;
 
-        router.addRoute({
-            path: routePath,
-            name: route.name,
-            component,
-            meta: { requiresAuth: route.needAuth },
+            const componentPath = resolveComponentPath(route.componentPath);
+            const componentLoader = viewModules[componentPath];
+
+            const component = componentLoader
+                ? () => componentLoader().then((m: any) => m.default ?? m)
+                : () => import("@/views/Home.vue");
+
+            router.addRoute({
+                path: routePath,
+                name: route.name,
+                component,
+                meta: { requiresAuth: route.needAuth },
+            });
         });
-    });
-
-    dynamicRoutesLoaded = true;
+    } catch (error) {
+        console.error("Impossible de charger les routes dynamiques");
+    } finally {
+        dynamicRoutesLoaded = true;
+    }
 }
+
 router.beforeEach(async (to, _from, next) => {
     if (!dynamicRoutesLoaded && localStore.pseudo) {
         await loadDynamicRoutes();
