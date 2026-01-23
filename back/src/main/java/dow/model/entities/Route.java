@@ -11,11 +11,9 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Name shown in URL, e.g. "/territory" or "territory"
     @Column(nullable = false, unique = true)
     private String name;
 
-    // Vue component import path relative to src/views, e.g. "Territory.vue" or with alias "@/views/Territory.vue"
     @Column(nullable = false)
     private String componentPath;
 
@@ -24,7 +22,7 @@ public class Route {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
-    private Role role; // required role when needAuth=true; null means any authenticated user
+    private Role role;
 
     public Route() {
     }
@@ -75,14 +73,13 @@ public class Route {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Route route = (Route) o;
-        return Objects.equals(id, route.id);
+        return needAuth == route.needAuth && Objects.equals(id, route.id) && Objects.equals(name, route.name) && Objects.equals(componentPath, route.componentPath) && Objects.equals(role, route.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, componentPath, needAuth, role);
     }
 }

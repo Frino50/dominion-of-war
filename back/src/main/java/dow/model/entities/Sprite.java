@@ -66,7 +66,7 @@ public class Sprite {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Sprite sprite = (Sprite) o;
-        return scale == sprite.scale && Objects.equals(id, sprite.id) && Objects.equals(name, sprite.name) && Objects.equals(animations, sprite.animations);
+        return Float.compare(scale, sprite.scale) == 0 && Objects.equals(id, sprite.id) && Objects.equals(name, sprite.name) && Objects.equals(animations, sprite.animations);
     }
 
     @Override

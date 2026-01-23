@@ -1,7 +1,7 @@
 package dow.security;
 
 import dow.exception.JwtAuthenticationException;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;

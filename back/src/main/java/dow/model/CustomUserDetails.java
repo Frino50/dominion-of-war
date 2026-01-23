@@ -3,6 +3,7 @@ package dow.model;
 
 import dow.model.entities.Player;
 import dow.model.entities.Role;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +36,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
+    @NonNull
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
@@ -45,6 +47,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
+    @NonNull
     public String getUsername() {
         return player.getPseudo();
     }

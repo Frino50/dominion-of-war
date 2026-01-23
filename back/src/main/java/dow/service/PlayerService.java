@@ -3,6 +3,7 @@ package dow.service;
 import dow.model.CustomUserDetails;
 import dow.model.entities.Player;
 import dow.repository.PlayerRepository;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class PlayerService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
+    @NonNull
     public CustomUserDetails loadUserByUsername(String pseudo) throws UsernameNotFoundException {
         Player player = playerRepository.findWithRolesByPseudo(pseudo)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec le pseudo: " + pseudo));

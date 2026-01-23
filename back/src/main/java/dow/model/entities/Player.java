@@ -62,11 +62,11 @@ public class Player {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(id, player.id) && Objects.equals(pseudo, player.pseudo) && Objects.equals(password, player.password);
+        return Objects.equals(id, player.id) && Objects.equals(pseudo, player.pseudo) && Objects.equals(password, player.password) && Objects.equals(roles, player.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pseudo, password);
+        return Objects.hash(id, pseudo, password, roles);
     }
 }

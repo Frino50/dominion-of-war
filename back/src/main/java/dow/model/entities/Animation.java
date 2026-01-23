@@ -155,23 +155,11 @@ public class Animation {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Animation animation = (Animation) o;
-        return frames == animation.frames &&
-                width == animation.width &&
-                height == animation.height &&
-                indice == animation.indice &&
-                frameRate == animation.frameRate &&
-                Objects.equals(id, animation.id) &&
-                type == animation.type &&
-                Objects.equals(sprite, animation.sprite) &&
-                Objects.equals(hitboxX, animation.hitboxX) &&
-                Objects.equals(hitboxY, animation.hitboxY) &&
-                Objects.equals(hitboxWidth, animation.hitboxWidth) &&
-                Objects.equals(hitboxHeight, animation.hitboxHeight);
+        return frames == animation.frames && width == animation.width && height == animation.height && indice == animation.indice && frameRate == animation.frameRate && Objects.equals(id, animation.id) && Objects.equals(hitboxX, animation.hitboxX) && Objects.equals(hitboxY, animation.hitboxY) && Objects.equals(hitboxWidth, animation.hitboxWidth) && Objects.equals(hitboxHeight, animation.hitboxHeight) && type == animation.type && Objects.equals(sprite, animation.sprite);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, frames, width, height, indice, frameRate, type, sprite,
-                hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+        return Objects.hash(id, frames, width, height, indice, frameRate, hitboxX, hitboxY, hitboxWidth, hitboxHeight, type, sprite);
     }
 }

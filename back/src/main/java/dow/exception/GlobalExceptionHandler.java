@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex) {
+    public ResponseEntity<String> handleAccessDenied() {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Accès refusé : vous n'avez pas le rôle requis pour cette action.");

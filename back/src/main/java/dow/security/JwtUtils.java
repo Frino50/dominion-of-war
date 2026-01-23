@@ -33,7 +33,13 @@ public class JwtUtils {
     }
 
     public String generateJwtToken(Authentication authentication) {
-        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new IllegalArgumentException("Authentication or principal is null");
+        }
+
+        if (!(authentication.getPrincipal() instanceof CustomUserDetails userPrincipal)) {
+            throw new IllegalArgumentException("Principal is not CustomUserDetails");
+        }
 
         Instant now = Instant.now();
         Instant expiryInstant = now.plusMillis(jwtExpirationMs);
