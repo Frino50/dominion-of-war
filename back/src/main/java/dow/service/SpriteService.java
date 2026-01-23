@@ -108,7 +108,7 @@ public class SpriteService {
             log.info("Sprite '{}' importé avec succès", spriteName);
             logSeparator();
 
-            return spriteRepository.getSpritesInfosByTypeAndName(AnimationType.IDLE, spriteName);
+            return spriteRepository.findSpriteInfosByTypeAndName(AnimationType.IDLE, spriteName);
 
         } catch (AlreadyExist e) {
             log.warn("Sprite déjà existant: {}", e.getMessage());
@@ -409,7 +409,7 @@ public class SpriteService {
 
     @Transactional
     public SpriteInfos normalizeSpriteSheet(Long animationId) throws IOException {
-        SpriteInfos info = spriteRepository.getSpriteInfosByAnimationId(animationId);
+        SpriteInfos info = spriteRepository.findSpriteInfosByAnimationId(animationId);
 
         if (info == null) {
             throw new IllegalArgumentException("Animation introuvable ID: " + animationId);
@@ -442,7 +442,7 @@ public class SpriteService {
         );
 
         logSeparator();
-        return spriteRepository.getSpriteInfosByAnimationId(animationId);
+        return spriteRepository.findSpriteInfosByAnimationId(animationId);
     }
 
     private void optimizeWithPngQuant(File file) {
@@ -579,12 +579,12 @@ public class SpriteService {
         return ResponseEntity.notFound().build();
     }
 
-    public List<SpriteInfos> getAllSpritesInfos() {
-        return spriteRepository.getAllSpritesInfos(AnimationType.IDLE);
+    public List<SpriteInfos> findAllSpriteInfosByAnimationType() {
+        return spriteRepository.findAllSpriteInfosByAnimationType(AnimationType.IDLE);
     }
 
-    public List<SpriteInfos> getAllAnimationsBySpriteName(String name) {
-        return spriteRepository.getAllAnimationsBySpriteName(name);
+    public List<SpriteInfos> findAllAnimationsBySpriteName(String name) {
+        return spriteRepository.findAllAnimationsBySpriteName(name);
     }
 
     @Transactional
@@ -613,7 +613,7 @@ public class SpriteService {
         }
 
         spriteRepository.save(sprite);
-        return spriteRepository.getSpritesInfosByTypeAndName(AnimationType.IDLE, sprite.getName());
+        return spriteRepository.findSpriteInfosByTypeAndName(AnimationType.IDLE, sprite.getName());
     }
 
     private void renameSpriteFolder(Sprite sprite, String newName) {
@@ -637,7 +637,7 @@ public class SpriteService {
 
     @Transactional
     public void flipHorizontal(Long animationId) {
-        SpriteInfos info = spriteRepository.getSpriteInfosByAnimationId(animationId);
+        SpriteInfos info = spriteRepository.findSpriteInfosByAnimationId(animationId);
         Path filePath = Paths.get(spriteStorage, info.getImageUrl());
 
         try {

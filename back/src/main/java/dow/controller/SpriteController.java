@@ -35,8 +35,8 @@ public class SpriteController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<List<SpriteInfos>> getAllSpritesInfos() {
-        List<SpriteInfos> spriteInfos = spriteService.getAllSpritesInfos();
+    public ResponseEntity<List<SpriteInfos>> findAllSpriteInfosByAnimationType() {
+        List<SpriteInfos> spriteInfos = spriteService.findAllSpriteInfosByAnimationType();
         return ResponseEntity.ok(spriteInfos);
     }
 
@@ -59,8 +59,8 @@ public class SpriteController {
     }
 
     @GetMapping("/animations/{spriteName}")
-    public List<SpriteInfos> getAllAnimationsBySpriteName(@PathVariable String spriteName) {
-        return spriteService.getAllAnimationsBySpriteName(spriteName);
+    public List<SpriteInfos> findAllAnimationsBySpriteName(@PathVariable String spriteName) {
+        return spriteService.findAllAnimationsBySpriteName(spriteName);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
