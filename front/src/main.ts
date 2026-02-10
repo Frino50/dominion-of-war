@@ -1,8 +1,8 @@
-import {createApp} from "vue";
+import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import {loading} from "@/directives/loading.ts";
-import {clickOutside} from "@/directives/clickOutside.ts";
+import { loading } from "@/directives/loading.ts";
+import { clickOutside } from "@/directives/clickOutside.ts";
 
 import "./style.css";
 

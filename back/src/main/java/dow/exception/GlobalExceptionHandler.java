@@ -37,6 +37,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseEntity<Map<String, String>> gameNotFoundException(GameNotFoundException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "GAME_NOT_FOUND");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(GameAlreadyInException.class)
+    public ResponseEntity<Map<String, String>> gameAlreadyInException(GameAlreadyInException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "GAME_ALREADY_IN");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(GameBadPasswordException.class)
+    public ResponseEntity<Map<String, String>> GameBadPasswordException(GameBadPasswordException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "GAME_BAD_PASSWORD");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleAllExceptions() {
         Map<String, String> body = new HashMap<>();

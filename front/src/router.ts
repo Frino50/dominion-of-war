@@ -25,6 +25,12 @@ const staticRoutes: Array<RouteRecordRaw> = [
         name: "Register",
         component: () => import("@/views/Register.vue"),
     },
+    // {
+    //     path: "/game/arena/:roomId",
+    //     name: "GameArena",
+    //     component: () => import("@/views/GameArena.vue"),
+    //     meta: { requiresAuth: true },
+    // },
 ];
 
 const router = createRouter({
