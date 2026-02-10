@@ -67,33 +67,43 @@ async function loadDynamicRoutes() {
         dynamicRoutesLoaded = true;
     }
 }
-
 router.beforeEach(async (to, _from, next) => {
-    if (!dynamicRoutesLoaded && localStore.pseudo) {
-        await loadDynamicRoutes();
-    }
-
-    // Si la route n'existe toujours pas après le chargement, rediriger vers home
-    if (to.matched.length === 0) {
-        next("/");
-        return;
-    }
-
     const isAuthenticated = !!localStore.pseudo;
+
+    // 1. CHARGEMENT DES ROUTES DYNAMIQUES
+    // Si l'utilisateur est connecté mais que les routes n'ont pas encore été injectées
+    if (isAuthenticated && !dynamicRoutesLoaded) {
+        try {
+            await loadDynamicRoutes();
+            // Une fois les routes ajoutées, on interrompt la navigation actuelle
+            // et on la relance pour que le routeur reconnaisse les nouveaux chemins.
+            return next({ ...to, replace: true });
+        } catch (error) {
+            console.error("Erreur lors de l'initialisation des routes:", error);
+            return next("/login");
+        }
+    }
+
+    // 2. GESTION DES ROUTES INEXISTANTES (404 / Fallback)
+    // Si après le chargement des routes, la destination n'existe toujours pas
+    if (to.matched.length === 0) {
+        return next("/");
+    }
+
+    // 3. LOGIQUE D'AUTORISATION (Garde de navigation)
     const requiresAuth = to.meta.requiresAuth;
 
-    // Redirection si auth requise mais non connecté
+    // Si la route demande une auth et que l'utilisateur n'est pas connecté
     if (requiresAuth && !isAuthenticated) {
-        next("/login");
-        return;
+        return next("/login");
     }
 
-    // Redirection si déjà connecté et accès à login/register
-    if ((to.path === "/login" || to.path === "/register") && isAuthenticated) {
-        next("/");
-        return;
+    // Si l'utilisateur est déjà connecté et essaie d'aller sur Login ou Register
+    if (isAuthenticated && (to.path === "/login" || to.path === "/register")) {
+        return next("/");
     }
 
+    // Si tout est ok, on valide la navigation
     next();
 });
 
