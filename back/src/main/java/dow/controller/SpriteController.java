@@ -33,7 +33,6 @@ public class SpriteController {
         return spriteService.processSpriteZip(zipFile);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<SpriteInfos>> findAllSpriteInfosByAnimationType() {
         List<SpriteInfos> spriteInfos = spriteService.findAllSpriteInfosByAnimationType();
