@@ -3,8 +3,8 @@
         <div class="header-content">
             <h1>Bestiaire <span class="accent">v1.0</span></h1>
             <div class="actions-bar">
-                <button class="btn btn-secondary" @click="openFilePicker">
-                    <span class="icon">📂</span> Importer un sprite
+                <button class="btn-secondary" @click="openFilePicker">
+                    Importer un sprite
                 </button>
 
                 <input
@@ -82,10 +82,6 @@ h1 {
     display: flex;
     align-items: center;
     gap: 1rem;
-}
-
-.icon {
-    font-size: 1.1rem;
 }
 
 @media (max-width: 768px) {

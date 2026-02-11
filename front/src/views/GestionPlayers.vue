@@ -35,14 +35,14 @@
                     <div class="form-actions">
                         <button
                             type="button"
-                            class="btn btn-secondary"
+                            class="btn-secondary"
                             @click="cancelEdit"
                         >
                             Annuler
                         </button>
                         <button
                             type="button"
-                            class="btn btn-primary"
+                            class="btn-primary"
                             @click="save"
                             :disabled="saving"
                         >
@@ -337,10 +337,6 @@ onMounted(load);
     display: flex;
     gap: 0.5rem;
     justify-content: flex-end;
-}
-
-.btn-icon:hover {
-    background-color: var(--bg-hover);
 }
 
 @media (max-width: 1200px) {

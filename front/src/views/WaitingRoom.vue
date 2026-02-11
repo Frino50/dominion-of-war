@@ -55,17 +55,15 @@
         </div>
 
         <div class="actions-section">
-            <button @click="copyInviteLink" class="btn-copy">
-                📋 Copier le lien d'invitation
+            <button @click="copyInviteLink" class="btn-primary">
+                Copier le lien d'invitation
             </button>
-            <button @click="leaveRoom" class="btn-leave">
+            <button @click="leaveRoom" class="btn-secondary">
                 ← Quitter la partie
             </button>
         </div>
 
-        <div v-if="showCopiedMessage" class="toast">
-            ✅ Lien copié dans le presse-papier !
-        </div>
+        <div v-if="showCopiedMessage" class="toast">Lien copié !</div>
     </div>
 </template>
 
@@ -300,32 +298,6 @@ async function leaveRoom() {
     display: flex;
     gap: 1rem;
     justify-content: center;
-}
-
-.btn-copy,
-.btn-leave {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-copy {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.btn-leave {
-    background: var(--bg-hover);
-    color: var(--text-bright);
-}
-
-.btn-copy:hover,
-.btn-leave:hover {
-    transform: translateY(-2px);
 }
 
 .toast {

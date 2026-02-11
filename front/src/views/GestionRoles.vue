@@ -31,12 +31,12 @@
                         <button
                             v-if="editing"
                             type="button"
-                            class="btn btn-secondary"
+                            class="btn-secondary"
                             @click="cancelEdit"
                         >
                             Annuler
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn-primary">
                             {{
                                 editing
                                     ? "Enregistrer les modifications"
@@ -77,7 +77,7 @@
                                             ✏️
                                         </button>
                                         <button
-                                            class="btn-icon danger"
+                                            class="btn-icon"
                                             @click="remove(r)"
                                             title="Supprimer"
                                         >
@@ -237,10 +237,6 @@ onMounted(loadRoles);
     display: flex;
     gap: 0.5rem;
     justify-content: flex-end;
-}
-
-.btn-icon.danger:hover {
-    background-color: rgba(220, 38, 38, 0.1);
 }
 
 @media (max-width: 768px) {

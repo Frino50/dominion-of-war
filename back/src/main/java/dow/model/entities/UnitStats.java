@@ -56,6 +56,10 @@ public class UnitStats {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Sprite getSprite() {
         return sprite;
     }

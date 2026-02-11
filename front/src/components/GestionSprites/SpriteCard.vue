@@ -16,32 +16,33 @@
             <div class="info-group">
                 <div class="input-row">
                     <label>Scale:</label>
-                    <input v-model.number="sprite.scale" class="dark-input" />
+                    <input v-model.number="sprite.scale" />
                 </div>
 
                 <div class="input-row">
                     <label>Nom:</label>
-                    <input
-                        v-model="sprite.newName"
-                        class="dark-input"
-                        type="text"
-                    />
+                    <input v-model="sprite.newName" type="text" />
                 </div>
 
-                <button @click="searchAllSprites">Voir tous les sprites</button>
+                <button class="btn-primary" @click="searchAllSprites">
+                    Voir tous les sprites
+                </button>
+                <button class="btn-primary" @click="openStatsModal">
+                    Statistiques
+                </button>
             </div>
         </div>
 
         <div class="card-footer">
             <button
                 :disabled="!sprite.scale"
-                class="btn-save"
+                class="btn-success flex"
                 @click="renameSprite()"
             >
                 💾
             </button>
             <button
-                class="btn-delete"
+                class="btn-danger flex"
                 title="Supprimer l'unité"
                 @click="$emit('delete')"
             >
@@ -59,6 +60,11 @@
             "
             @frame-rate="(value) => (sprite.frameRate = value)"
         />
+
+        <UnitStatsModal
+            v-model:visible="showStatsModal"
+            :sprite-name="sprite.name"
+        />
     </div>
 </template>
 
@@ -69,6 +75,7 @@ import ModifSpriteDto from "@/models/dtos/modifSpriteDto.ts";
 import spriteService from "@/services/spriteService.ts";
 import { computed, onMounted, ref } from "vue";
 import SpriteModal from "@/components/GestionSprites/SpriteModal.vue";
+import UnitStatsModal from "@/components/GestionSprites/UnitStatsModal.vue";
 
 defineEmits(["delete"]);
 
@@ -76,6 +83,7 @@ const sprite = defineModel<SpriteInfo>({ required: true });
 
 const listSpriteInfo = ref<SpriteInfo[]>([]);
 const showModal = ref(false);
+const showStatsModal = ref(false);
 const animationKey = ref(0);
 
 onMounted(() => {
@@ -112,6 +120,10 @@ async function renameSprite() {
     await spriteService.renameSprite(dto);
 
     sprite.value.name = newName;
+}
+
+function openStatsModal() {
+    showStatsModal.value = true;
 }
 </script>
 
@@ -160,24 +172,6 @@ async function renameSprite() {
     font-weight: 500;
 }
 
-.dark-input {
-    background: var(--bg-input);
-    border: 1px solid var(--border-base);
-    color: var(--text-bright);
-    padding: 0.6rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    flex: 1;
-    box-sizing: border-box;
-    transition: border-color var(--transition-base);
-}
-
-.dark-input:focus {
-    outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
 .card-footer {
     padding: 1rem;
     display: flex;
@@ -189,35 +183,6 @@ async function renameSprite() {
 .card-footer button {
     text-transform: none;
     letter-spacing: normal;
-}
-
-.btn-save {
-    flex: 1;
-    background: var(--success);
-    color: white;
-    box-shadow: 0 0 15px rgba(5, 150, 105, 0.4);
-}
-
-.btn-save:hover:not(:disabled) {
-    background: #10b981;
-}
-
-.btn-save:disabled {
-    background: var(--bg-hover);
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.btn-delete {
-    flex: 1;
-    background: var(--danger);
-    color: white;
-    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
-}
-
-.btn-delete:hover {
-    background: #e11d48;
 }
 
 .visual-stage {

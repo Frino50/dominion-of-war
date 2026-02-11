@@ -85,13 +85,13 @@
                 <div class="form-actions">
                     <button
                         v-if="editing"
-                        class="btn btn-secondary"
+                        class="btn-secondary"
                         type="button"
                         @click="cancelEdit"
                     >
                         Annuler
                     </button>
-                    <button class="btn btn-primary" type="submit">
+                    <button class="btn-primary" type="submit">
                         {{
                             editing
                                 ? "Enregistrer les modifications"
@@ -152,7 +152,7 @@
                                         ✏️
                                     </button>
                                     <button
-                                        class="btn-icon danger"
+                                        class="btn-icon"
                                         @click="remove(r)"
                                         title="Supprimer"
                                     >
@@ -455,9 +455,5 @@ input:checked + .slider:before {
     display: flex;
     gap: 0.5rem;
     justify-content: flex-end;
-}
-
-.btn-icon.danger:hover {
-    background-color: rgba(220, 38, 38, 0.1);
 }
 </style>

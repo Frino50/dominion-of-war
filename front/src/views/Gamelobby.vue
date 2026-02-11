@@ -2,7 +2,7 @@
     <div class="game-lobby">
         <header class="lobby-header">
             <h1>Parties</h1>
-            <button @click="showCreateModal = true" class="btn-create">
+            <button @click="showCreateModal = true" class="btn-primary">
                 Créer une partie
             </button>
         </header>
@@ -82,11 +82,11 @@
                             <button
                                 type="button"
                                 @click="showCreateModal = false"
-                                class="btn-cancel"
+                                class="btn-secondary"
                             >
                                 Annuler
                             </button>
-                            <button type="submit" class="btn-submit">
+                            <button type="submit" class="btn-primary">
                                 Créer
                             </button>
                         </div>
@@ -123,11 +123,11 @@
                             <button
                                 type="button"
                                 @click="showJoinModal = false"
-                                class="btn-cancel"
+                                class="btn-secondary"
                             >
                                 Annuler
                             </button>
-                            <button type="submit" class="btn-submit">
+                            <button type="submit" class="btn-primary">
                                 Rejoindre
                             </button>
                         </div>
@@ -224,22 +224,6 @@ function translateStatus(status: string): string {
 .lobby-header h1 {
     font-size: 2rem;
     margin: 0;
-}
-
-.btn-create {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.btn-create:hover {
-    transform: translateY(-2px);
 }
 
 .rooms-grid {
@@ -384,31 +368,5 @@ function translateStatus(status: string): string {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
-}
-
-.btn-cancel,
-.btn-submit {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-cancel {
-    background: var(--bg-hover);
-    color: var(--text-bright);
-}
-
-.btn-submit {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.btn-cancel:hover,
-.btn-submit:hover {
-    transform: translateY(-2px);
 }
 </style>

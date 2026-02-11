@@ -12,13 +12,21 @@
         </div>
 
         <section class="actions">
-            <RouterLink v-if="!pseudo" class="btn btn-primary" to="/login">
+            <button
+                v-if="!pseudo"
+                class="btn-primary"
+                @click="router.push(`/login`)"
+            >
                 Se connecter
-            </RouterLink>
-            <RouterLink v-if="!pseudo" class="btn btn-secondary" to="/register">
+            </button>
+            <button
+                v-if="!pseudo"
+                class="btn-secondary"
+                @click="router.push(`/register`)"
+            >
                 Créer un compte
-            </RouterLink>
-            <button v-if="pseudo" class="btn btn-danger" @click="logout">
+            </button>
+            <button v-if="pseudo" class="btn-danger" @click="logout">
                 Se déconnecter
             </button>
         </section>

@@ -20,7 +20,9 @@
                 />
             </div>
 
-            <button @click="handleSubmit">{{ props.buttonText }}</button>
+            <button class="btn-primary" @click="handleSubmit">
+                {{ props.buttonText }}
+            </button>
 
             <div class="alt-text">
                 {{ props.altText }}

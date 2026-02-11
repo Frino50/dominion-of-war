@@ -10,7 +10,7 @@
                     <header class="modal-header">
                         <h2>Inspecteur de Sprites</h2>
                         <button
-                            class="close-btn"
+                            class="btn-close"
                             @click="$emit('close')"
                             aria-label="Fermer"
                         >
@@ -37,7 +37,7 @@
                                         spriteInfo.hitboxX !== undefined &&
                                         spriteInfo.hitboxX !== null
                                     "
-                                    class="badge badge-hitbox"
+                                    class="badge badge-success"
                                     >Hitbox définie</span
                                 >
                             </div>
@@ -74,10 +74,14 @@
                             </div>
 
                             <div class="card-footer">
-                                <button @click="openHitboxEditor(spriteInfo)">
-                                    <span>Éditer Hitbox</span>
+                                <button
+                                    class="btn-primary"
+                                    @click="openHitboxEditor(spriteInfo)"
+                                >
+                                    Éditer Hitbox
                                 </button>
                                 <button
+                                    class="btn-primary"
                                     @click="
                                         reBuildImage(
                                             spriteInfo.animationId,
@@ -85,9 +89,10 @@
                                         )
                                     "
                                 >
-                                    <span>Améliorer le sprite</span>
+                                    Améliorer le sprite
                                 </button>
                                 <button
+                                    class="btn-primary"
                                     @click="
                                         flipHorizontal(
                                             spriteInfo.animationId,
@@ -95,17 +100,16 @@
                                         )
                                     "
                                 >
-                                    <span>Tourner le sprite</span>
+                                    Tourner le sprite
                                 </button>
                                 <div class="input-row">
                                     <label>Frame Rate:</label>
                                     <input
                                         type="text"
                                         v-model="spriteInfo.frameRate"
-                                        class="dark-input"
                                     />
                                     <button
-                                        class="btn-icon btn-save"
+                                        class="btn-success"
                                         @click="
                                             saveFrameRate(
                                                 spriteInfo.animationId,
@@ -114,7 +118,7 @@
                                         "
                                         :disabled="!spriteInfo.frameRate"
                                     >
-                                        💾
+                                        Sauvegarder
                                     </button>
                                 </div>
                             </div>
@@ -276,23 +280,6 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     font-size: 1.5rem;
 }
 
-.close-btn {
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 2rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: color var(--transition-base);
-    padding: 0;
-    box-shadow: none;
-    border: none;
-}
-
-.close-btn:hover {
-    color: var(--text-bright);
-    transform: none;
-}
-
 .sprites-grid {
     padding: 2rem;
     overflow-y: auto;
@@ -325,21 +312,6 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     border-bottom: 1px solid var(--border-base);
     display: flex;
     gap: 0.5rem;
-}
-
-.badge {
-    background: var(--bg-hover);
-    color: var(--text-secondary);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-family: monospace;
-}
-
-.badge-hitbox {
-    background: var(--success);
-    color: white;
 }
 
 .card-body {
@@ -424,44 +396,6 @@ function onHitboxSaved(hitbox: Hitbox | null) {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
-}
-
-.dark-input {
-    background: var(--bg-input);
-    border: 1px solid var(--border-base);
-    color: var(--text-bright);
-    padding: 0.6rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    flex: 1;
-    box-sizing: border-box;
-    transition: border-color var(--transition-base);
-}
-
-.dark-input:focus {
-    outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.btn-icon {
-    flex: 1;
-    padding: 0.6rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    margin-left: 1.2rem;
-}
-
-.btn-save {
-    background: var(--success);
-    color: white;
-    box-shadow: 0 0 15px rgba(5, 150, 105, 0.4);
-}
-
-.btn-save:hover:not(:disabled) {
-    background: #10b981;
 }
 
 .input-row {

@@ -1,5 +1,5 @@
 <template>
-    <div class="hitbox-editor-overlay" @click.self="$emit('close')">
+    <div class="hitbox-editor-overlay">
         <div class="hitbox-editor">
             <header class="editor-header">
                 <div class="header-title">
@@ -8,7 +8,7 @@
                 <div class="header-actions">
                     <span class="zoom-info">{{ Math.round(zoom * 100) }}%</span>
                     <button
-                        class="close-btn"
+                        class="btn-close"
                         @click="$emit('close')"
                         title="Fermer"
                         aria-label="Fermer"
@@ -92,18 +92,18 @@
                     </div>
 
                     <div class="sidebar-footer">
-                        <button class="btn btn-primary" @click="saveHitbox">
+                        <button class="btn-primary" @click="saveHitbox">
                             Sauvegarder
                         </button>
                         <div class="btn-row">
                             <button
-                                class="btn btn-secondary"
+                                class="btn-secondary flex"
                                 @click="resetHitbox"
                             >
                                 Reset
                             </button>
                             <button
-                                class="btn btn-danger"
+                                class="btn-danger flex"
                                 @click="deleteHitbox"
                                 v-if="hasHitbox"
                             >
@@ -539,23 +539,6 @@ function resetHitbox() {
     border: 1px solid var(--border-base);
 }
 
-.close-btn {
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 2rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: color var(--transition-base);
-    padding: 0;
-    box-shadow: none;
-    border: none;
-}
-
-.close-btn:hover {
-    color: var(--text-bright);
-    transform: none;
-}
-
 .editor-layout {
     display: grid;
     grid-template-columns: 1fr 320px;
@@ -698,48 +681,6 @@ function resetHitbox() {
 .btn-row {
     display: flex;
     gap: 0.75rem;
-}
-
-.btn {
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    font-size: 0.95rem;
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: white;
-    width: 100%;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover);
-}
-
-.btn-secondary {
-    background: var(--bg-hover);
-    color: var(--text-bright);
-    flex: 1;
-}
-
-.btn-secondary:hover {
-    background: var(--border-light);
-}
-
-.btn-danger {
-    background: rgba(220, 38, 38, 0.2);
-    color: #ef4444;
-    flex: 1;
-    border: 1px solid rgba(220, 38, 38, 0.3);
-}
-
-.btn-danger:hover {
-    background: rgba(220, 38, 38, 0.3);
 }
 
 @media (max-width: 1024px) {
