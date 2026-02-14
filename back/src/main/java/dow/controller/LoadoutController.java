@@ -20,8 +20,8 @@ public class LoadoutController {
     }
 
     @GetMapping("/{gameRoomId}/opponents")
-    public LoadoutUpdateDto loadOpponentStatus(@PathVariable Long gameRoomId) {
-        return loadoutService.loadOpponentStatus(gameRoomId, utilsService.getPlayer());
+    public LoadoutUpdateDto getOpponent(@PathVariable Long gameRoomId) {
+        return loadoutService.getOpponent(gameRoomId, utilsService.getPlayer());
     }
 
     @PostMapping("/{gameRoomId}/select/{spriteName}")

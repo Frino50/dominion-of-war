@@ -38,8 +38,8 @@ public class LoadoutService {
     }
 
     @Transactional(readOnly = true)
-    public LoadoutUpdateDto loadOpponentStatus(Long gameRoomId, Player currentPlayer) {
-        return loadoutRepository.loadOpponentStatus(gameRoomId, currentPlayer.getId());
+    public LoadoutUpdateDto getOpponent(Long gameRoomId, Player currentPlayer) {
+        return loadoutRepository.getOpponent(gameRoomId, currentPlayer.getId());
     }
 
     @Transactional
@@ -52,7 +52,6 @@ public class LoadoutService {
         Sprite sprite = spriteRepository.findByName(spriteName)
                 .orElseThrow(() -> new RuntimeException("Unité introuvable: " + spriteName));
 
-        // Remplissage intelligent du premier slot vide
         fillFirstEmptySlot(loadout, sprite);
 
         loadoutRepository.save(loadout);

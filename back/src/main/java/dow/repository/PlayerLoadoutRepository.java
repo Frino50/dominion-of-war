@@ -33,7 +33,7 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
                 AND p.id <> :currentPlayerId
                 AND (gp.role = dow.model.enumeration.ParticipantRole.PLAYER_1 OR gp.role = dow.model.enumeration.ParticipantRole.PLAYER_2)
             """)
-    LoadoutUpdateDto loadOpponentStatus(
+    LoadoutUpdateDto getOpponent(
             @Param("gameRoomId") Long gameRoomId,
             @Param("currentPlayerId") Long currentPlayerId
     );

@@ -6,19 +6,13 @@ import SpriteInfo from "@/models/SpriteInfos.ts";
  * Service pour gérer la sélection des unités (loadout)
  */
 export default {
-    /**
-     * Récupérer le statut des loadouts des adversaires
-     */
-    async loadOpponentStatus(gameRoomId: number): Promise<LoadoutUpdateDto> {
+    async getOpponent(gameRoomId: number): Promise<LoadoutUpdateDto> {
         const response = await apiService.get<LoadoutUpdateDto>(
             `/loadout/${gameRoomId}/opponents`
         );
         return response.data;
     },
 
-    /**
-     * Sélectionner une unité par nom de sprite
-     */
     async selectUnit(
         gameRoomId: number,
         spriteName: string

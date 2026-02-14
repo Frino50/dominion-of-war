@@ -22,23 +22,17 @@
                         v-for="index in 5"
                         :key="'slot-' + index"
                         class="unit-slot"
-                        :class="{ filled: optimisticListSpriteInfo[index - 1] }"
+                        :class="{ filled: listSpriteInfo[index - 1] }"
                     >
                         <Animation
-                            v-if="optimisticListSpriteInfo[index - 1]"
-                            :key="optimisticListSpriteInfo[index - 1].name"
-                            :sprite-src="
-                                optimisticListSpriteInfo[index - 1].imageUrl
-                            "
-                            :frames="optimisticListSpriteInfo[index - 1].frames"
-                            :width="optimisticListSpriteInfo[index - 1].width"
-                            :height="optimisticListSpriteInfo[index - 1].height"
-                            :scale="
-                                optimisticListSpriteInfo[index - 1].scale * 0.5
-                            "
-                            :frame-rate="
-                                optimisticListSpriteInfo[index - 1].frameRate
-                            "
+                            v-if="listSpriteInfo[index - 1]"
+                            :key="listSpriteInfo[index - 1].name"
+                            :sprite-src="listSpriteInfo[index - 1].imageUrl"
+                            :frames="listSpriteInfo[index - 1].frames"
+                            :width="listSpriteInfo[index - 1].width"
+                            :height="listSpriteInfo[index - 1].height"
+                            :scale="listSpriteInfo[index - 1].scale * 0.5"
+                            :frame-rate="listSpriteInfo[index - 1].frameRate"
                             class="slot-sprite"
                         />
                         <span v-else class="slot-empty">{{ index }}</span>
@@ -149,18 +143,12 @@ onMounted(async function () {
     const response = await spriteService.getAllSpritesInfos();
     listSpritesInfos.value = response.data;
 
-    opponent.value = await loadoutService.loadOpponentStatus(gameRoomId.value);
+    opponent.value = await loadoutService.getOpponent(gameRoomId.value);
 
     // Démarrer le timer côté serveur
     await gameService.startSelectionPhase(gameRoomId.value);
 
-    // Vérifier si le WebSocket est déjà connecté, sinon le connecter
-    if (!gameWebSocket.isConnected()) {
-        const token = localStorage.getItem("token") || "";
-        await gameWebSocket.connect(token);
-    }
-
-    // S'abonner aux mises à jour de loadout
+    // S'abonner aux changements d'unités de l'adversaire
     gameWebSocket.subscribeToLoadout(
         gameRoomId.value,
         opponent.value.playerPseudo,
@@ -202,82 +190,17 @@ function handlePhaseChange(data: { phase: string; duration?: number }) {
     }
 }
 
-// File d'attente typée
-const actionQueue: string[] = [];
-let isProcessingQueue = false;
+async function selectUnit(sprite: SpriteInfo) {
+    const res = await loadoutService.selectUnit(gameRoomId.value, sprite.name);
+    listSpriteInfo.value.push(res);
+}
 
-// État optimiste pour l'affichage immédiat
-const optimisticListSpriteInfo = ref<SpriteInfo[]>([]);
-
-/**
- * Gère le clic sur une unité avec mise à jour immédiate de l'interface
- */
-const selectUnit = (sprite: SpriteInfo): void => {
-    if (isLocked.value) return;
-
-    // 1. MISE À JOUR OPTIMISTE
-    const index = optimisticListSpriteInfo.value.findIndex(
-        (u) => u.name === sprite.name
-    );
-
-    if (index !== -1) {
-        // Suppression : on retire l'élément
-        optimisticListSpriteInfo.value.splice(index, 1);
-    } else if (optimisticListSpriteInfo.value.length < 5) {
-        // Ajout : On fait une copie de l'objet pour éviter les références partagées
-        // qui causent souvent les bugs d'image
-        optimisticListSpriteInfo.value.push({ ...sprite });
-    } else {
-        return;
-    }
-
-    // 2. EMPILE L'ACTION (le nom suffit pour l'API)
-    actionQueue.push(sprite.name);
-
-    // 3. TRAITEMENT DE LA QUEUE
-    processQueue();
-
-    // 4. FEEDBACK SONORE
-    const audio = new Audio("/sounds/click.mp3");
-    audio.volume = 0.3;
-    audio.play().catch(() => {});
-};
-
-const processQueue = async (): Promise<void> => {
-    if (isProcessingQueue || actionQueue.length === 0) return;
-    isProcessingQueue = true;
-
-    while (actionQueue.length > 0) {
-        const spriteName = actionQueue.shift();
-        try {
-            const res = await loadoutService.selectUnit(
-                gameRoomId.value,
-                spriteName!
-            );
-
-            listSpriteInfo.value.push(res);
-        } catch (error) {
-            const res = await loadoutService.selectUnit(
-                gameRoomId.value,
-                spriteName!
-            );
-            listSpriteInfo.value.push(res);
-
-            optimisticListSpriteInfo.value = [...listSpriteInfo.value];
-        }
-    }
-    isProcessingQueue = false;
-};
-
-/**
- * Helper de vérification visuelle (utilisé pour les classes CSS)
- */
 function isUnitSelected(spriteName: string): boolean {
-    return optimisticListSpriteInfo.value.some((u) => u.name === spriteName);
+    return listSpriteInfo.value.some((u) => u.name === spriteName);
 }
 
 async function lockLoadout() {
-    if (optimisticListSpriteInfo.value.length !== 5 || isLocked.value) {
+    if (listSpriteInfo.value.length !== 5 || isLocked.value) {
         return;
     }
 
