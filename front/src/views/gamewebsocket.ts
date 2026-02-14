@@ -4,6 +4,16 @@ import { GameRoomInfo } from "@/models/dtos/GameRoomInfo.ts";
 import { GameParticipantWaitingDto } from "@/models/dtos/GameParticipantWaitingDto.ts";
 
 /**
+ * Interface pour les mises à jour de loadout
+ */
+export interface LoadoutUpdate {
+    playerId: number;
+    playerPseudo: string;
+    unitsSelected: number;
+    isLocked: boolean;
+}
+
+/**
  * Service WebSocket pour le jeu en temps réel
  */
 class GameWebSocketService {
@@ -31,15 +41,12 @@ class GameWebSocketService {
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,
                 onConnect: () => {
-                    console.log("✅ WebSocket connecté");
                     resolve();
                 },
                 onStompError: (frame) => {
-                    console.error("❌ Erreur STOMP:", frame);
                     reject(new Error(frame.headers["message"]));
                 },
                 onWebSocketError: (event) => {
-                    console.error("❌ Erreur WebSocket:", event);
                     reject(event);
                 },
             });
@@ -87,6 +94,28 @@ class GameWebSocketService {
     }
 
     /**
+     * S'abonner aux mises à jour de loadout
+     */
+    subscribeToLoadout(
+        gameRoomId: number,
+        callback: (update: LoadoutUpdate) => void
+    ): void {
+        this.subscribe(`/topic/game/${gameRoomId}/loadout`, (message) => {
+            const update: LoadoutUpdate = JSON.parse(message.body);
+            callback(update);
+        });
+    }
+
+    /**
+     * Se désabonner de tous les topics liés à une game room
+     */
+    unsubscribeFromGameRoom(gameRoomId: number): void {
+        this.unsubscribe(`/topic/game/${gameRoomId}/participants`);
+        this.unsubscribe(`/topic/game/${gameRoomId}/phase`);
+        this.unsubscribe(`/topic/game/${gameRoomId}/loadout`);
+    }
+
+    /**
      * Helper pour s'abonner à un topic
      */
     private subscribe(
@@ -94,7 +123,6 @@ class GameWebSocketService {
         callback: (message: Message) => void
     ): void {
         if (!this.client?.connected) {
-            console.error("WebSocket non connecté");
             return;
         }
 
@@ -105,8 +133,6 @@ class GameWebSocketService {
 
         const subscription = this.client.subscribe(destination, callback);
         this.subscriptions.set(destination, subscription);
-
-        console.log(`📡 Abonné à ${destination}`);
     }
 
     /**
@@ -117,7 +143,6 @@ class GameWebSocketService {
         if (sub) {
             sub.unsubscribe();
             this.subscriptions.delete(destination);
-            console.log(`📴 Désabonné de ${destination}`);
         }
     }
 

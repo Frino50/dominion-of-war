@@ -107,4 +107,28 @@ public interface SpriteRepository extends JpaRepository<Sprite, Long> {
             WHERE a.id = :animationId
             """)
     SpriteInfos findSpriteInfosByAnimationId(@Param("animationId") Long animationId);
+
+    @Query("""
+            SELECT new dow.model.dto.SpriteInfos(
+                    a.id,
+                    s.name,
+                    CONCAT(s.name, '/', a.type, '/', a.indice, '.png'),
+                    a.width,
+                    a.height,
+                    a.frames,
+                    s.scale,
+                    a.frameRate,
+                    a.hitboxX,
+                    a.hitboxY,
+                    a.hitboxWidth,
+                    a.hitboxHeight
+            )
+            FROM Sprite s
+            JOIN s.animations a
+            WHERE s.name IN :names AND a.type = :animationType
+            """)
+    List<SpriteInfos> findSpriteInfosByNames(
+            @Param("names") List<String> names,
+            @Param("animationType") AnimationType animationType
+    );
 }

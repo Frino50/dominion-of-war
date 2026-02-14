@@ -4,6 +4,7 @@ import dow.model.dto.GameParticipantWaitingDto;
 import dow.model.dto.GameRoomInfoDto;
 import dow.model.dto.GameRoomLightDto;
 import dow.service.GameRoomService;
+import dow.service.LoadoutTimerService;
 import dow.service.UtilsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,12 @@ public class GameController {
 
     private final GameRoomService gameRoomService;
     private final UtilsService utilsService;
+    private final LoadoutTimerService loadoutTimerService;
 
-    public GameController(GameRoomService gameRoomService, UtilsService utilsService) {
+    public GameController(GameRoomService gameRoomService, UtilsService utilsService, LoadoutTimerService loadoutTimerService) {
         this.gameRoomService = gameRoomService;
         this.utilsService = utilsService;
+        this.loadoutTimerService = loadoutTimerService;
     }
 
     @GetMapping("/rooms")
@@ -51,5 +54,23 @@ public class GameController {
     @GetMapping("/room/{gameRoomId}")
     public GameRoomLightDto findRoomInfoLightDtoById(@PathVariable Long gameRoomId) {
         return gameRoomService.findRoomLightDtoById(gameRoomId);
+    }
+
+    @PostMapping("/start-selection/{gameRoomId}")
+    public ResponseEntity<Void> startSelectionPhase(@PathVariable Long gameRoomId) {
+        loadoutTimerService.startTimer(gameRoomId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/remaining-time/{gameRoomId}")
+    public ResponseEntity<Integer> getRemainingTime(@PathVariable Long gameRoomId) {
+        int remainingTime = loadoutTimerService.getRemainingTime(gameRoomId);
+        return ResponseEntity.ok(remainingTime);
+    }
+
+    @GetMapping("/room-id")
+    public ResponseEntity<Long> findGameRoomIdByPlayerIdAndStatusUnitSelection() {
+        long roomId = gameRoomService.findGameRoomIdByPlayerIdAndStatusUnitSelection();
+        return ResponseEntity.ok(roomId);
     }
 }

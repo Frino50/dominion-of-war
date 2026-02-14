@@ -25,4 +25,10 @@ public interface GameParticipantRepository extends JpaRepository<GameParticipant
             "FROM GameParticipant p " +
             "WHERE p.gameRoom.id = :gameRoomId")
     List<GameParticipantWaitingDto> findAllParticipantsByRoomId(Long gameRoomId);
+
+    @Query("SELECT p.gameRoom.id " +
+            "FROM GameParticipant p " +
+            "WHERE p.player.id = :playerId " +
+            "AND p.gameRoom.status = dow.model.enumeration.GameStatus.UNIT_SELECTION")
+    Long findGameRoomIdByPlayerIdAndStatusUnitSelection(Long playerId);
 }

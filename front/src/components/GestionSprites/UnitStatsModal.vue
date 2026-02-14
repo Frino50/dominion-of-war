@@ -117,13 +117,11 @@ const props = defineProps<{
     spriteName: string;
 }>();
 
-// Utilisation de defineModel pour la visibilité
 const isVisible = defineModel<boolean>("visible", { default: false });
 
 const unitStats = ref<UnitStatsDto | null>(null);
 const originalStats = ref<UnitStatsDto | null>(null);
 
-// Calcul des changements basé sur l'état initial
 const hasChanges = computed(() => {
     if (!unitStats.value || !originalStats.value) return false;
     return (
@@ -131,7 +129,6 @@ const hasChanges = computed(() => {
     );
 });
 
-// Fonction de chargement déclenchée par la transition
 async function onBeforeEnter() {
     const stats = await unitStatsService.getUnitStatsBySpriteName(
         props.spriteName
@@ -140,7 +137,6 @@ async function onBeforeEnter() {
     originalStats.value = JSON.parse(JSON.stringify(stats));
 }
 
-// Nettoyage à la fermeture
 function onAfterLeave() {
     unitStats.value = null;
     originalStats.value = null;
@@ -148,13 +144,9 @@ function onAfterLeave() {
 
 async function saveStats() {
     if (!unitStats.value || !hasChanges.value) return;
-    try {
-        // Appelle le service pour create ou update
-        await unitStatsService.createOrUpdateUnitStats(unitStats.value);
-        originalStats.value = JSON.parse(JSON.stringify(unitStats.value));
-    } catch (error) {
-        console.error("Erreur sauvegarde:", error);
-    }
+
+    await unitStatsService.createOrUpdateUnitStats(unitStats.value);
+    originalStats.value = JSON.parse(JSON.stringify(unitStats.value));
 }
 </script>
 

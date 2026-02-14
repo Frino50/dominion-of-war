@@ -1,14 +1,94 @@
 <template>
     <div class="selection-container">
         <header class="header">
-            <h1>Unités Disponibles</h1>
+            <h1>Sélection des Unités</h1>
+            <div class="timer-container">
+                <div
+                    class="timer"
+                    :class="{ 'timer-warning': remainingTime <= 10 }"
+                >
+                    <i class="clock-icon">⏱️</i>
+                    <span class="time">{{ formatTime(remainingTime) }}</span>
+                </div>
+            </div>
         </header>
 
+        <!-- Statut des joueurs -->
+        <div class="players-status">
+            <div class="player-status my-status">
+                <h3>Mes unités ({{ myLoadout.length }}/5)</h3>
+                <div class="unit-slots">
+                    <div
+                        v-for="index in 5"
+                        :key="'slot-' + index"
+                        class="unit-slot"
+                        :class="{ filled: optimisticLoadout[index - 1] }"
+                    >
+                        <Animation
+                            v-if="optimisticLoadout[index - 1]"
+                            :key="optimisticLoadout[index - 1].name"
+                            :sprite-src="optimisticLoadout[index - 1].imageUrl"
+                            :frames="optimisticLoadout[index - 1].frames"
+                            :width="optimisticLoadout[index - 1].width"
+                            :height="optimisticLoadout[index - 1].height"
+                            :scale="optimisticLoadout[index - 1].scale * 0.5"
+                            :frame-rate="optimisticLoadout[index - 1].frameRate"
+                            class="slot-sprite"
+                        />
+                        <span v-else class="slot-empty">{{ index }}</span>
+                    </div>
+                </div>
+                <button
+                    v-if="!isLocked"
+                    @click="lockLoadout"
+                    class="lock-button"
+                >
+                    Verrouiller ma sélection
+                </button>
+                <div v-if="isLocked" class="locked-indicator">
+                    ✓ Sélection verrouillée
+                </div>
+            </div>
+
+            <div
+                v-for="opponent in opponents"
+                :key="opponent.playerId"
+                class="player-status opponent-status"
+            >
+                <h3>
+                    {{ opponent.playerPseudo }} ({{ opponent.unitsSelected }}/5)
+                </h3>
+                <div class="unit-slots">
+                    <div
+                        v-for="index in 5"
+                        :key="index"
+                        class="unit-slot"
+                        :class="{ filled: index <= opponent.unitsSelected }"
+                    >
+                        <span
+                            v-if="index <= opponent.unitsSelected"
+                            class="slot-hidden"
+                            >?</span
+                        >
+                        <span v-else class="slot-empty">{{ index }}</span>
+                    </div>
+                </div>
+                <div v-if="opponent.isLocked" class="locked-indicator">
+                    ✓ Sélection verrouillée
+                </div>
+            </div>
+        </div>
+
+        <!-- Grille des unités disponibles -->
         <div class="units-grid">
             <div
                 v-for="sprite in listSpritesInfos"
                 :key="sprite.name"
                 class="unit-card"
+                :class="{
+                    selected: isUnitSelected(sprite.name),
+                    disabled: myLoadout.length >= 5 || isLocked,
+                }"
                 @click="selectUnit(sprite)"
             >
                 <div class="unit-preview">
@@ -28,34 +108,223 @@
                     <h3 class="unit-name">{{ sprite.name }}</h3>
                 </div>
 
-                <div class="selection-indicator"></div>
+                <div
+                    v-if="isUnitSelected(sprite.name)"
+                    class="selection-indicator"
+                >
+                    ✓
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import spriteService from "@/services/spriteService.ts";
+import loadoutService from "@/services/loadoutService.ts";
+import gameService from "@/services/gameService.ts";
 import SpriteInfo from "@/models/SpriteInfos.ts";
 import Animation from "@/components/GestionSprites/Animation.vue";
+import { gameWebSocket } from "@/views/gamewebsocket.ts";
 
+const router = useRouter();
+const gameRoomId = ref<number>(0);
 const listSpritesInfos = ref<SpriteInfo[]>([]);
+const myLoadout = ref<SpriteInfo[]>([]);
+const isLocked = ref(false);
+const opponents = ref<any[]>([]);
+const remainingTime = ref(60);
 
-onMounted(async () => {
+let timerInterval: number | null = null;
+
+onMounted(async function () {
+    gameRoomId.value =
+        await gameService.findGameRoomIdByPlayerIdAndStatusUnitSelection();
+
     const response = await spriteService.getAllSpritesInfos();
     listSpritesInfos.value = response.data;
+
+    // Charger mon loadout existant
+    await loadMyLoadout();
+
+    // Charger le statut des adversaires
+    await loadOpponentsStatus();
+
+    // Démarrer le timer côté serveur
+    await gameService.startSelectionPhase(gameRoomId.value);
+
+    // Vérifier si le WebSocket est déjà connecté, sinon le connecter
+    if (!gameWebSocket.isConnected()) {
+        const token = localStorage.getItem("token") || "";
+        await gameWebSocket.connect(token);
+    }
+
+    // S'abonner aux mises à jour de loadout
+    gameWebSocket.subscribeToLoadout(gameRoomId.value, handleLoadoutUpdate);
+
+    // S'abonner aux changements de phase
+    gameWebSocket.subscribeToPhase(gameRoomId.value, handlePhaseChange);
+
+    // Mise à jour du timer toutes les secondes
+    timerInterval = window.setInterval(updateTimer, 1000);
 });
 
-const selectUnit = (unit: SpriteInfo) => {
-    console.log("Unité sélectionnée :", unit.name);
-    // Ajoutez ici votre logique de sélection (ex: router-link ou store Pinia)
+onUnmounted(function () {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    // Se désabonner des topics de cette room
+    gameWebSocket.unsubscribeFromGameRoom(gameRoomId.value);
+});
+
+async function loadMyLoadout() {
+    const response = await loadoutService.getMyLoadout(gameRoomId.value);
+    myLoadout.value = response.selectedUnits || [];
+    isLocked.value = response.isLocked;
+}
+
+async function loadOpponentsStatus() {
+    opponents.value = await loadoutService.getOpponentsStatus(gameRoomId.value);
+}
+
+async function updateTimer() {
+    remainingTime.value = await gameService.getRemainingTime(gameRoomId.value);
+
+    if (remainingTime.value <= 0) {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+    }
+}
+
+function handleLoadoutUpdate(update: any) {
+    // Mettre à jour le statut de l'adversaire
+    const opponentIndex = opponents.value.findIndex(function (o) {
+        return o.playerId === update.playerId;
+    });
+
+    if (opponentIndex !== -1) {
+        opponents.value[opponentIndex] = update;
+    } else {
+        // Si c'est une mise à jour de mon propre loadout depuis un autre onglet
+        loadMyLoadout();
+    }
+}
+
+function handlePhaseChange(data: { phase: string; duration?: number }) {
+    if (data.phase === "FIGHT") {
+        router.push(`/game/fight/${gameRoomId.value}`);
+    }
+}
+
+// File d'attente typée
+const actionQueue: string[] = [];
+let isProcessingQueue = false;
+
+// État optimiste pour l'affichage immédiat
+const optimisticLoadout = ref<SpriteInfo[]>([]);
+
+/**
+ * Gère le clic sur une unité avec mise à jour immédiate de l'interface
+ */
+const selectUnit = (sprite: SpriteInfo): void => {
+    if (isLocked.value) return;
+
+    // 1. MISE À JOUR OPTIMISTE
+    const index = optimisticLoadout.value.findIndex(
+        (u) => u.name === sprite.name
+    );
+
+    if (index !== -1) {
+        // Suppression : on retire l'élément
+        optimisticLoadout.value.splice(index, 1);
+    } else if (optimisticLoadout.value.length < 5) {
+        // Ajout : On fait une copie de l'objet pour éviter les références partagées
+        // qui causent souvent les bugs d'image
+        optimisticLoadout.value.push({ ...sprite });
+    } else {
+        return;
+    }
+
+    // 2. EMPILE L'ACTION (le nom suffit pour l'API)
+    actionQueue.push(sprite.name);
+
+    // 3. TRAITEMENT DE LA QUEUE
+    processQueue();
+
+    // 4. FEEDBACK SONORE
+    const audio = new Audio("/sounds/click.mp3");
+    audio.volume = 0.3;
+    audio.play().catch(() => {});
 };
+
+/**
+ * Worker asynchrone qui vide la file d'attente une par une
+ */
+const processQueue = async (): Promise<void> => {
+    if (isProcessingQueue || actionQueue.length === 0) return;
+
+    isProcessingQueue = true;
+
+    while (actionQueue.length > 0) {
+        const spriteName = actionQueue.shift();
+        if (!spriteName) continue;
+
+        try {
+            // Appel API
+            const res = await loadoutService.selectUnit(
+                gameRoomId.value,
+                spriteName
+            );
+
+            // On met à jour la "vérité" (myLoadout)
+            myLoadout.value = [...(res.selectedUnits || [])];
+
+            // On synchronise l'optimiste avec la réalité du serveur
+            // pour corriger d'éventuels écarts après le dernier message de la queue
+            if (actionQueue.length === 0) {
+                optimisticLoadout.value = [...myLoadout.value];
+            }
+        } catch (error) {
+            console.error("Erreur de synchronisation:", error);
+            // En cas d'échec, on réinitialise pour éviter de bloquer l'UI dans un faux état
+            await loadMyLoadout();
+            optimisticLoadout.value = [...myLoadout.value];
+        }
+    }
+
+    isProcessingQueue = false;
+};
+
+/**
+ * Helper de vérification visuelle (utilisé pour les classes CSS)
+ */
+function isUnitSelected(spriteName: string): boolean {
+    return optimisticLoadout.value.some((u) => u.name === spriteName);
+}
+
+async function lockLoadout() {
+    if (myLoadout.value.length !== 5 || isLocked.value) {
+        return;
+    }
+
+    await loadoutService.lockLoadout(gameRoomId.value);
+    isLocked.value = true;
+}
+
+function formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
 </script>
+
 <style scoped>
 .selection-container {
     padding: 2rem;
-    background-color: #1a1a1a; /* Fond sombre pour faire ressortir les sprites */
+    background-color: #1a1a1a;
     min-height: 100vh;
     color: white;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -63,7 +332,132 @@ const selectUnit = (unit: SpriteInfo) => {
 
 .header {
     text-align: center;
+    margin-bottom: 2rem;
+}
+
+.timer-container {
+    margin-top: 1rem;
+}
+
+.timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(145deg, #2a2a2a, #222);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: 2px solid #444;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.timer-warning {
+    border-color: #ff4444;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.clock-icon {
+    font-style: normal;
+    font-size: 1.8rem;
+}
+
+.players-status {
+    display: flex;
+    gap: 2rem;
     margin-bottom: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.player-status {
+    background: linear-gradient(145deg, #2a2a2a, #222);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #444;
+    min-width: 300px;
+}
+
+.my-status {
+    border-color: #00d4ff;
+}
+
+.opponent-status {
+    border-color: #ff4444;
+}
+
+.unit-slots {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.unit-slot {
+    width: 60px;
+    height: 60px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.unit-slot.filled {
+    border-color: #00d4ff;
+    background: #2a2a2a;
+}
+
+.slot-empty {
+    color: #666;
+    font-size: 1.5rem;
+}
+
+.slot-hidden {
+    color: #ff4444;
+    font-size: 2rem;
+}
+
+.slot-sprite {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.lock-button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(145deg, #00d4ff, #0099cc);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.lock-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+}
+
+.locked-indicator {
+    margin-top: 1rem;
+    color: #00ff00;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.1rem;
 }
 
 .units-grid {
@@ -84,10 +478,20 @@ const selectUnit = (unit: SpriteInfo) => {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.unit-card:hover {
+.unit-card:hover:not(.disabled) {
     transform: translateY(-10px);
     border-color: #00d4ff;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.unit-card.selected {
+    border-color: #00ff00;
+    background: linear-gradient(145deg, #2a4a2a, #224422);
+}
+
+.unit-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .unit-preview {
@@ -99,7 +503,6 @@ const selectUnit = (unit: SpriteInfo) => {
     background: radial-gradient(circle, #333 0%, #1a1a1a 100%);
 }
 
-/* Socle sous le sprite pour l'effet de profondeur */
 .pedestal {
     position: absolute;
     bottom: 30%;
@@ -113,7 +516,6 @@ const selectUnit = (unit: SpriteInfo) => {
 .sprite-animation {
     position: relative;
     z-index: 2;
-    /* On s'assure que l'animation n'est pas trop petite */
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
 }
 
@@ -130,8 +532,22 @@ const selectUnit = (unit: SpriteInfo) => {
     font-weight: bold;
 }
 
-/* Animation au clic */
-.unit-card:active {
+.selection-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: #00ff00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.unit-card:active:not(.disabled) {
     transform: scale(0.95);
 }
 </style>

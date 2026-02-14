@@ -42,14 +42,42 @@ export default {
         return response.data;
     },
 
+    /**
+     * Quitter une partie
+     */
     async leaveRoom(gameRoomId: number): Promise<void> {
         await apiService.post(`/game/leave/${gameRoomId}`);
     },
 
+    /**
+     * Récupérer les infos légères d'une room
+     */
     async findRoomLightDtoById(gameRoomId: number): Promise<GameRoomDto> {
         const response = await apiService.get<GameRoomDto>(
             `/game/room/${gameRoomId}`
         );
+        return response.data;
+    },
+
+    /**
+     * Démarrer la phase de sélection des unités
+     */
+    async startSelectionPhase(gameRoomId: number): Promise<void> {
+        await apiService.post(`/game/start-selection/${gameRoomId}`);
+    },
+
+    /**
+     * Récupérer le temps restant pour la sélection (en secondes)
+     */
+    async getRemainingTime(gameRoomId: number): Promise<number> {
+        const response = await apiService.get<number>(
+            `/game/remaining-time/${gameRoomId}`
+        );
+        return response.data;
+    },
+
+    async findGameRoomIdByPlayerIdAndStatusUnitSelection(): Promise<number> {
+        const response = await apiService.get<number>(`/game/room-id`);
         return response.data;
     },
 };

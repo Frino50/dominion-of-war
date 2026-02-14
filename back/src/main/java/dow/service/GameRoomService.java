@@ -162,4 +162,8 @@ public class GameRoomService {
     public List<GameParticipantWaitingDto> getParticipantsWaitingDto(Long gameRoomId) {
         return gameParticipantRepository.findAllParticipantsByRoomId(gameRoomId);
     }
+
+    public Long findGameRoomIdByPlayerIdAndStatusUnitSelection() {
+        return gameParticipantRepository.findGameRoomIdByPlayerIdAndStatusUnitSelection(utilsService.getPlayer().getId());
+    }
 }

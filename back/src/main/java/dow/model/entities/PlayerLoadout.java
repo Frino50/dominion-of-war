@@ -21,24 +21,24 @@ public class PlayerLoadout {
     private Player player;
 
     @ManyToOne
-    @JoinColumn(name = "unit_1_id")
-    private UnitStats unit1;
+    @JoinColumn(name = "sprite_1_id")
+    private Sprite sprite1;
 
     @ManyToOne
-    @JoinColumn(name = "unit_2_id")
-    private UnitStats unit2;
+    @JoinColumn(name = "sprite_2_id")
+    private Sprite sprite2;
 
     @ManyToOne
-    @JoinColumn(name = "unit_3_id")
-    private UnitStats unit3;
+    @JoinColumn(name = "sprite_3_id")
+    private Sprite sprite3;
 
     @ManyToOne
-    @JoinColumn(name = "unit_4_id")
-    private UnitStats unit4;
+    @JoinColumn(name = "sprite_4_id")
+    private Sprite sprite4;
 
     @ManyToOne
-    @JoinColumn(name = "unit_5_id")
-    private UnitStats unit5;
+    @JoinColumn(name = "sprite_5_id")
+    private Sprite sprite5;
 
     @Column(name = "is_locked", nullable = false)
     private boolean locked = false;
@@ -71,44 +71,44 @@ public class PlayerLoadout {
         this.player = player;
     }
 
-    public UnitStats getUnit1() {
-        return unit1;
+    public Sprite getSprite1() {
+        return sprite1;
     }
 
-    public void setUnit1(UnitStats unit1) {
-        this.unit1 = unit1;
+    public void setSprite1(Sprite sprite1) {
+        this.sprite1 = sprite1;
     }
 
-    public UnitStats getUnit2() {
-        return unit2;
+    public Sprite getSprite2() {
+        return sprite2;
     }
 
-    public void setUnit2(UnitStats unit2) {
-        this.unit2 = unit2;
+    public void setSprite2(Sprite sprite2) {
+        this.sprite2 = sprite2;
     }
 
-    public UnitStats getUnit3() {
-        return unit3;
+    public Sprite getSprite3() {
+        return sprite3;
     }
 
-    public void setUnit3(UnitStats unit3) {
-        this.unit3 = unit3;
+    public void setSprite3(Sprite sprite3) {
+        this.sprite3 = sprite3;
     }
 
-    public UnitStats getUnit4() {
-        return unit4;
+    public Sprite getSprite4() {
+        return sprite4;
     }
 
-    public void setUnit4(UnitStats unit4) {
-        this.unit4 = unit4;
+    public void setSprite4(Sprite sprite4) {
+        this.sprite4 = sprite4;
     }
 
-    public UnitStats getUnit5() {
-        return unit5;
+    public Sprite getSprite5() {
+        return sprite5;
     }
 
-    public void setUnit5(UnitStats unit5) {
-        this.unit5 = unit5;
+    public void setSprite5(Sprite sprite5) {
+        this.sprite5 = sprite5;
     }
 
     public boolean isLocked() {
@@ -120,8 +120,8 @@ public class PlayerLoadout {
     }
 
     public boolean isComplete() {
-        return unit1 != null && unit2 != null && unit3 != null &&
-                unit4 != null && unit5 != null;
+        return sprite1 != null && sprite2 != null && sprite3 != null &&
+                sprite4 != null && sprite5 != null;
     }
 
     @Override
@@ -138,5 +138,4 @@ public class PlayerLoadout {
     public int hashCode() {
         return Objects.hash(id, gameRoom, player, locked);
     }
-
 }
