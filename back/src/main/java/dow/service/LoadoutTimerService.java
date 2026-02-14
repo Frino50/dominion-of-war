@@ -35,14 +35,12 @@ public class LoadoutTimerService {
             long secondsElapsed = between(startTime, now).getSeconds();
 
             if (secondsElapsed >= SELECTION_TIMEOUT_SECONDS) {
-                // Le temps est écoulé, compléter automatiquement
                 try {
                     loadoutService.autoCompleteLoadouts(gameRoomId);
                 } catch (Exception e) {
-                    // Log l'erreur mais continue
-                    System.err.println("Error auto-completing loadouts for room " + gameRoomId + ": " + e.getMessage());
+                    System.err.println("Erreur lors du remplissation automatique d'unités " + gameRoomId + ": " + e.getMessage());
                 }
-                return true; // Retirer du map
+                return true;
             }
 
             return false;

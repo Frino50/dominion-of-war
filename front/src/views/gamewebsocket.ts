@@ -85,7 +85,7 @@ class GameWebSocketService {
     }
 
     /**
-     * S'abonner aux mises à jour de loadout
+     * S'abonner aux changements de l'adversaire
      */
     subscribeToLoadout(
         gameRoomId: number,

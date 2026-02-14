@@ -148,7 +148,7 @@ onMounted(async function () {
     // Démarrer le timer côté serveur
     await gameService.startSelectionPhase(gameRoomId.value);
 
-    // S'abonner aux changements d'unités de l'adversaire
+    // S'abonner aux changements de l'adversaire
     gameWebSocket.subscribeToLoadout(
         gameRoomId.value,
         opponent.value.playerPseudo,
