@@ -1,14 +1,11 @@
 package dow.controller;
 
 import dow.model.dto.LoadoutUpdateDto;
-import dow.model.dto.PlayerLoadoutDto;
 import dow.model.dto.SpriteInfos;
 import dow.service.LoadoutService;
 import dow.service.UtilsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/loadout")
@@ -22,22 +19,16 @@ public class LoadoutController {
         this.utilsService = utilsService;
     }
 
-    @GetMapping("/{gameRoomId}")
-    public List<SpriteInfos> findSpriteInfosByPlayerAndRoom(@PathVariable Long gameRoomId) {
-        return loadoutService.findSpriteInfosByPlayerAndRoom(gameRoomId);
-    }
-
     @GetMapping("/{gameRoomId}/opponents")
     public LoadoutUpdateDto loadOpponentStatus(@PathVariable Long gameRoomId) {
         return loadoutService.loadOpponentStatus(gameRoomId, utilsService.getPlayer());
     }
 
     @PostMapping("/{gameRoomId}/select/{spriteName}")
-    public ResponseEntity<PlayerLoadoutDto> selectUnit(
+    public ResponseEntity<SpriteInfos> selectUnit(
             @PathVariable Long gameRoomId,
             @PathVariable String spriteName) {
-        PlayerLoadoutDto loadout = loadoutService.selectUnit(gameRoomId, utilsService.getPlayer(), spriteName);
-        return ResponseEntity.ok(loadout);
+        return ResponseEntity.ok(loadoutService.selectUnit(gameRoomId, utilsService.getPlayer(), spriteName));
     }
 
     @PostMapping("/{gameRoomId}/lock")

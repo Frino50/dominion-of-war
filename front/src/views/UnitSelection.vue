@@ -16,23 +16,29 @@
         <!-- Statut des joueurs -->
         <div class="players-status">
             <div class="player-status my-status">
-                <h3>Mes unités ({{ myLoadout.length }}/5)</h3>
+                <h3>Mes unités ({{ listSpriteInfo.length }}/5)</h3>
                 <div class="unit-slots">
                     <div
                         v-for="index in 5"
                         :key="'slot-' + index"
                         class="unit-slot"
-                        :class="{ filled: optimisticLoadout[index - 1] }"
+                        :class="{ filled: optimisticListSpriteInfo[index - 1] }"
                     >
                         <Animation
-                            v-if="optimisticLoadout[index - 1]"
-                            :key="optimisticLoadout[index - 1].name"
-                            :sprite-src="optimisticLoadout[index - 1].imageUrl"
-                            :frames="optimisticLoadout[index - 1].frames"
-                            :width="optimisticLoadout[index - 1].width"
-                            :height="optimisticLoadout[index - 1].height"
-                            :scale="optimisticLoadout[index - 1].scale * 0.5"
-                            :frame-rate="optimisticLoadout[index - 1].frameRate"
+                            v-if="optimisticListSpriteInfo[index - 1]"
+                            :key="optimisticListSpriteInfo[index - 1].name"
+                            :sprite-src="
+                                optimisticListSpriteInfo[index - 1].imageUrl
+                            "
+                            :frames="optimisticListSpriteInfo[index - 1].frames"
+                            :width="optimisticListSpriteInfo[index - 1].width"
+                            :height="optimisticListSpriteInfo[index - 1].height"
+                            :scale="
+                                optimisticListSpriteInfo[index - 1].scale * 0.5
+                            "
+                            :frame-rate="
+                                optimisticListSpriteInfo[index - 1].frameRate
+                            "
                             class="slot-sprite"
                         />
                         <span v-else class="slot-empty">{{ index }}</span>
@@ -83,7 +89,7 @@
                 class="unit-card"
                 :class="{
                     selected: isUnitSelected(sprite.name),
-                    disabled: myLoadout.length >= 5 || isLocked,
+                    disabled: listSpriteInfo.length >= 5 || isLocked,
                 }"
                 @click="selectUnit(sprite)"
             >
@@ -129,7 +135,7 @@ import type { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto.ts";
 const router = useRouter();
 const gameRoomId = ref<number>(0);
 const listSpritesInfos = ref<SpriteInfo[]>([]);
-const myLoadout = ref<SpriteInfo[]>([]);
+const listSpriteInfo = ref<SpriteInfo[]>([]);
 const isLocked = ref(false);
 const opponent = ref<LoadoutUpdateDto>();
 const remainingTime = ref(60);
@@ -142,9 +148,6 @@ onMounted(async function () {
 
     const response = await spriteService.getAllSpritesInfos();
     listSpritesInfos.value = response.data;
-
-    // Charger mon loadout existant
-    await loadMyLoadout();
 
     opponent.value = await loadoutService.loadOpponentStatus(gameRoomId.value);
 
@@ -179,12 +182,6 @@ onUnmounted(function () {
     gameWebSocket.unsubscribeFromGameRoom(gameRoomId.value);
 });
 
-async function loadMyLoadout() {
-    myLoadout.value = await loadoutService.findSpriteInfosByPlayerAndRoom(
-        gameRoomId.value
-    );
-}
-
 async function updateTimer() {
     remainingTime.value = await gameService.getRemainingTime(gameRoomId.value);
 
@@ -210,7 +207,7 @@ const actionQueue: string[] = [];
 let isProcessingQueue = false;
 
 // État optimiste pour l'affichage immédiat
-const optimisticLoadout = ref<SpriteInfo[]>([]);
+const optimisticListSpriteInfo = ref<SpriteInfo[]>([]);
 
 /**
  * Gère le clic sur une unité avec mise à jour immédiate de l'interface
@@ -219,17 +216,17 @@ const selectUnit = (sprite: SpriteInfo): void => {
     if (isLocked.value) return;
 
     // 1. MISE À JOUR OPTIMISTE
-    const index = optimisticLoadout.value.findIndex(
+    const index = optimisticListSpriteInfo.value.findIndex(
         (u) => u.name === sprite.name
     );
 
     if (index !== -1) {
         // Suppression : on retire l'élément
-        optimisticLoadout.value.splice(index, 1);
-    } else if (optimisticLoadout.value.length < 5) {
+        optimisticListSpriteInfo.value.splice(index, 1);
+    } else if (optimisticListSpriteInfo.value.length < 5) {
         // Ajout : On fait une copie de l'objet pour éviter les références partagées
         // qui causent souvent les bugs d'image
-        optimisticLoadout.value.push({ ...sprite });
+        optimisticListSpriteInfo.value.push({ ...sprite });
     } else {
         return;
     }
@@ -258,10 +255,15 @@ const processQueue = async (): Promise<void> => {
                 spriteName!
             );
 
-            myLoadout.value = res.selectedUnits || [];
+            listSpriteInfo.value.push(res);
         } catch (error) {
-            await loadMyLoadout();
-            optimisticLoadout.value = [...myLoadout.value];
+            const res = await loadoutService.selectUnit(
+                gameRoomId.value,
+                spriteName!
+            );
+            listSpriteInfo.value.push(res);
+
+            optimisticListSpriteInfo.value = [...listSpriteInfo.value];
         }
     }
     isProcessingQueue = false;
@@ -271,7 +273,7 @@ const processQueue = async (): Promise<void> => {
  * Helper de vérification visuelle (utilisé pour les classes CSS)
  */
 function isUnitSelected(spriteName: string): boolean {
-    return optimisticLoadout.value.some((u) => u.name === spriteName);
+    return optimisticListSpriteInfo.value.some((u) => u.name === spriteName);
 }
 
 const isLocking = ref(false);
@@ -279,7 +281,7 @@ const isLocking = ref(false);
 async function lockLoadout(): Promise<void> {
     // On se base sur l'affichage (optimiste) pour la condition des 5 unités
     if (
-        optimisticLoadout.value.length !== 5 ||
+        optimisticListSpriteInfo.value.length !== 5 ||
         isLocked.value ||
         isLocking.value
     ) {

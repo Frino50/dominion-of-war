@@ -1,5 +1,4 @@
 import apiService from "@/services/apiService";
-import type { PlayerLoadoutDto } from "@/models/dtos/PlayerLoadoutDto";
 import type { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto";
 import SpriteInfo from "@/models/SpriteInfos.ts";
 
@@ -7,18 +6,6 @@ import SpriteInfo from "@/models/SpriteInfos.ts";
  * Service pour gérer la sélection des unités (loadout)
  */
 export default {
-    /**
-     * Récupérer mon loadout pour une partie
-     */
-    async findSpriteInfosByPlayerAndRoom(
-        gameRoomId: number
-    ): Promise<SpriteInfo[]> {
-        const response = await apiService.get<SpriteInfo[]>(
-            `/loadout/${gameRoomId}`
-        );
-        return response.data;
-    },
-
     /**
      * Récupérer le statut des loadouts des adversaires
      */
@@ -35,8 +22,8 @@ export default {
     async selectUnit(
         gameRoomId: number,
         spriteName: string
-    ): Promise<PlayerLoadoutDto> {
-        const response = await apiService.post<PlayerLoadoutDto>(
+    ): Promise<SpriteInfo> {
+        const response = await apiService.post<SpriteInfo>(
             `/loadout/${gameRoomId}/select/${spriteName}`
         );
         return response.data;

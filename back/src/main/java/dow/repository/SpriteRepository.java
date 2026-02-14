@@ -125,44 +125,10 @@ public interface SpriteRepository extends JpaRepository<Sprite, Long> {
             )
             FROM Sprite s
             JOIN s.animations a
-            WHERE s.name IN :names AND a.type = :animationType
+            WHERE s.name = :spriteName AND a.type = :animationType
             """)
-    List<SpriteInfos> findSpriteInfosByNames(
-            @Param("names") List<String> names,
-            @Param("animationType") AnimationType animationType
-    );
-
-    @Query("""
-            SELECT new dow.model.dto.SpriteInfos(
-                    a.id,
-                    s.name,
-                    CONCAT(s.name, '/', a.type, '/', a.indice, '.png'),
-                    a.width,
-                    a.height,
-                    a.frames,
-                    s.scale,
-                    a.frameRate,
-                    a.hitboxX,
-                    a.hitboxY,
-                    a.hitboxWidth,
-                    a.hitboxHeight
-            )
-            FROM PlayerLoadout pl
-            JOIN Animation a ON (
-                a.sprite = pl.sprite1 OR
-                a.sprite = pl.sprite2 OR
-                a.sprite = pl.sprite3 OR
-                a.sprite = pl.sprite4 OR
-                a.sprite = pl.sprite5
-            )
-            JOIN a.sprite s
-            WHERE pl.player.id = :playerId
-              AND pl.gameRoom.id = :gameRoomId
-              AND a.type = :animationType
-            """)
-    List<SpriteInfos> findSpriteInfosByPlayerAndRoom(
-            @Param("playerId") Long playerId,
-            @Param("gameRoomId") Long gameRoomId,
+    SpriteInfos findSpriteInfosByName(
+            @Param("spriteName") String spriteName,
             @Param("animationType") AnimationType animationType
     );
 }

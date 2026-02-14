@@ -1,7 +1,6 @@
 package dow.service;
 
 import dow.model.dto.LoadoutUpdateDto;
-import dow.model.dto.PlayerLoadoutDto;
 import dow.model.dto.SpriteInfos;
 import dow.model.entities.*;
 import dow.model.enumeration.AnimationType;
@@ -14,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Stream;
 
 @Service
@@ -24,22 +26,15 @@ public class LoadoutService {
     private final GameRoomRepository gameRoomRepository;
     private final SpriteRepository spriteRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final UtilsService utilsService;
 
     public LoadoutService(PlayerLoadoutRepository loadoutRepository,
                           GameRoomRepository gameRoomRepository,
                           SpriteRepository spriteRepository,
-                          SimpMessagingTemplate messagingTemplate, UtilsService utilsService) {
+                          SimpMessagingTemplate messagingTemplate) {
         this.loadoutRepository = loadoutRepository;
         this.gameRoomRepository = gameRoomRepository;
         this.spriteRepository = spriteRepository;
         this.messagingTemplate = messagingTemplate;
-        this.utilsService = utilsService;
-    }
-
-    @Transactional(readOnly = true)
-    public List<SpriteInfos> findSpriteInfosByPlayerAndRoom(Long gameRoomId) {
-        return spriteRepository.findSpriteInfosByPlayerAndRoom(utilsService.getPlayer().getId(), gameRoomId, AnimationType.IDLE);
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +43,7 @@ public class LoadoutService {
     }
 
     @Transactional
-    public PlayerLoadoutDto selectUnit(Long gameRoomId, Player player, String spriteName) {
+    public SpriteInfos selectUnit(Long gameRoomId, Player player, String spriteName) {
         PlayerLoadout loadout = getOrCreateLoadoutEntity(gameRoomId, player);
 
         if (loadout.isLocked()) throw new RuntimeException("Temps écoulé");
@@ -63,7 +58,7 @@ public class LoadoutService {
         loadoutRepository.save(loadout);
         notifyLoadoutUpdate(loadout.getGameRoom().getId(), player, loadout);
 
-        return buildFullLoadoutDto(loadout);
+        return spriteRepository.findSpriteInfosByName(spriteName, AnimationType.IDLE);
     }
 
     @Transactional
@@ -126,27 +121,6 @@ public class LoadoutService {
                 .orElseThrow(() -> new RuntimeException("Room introuvable"));
         return loadoutRepository.findByGameRoomAndPlayer(room, player)
                 .orElseGet(() -> loadoutRepository.save(new PlayerLoadout(room, player)));
-    }
-
-    private PlayerLoadoutDto buildFullLoadoutDto(PlayerLoadout loadout) {
-        // Collecter les noms non-nulls pour faire 1 seule requête
-        List<String> spriteNames = Stream.of(
-                loadout.getSprite1(), loadout.getSprite2(), loadout.getSprite3(),
-                loadout.getSprite4(), loadout.getSprite5()
-        ).filter(Objects::nonNull).map(Sprite::getName).toList();
-
-        List<SpriteInfos> units = Collections.emptyList();
-        if (!spriteNames.isEmpty()) {
-            // Optimisation : 1 requête SQL pour récupérer toutes les infos d'un coup
-            units = spriteRepository.findSpriteInfosByNames(spriteNames, AnimationType.IDLE);
-        }
-
-        return new PlayerLoadoutDto(
-                loadout.getId(),
-                loadout.getPlayer().getId(),
-                units, // constructeur à adapter si l'ordre est différent dans votre DTO
-                loadout.isLocked()
-        );
     }
 
     private void fillFirstEmptySlot(PlayerLoadout loadout, Sprite sprite) {
