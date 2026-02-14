@@ -180,8 +180,9 @@ onUnmounted(function () {
 });
 
 async function loadMyLoadout() {
-    const response = await loadoutService.getMyLoadout(gameRoomId.value);
-    myLoadout.value = response.selectedUnits || [];
+    myLoadout.value = await loadoutService.findSpriteInfosByPlayerAndRoom(
+        gameRoomId.value
+    );
 }
 
 async function updateTimer() {

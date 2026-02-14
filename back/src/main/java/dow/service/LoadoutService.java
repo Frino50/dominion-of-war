@@ -24,21 +24,22 @@ public class LoadoutService {
     private final GameRoomRepository gameRoomRepository;
     private final SpriteRepository spriteRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UtilsService utilsService;
 
     public LoadoutService(PlayerLoadoutRepository loadoutRepository,
                           GameRoomRepository gameRoomRepository,
                           SpriteRepository spriteRepository,
-                          SimpMessagingTemplate messagingTemplate) {
+                          SimpMessagingTemplate messagingTemplate, UtilsService utilsService) {
         this.loadoutRepository = loadoutRepository;
         this.gameRoomRepository = gameRoomRepository;
         this.spriteRepository = spriteRepository;
         this.messagingTemplate = messagingTemplate;
+        this.utilsService = utilsService;
     }
 
     @Transactional(readOnly = true)
-    public PlayerLoadoutDto getPlayerLoadout(Long gameRoomId, Player player) {
-        PlayerLoadout loadout = getOrCreateLoadoutEntity(gameRoomId, player);
-        return buildFullLoadoutDto(loadout);
+    public List<SpriteInfos> findSpriteInfosByPlayerAndRoom(Long gameRoomId) {
+        return spriteRepository.findSpriteInfosByPlayerAndRoom(utilsService.getPlayer().getId(), gameRoomId, AnimationType.IDLE);
     }
 
     @Transactional(readOnly = true)

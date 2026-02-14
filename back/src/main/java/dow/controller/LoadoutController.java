@@ -2,10 +2,13 @@ package dow.controller;
 
 import dow.model.dto.LoadoutUpdateDto;
 import dow.model.dto.PlayerLoadoutDto;
+import dow.model.dto.SpriteInfos;
 import dow.service.LoadoutService;
 import dow.service.UtilsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/loadout")
@@ -20,8 +23,8 @@ public class LoadoutController {
     }
 
     @GetMapping("/{gameRoomId}")
-    public PlayerLoadoutDto getMyLoadout(@PathVariable Long gameRoomId) {
-        return loadoutService.getPlayerLoadout(gameRoomId, utilsService.getPlayer());
+    public List<SpriteInfos> findSpriteInfosByPlayerAndRoom(@PathVariable Long gameRoomId) {
+        return loadoutService.findSpriteInfosByPlayerAndRoom(gameRoomId);
     }
 
     @GetMapping("/{gameRoomId}/opponents")
