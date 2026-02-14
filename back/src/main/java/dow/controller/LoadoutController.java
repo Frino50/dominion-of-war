@@ -7,8 +7,6 @@ import dow.service.UtilsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/loadout")
 public class LoadoutController {
@@ -27,8 +25,8 @@ public class LoadoutController {
     }
 
     @GetMapping("/{gameRoomId}/opponents")
-    public List<LoadoutUpdateDto> findOpponentsStatus(@PathVariable Long gameRoomId) {
-        return loadoutService.findOpponentsStatus(gameRoomId, utilsService.getPlayer());
+    public LoadoutUpdateDto loadOpponentStatus(@PathVariable Long gameRoomId) {
+        return loadoutService.loadOpponentStatus(gameRoomId, utilsService.getPlayer());
     }
 
     @PostMapping("/{gameRoomId}/select/{spriteName}")

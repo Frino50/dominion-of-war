@@ -42,9 +42,8 @@ public class LoadoutService {
     }
 
     @Transactional(readOnly = true)
-    public List<LoadoutUpdateDto> findOpponentsStatus(Long gameRoomId, Player currentPlayer) {
-        // 1 seule requête SQL au lieu de N boucles
-        return loadoutRepository.findOpponentsStatus(gameRoomId, currentPlayer.getId());
+    public LoadoutUpdateDto loadOpponentStatus(Long gameRoomId, Player currentPlayer) {
+        return loadoutRepository.loadOpponentStatus(gameRoomId, currentPlayer.getId());
     }
 
     @Transactional
@@ -171,8 +170,8 @@ public class LoadoutService {
 
     private void notifyLoadoutUpdate(Long roomId, Player player, PlayerLoadout loadout) {
         messagingTemplate.convertAndSend(
-                "/topic/game/" + roomId + "/loadout",
-                new LoadoutUpdateDto(player.getId(), player.getPseudo(), countUnits(loadout), loadout.isLocked())
+                "/topic/game/" + roomId + "/" + player.getPseudo() + "/loadout",
+                new LoadoutUpdateDto(player.getPseudo(), countUnits(loadout), loadout.isLocked())
         );
     }
 

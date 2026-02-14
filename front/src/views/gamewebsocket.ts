@@ -2,16 +2,7 @@ import { Client, Message, StompSubscription } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { GameRoomInfo } from "@/models/dtos/GameRoomInfo.ts";
 import { GameParticipantWaitingDto } from "@/models/dtos/GameParticipantWaitingDto.ts";
-
-/**
- * Interface pour les mises à jour de loadout
- */
-export interface LoadoutUpdate {
-    playerId: number;
-    playerPseudo: string;
-    unitsSelected: number;
-    isLocked: boolean;
-}
+import { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto.ts";
 
 /**
  * Service WebSocket pour le jeu en temps réel
@@ -98,12 +89,16 @@ class GameWebSocketService {
      */
     subscribeToLoadout(
         gameRoomId: number,
-        callback: (update: LoadoutUpdate) => void
+        opponentPseudo: string,
+        callback: (update: LoadoutUpdateDto) => void
     ): void {
-        this.subscribe(`/topic/game/${gameRoomId}/loadout`, (message) => {
-            const update: LoadoutUpdate = JSON.parse(message.body);
-            callback(update);
-        });
+        this.subscribe(
+            `/topic/game/${gameRoomId}/${opponentPseudo}/loadout`,
+            (message) => {
+                const update: LoadoutUpdateDto = JSON.parse(message.body);
+                callback(update);
+            }
+        );
     }
 
     /**

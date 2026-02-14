@@ -50,11 +50,7 @@
                 </div>
             </div>
 
-            <div
-                v-for="opponent in opponents"
-                :key="opponent.playerId"
-                class="player-status opponent-status"
-            >
+            <div v-if="opponent" class="player-status opponent-status">
                 <h3>
                     {{ opponent.playerPseudo }} ({{ opponent.unitsSelected }}/5)
                 </h3>
@@ -135,7 +131,7 @@ const gameRoomId = ref<number>(0);
 const listSpritesInfos = ref<SpriteInfo[]>([]);
 const myLoadout = ref<SpriteInfo[]>([]);
 const isLocked = ref(false);
-const opponents = ref<LoadoutUpdateDto[]>([]);
+const opponent = ref<LoadoutUpdateDto>();
 const remainingTime = ref(60);
 
 let timerInterval: number | null = null;
@@ -150,7 +146,7 @@ onMounted(async function () {
     // Charger mon loadout existant
     await loadMyLoadout();
 
-    await loadOpponentsStatus();
+    opponent.value = await loadoutService.loadOpponentStatus(gameRoomId.value);
 
     // Démarrer le timer côté serveur
     await gameService.startSelectionPhase(gameRoomId.value);
@@ -162,7 +158,11 @@ onMounted(async function () {
     }
 
     // S'abonner aux mises à jour de loadout
-    gameWebSocket.subscribeToLoadout(gameRoomId.value, handleLoadoutUpdate);
+    gameWebSocket.subscribeToLoadout(
+        gameRoomId.value,
+        opponent.value.playerPseudo,
+        handleLoadoutUpdate
+    );
 
     // S'abonner aux changements de phase
     gameWebSocket.subscribeToPhase(gameRoomId.value, handlePhaseChange);
@@ -184,10 +184,6 @@ async function loadMyLoadout() {
     myLoadout.value = response.selectedUnits || [];
 }
 
-async function loadOpponentsStatus() {
-    opponents.value = await loadoutService.findOpponentStatus(gameRoomId.value);
-}
-
 async function updateTimer() {
     remainingTime.value = await gameService.getRemainingTime(gameRoomId.value);
 
@@ -198,16 +194,8 @@ async function updateTimer() {
     }
 }
 
-function handleLoadoutUpdate(update: any) {
-    const opponentIndex = opponents.value.findIndex(function (o) {
-        return o.playerId === update.playerId;
-    });
-
-    if (opponentIndex !== -1) {
-        opponents.value[opponentIndex] = update;
-    } else {
-        loadMyLoadout();
-    }
+function handleLoadoutUpdate(update: LoadoutUpdateDto) {
+    opponent.value = update;
 }
 
 function handlePhaseChange(data: { phase: string; duration?: number }) {

@@ -1,7 +1,6 @@
 package dow.model.dto;
 
 public class LoadoutUpdateDto {
-    private Long playerId;
     private String playerPseudo;
     private int unitsSelected; // Nombre d'unités sélectionnées (1-5)
     private boolean isLocked;
@@ -9,20 +8,12 @@ public class LoadoutUpdateDto {
     public LoadoutUpdateDto() {
     }
 
-    public LoadoutUpdateDto(Long playerId, String playerPseudo, int unitsSelected, boolean isLocked) {
-        this.playerId = playerId;
+    public LoadoutUpdateDto(String playerPseudo, int unitsSelected, boolean isLocked) {
         this.playerPseudo = playerPseudo;
         this.unitsSelected = unitsSelected;
         this.isLocked = isLocked;
     }
 
-    public Long getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(Long playerId) {
-        this.playerId = playerId;
-    }
 
     public String getPlayerPseudo() {
         return playerPseudo;

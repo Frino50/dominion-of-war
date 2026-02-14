@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,7 +18,6 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
 
     @Query("""
                 SELECT new dow.model.dto.LoadoutUpdateDto(
-                    p.id,
                     p.pseudo,
                     (CASE WHEN pl.sprite1 IS NOT NULL THEN 1 ELSE 0 END +
                      CASE WHEN pl.sprite2 IS NOT NULL THEN 1 ELSE 0 END +
@@ -35,15 +33,15 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
                 AND p.id <> :currentPlayerId
                 AND (gp.role = dow.model.enumeration.ParticipantRole.PLAYER_1 OR gp.role = dow.model.enumeration.ParticipantRole.PLAYER_2)
             """)
-    List<LoadoutUpdateDto> findOpponentsStatus(
+    LoadoutUpdateDto loadOpponentStatus(
             @Param("gameRoomId") Long gameRoomId,
             @Param("currentPlayerId") Long currentPlayerId
     );
 
     @Query("""
-                SELECT COUNT(pl) = 2 
-                FROM PlayerLoadout pl 
-                WHERE pl.gameRoom.id = :gameRoomId 
+                SELECT COUNT(pl) = 2
+                FROM PlayerLoadout pl
+                WHERE pl.gameRoom.id = :gameRoomId
                 AND pl.locked = true
             """)
     boolean areAllPlayersLocked(@Param("gameRoomId") Long gameRoomId);
