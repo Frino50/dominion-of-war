@@ -39,4 +39,12 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
             @Param("gameRoomId") Long gameRoomId,
             @Param("currentPlayerId") Long currentPlayerId
     );
+
+    @Query("""
+                SELECT COUNT(pl) = 2 
+                FROM PlayerLoadout pl 
+                WHERE pl.gameRoom.id = :gameRoomId 
+                AND pl.locked = true
+            """)
+    boolean areAllPlayersLocked(@Param("gameRoomId") Long gameRoomId);
 }

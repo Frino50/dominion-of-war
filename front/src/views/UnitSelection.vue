@@ -128,13 +128,14 @@ import gameService from "@/services/gameService.ts";
 import SpriteInfo from "@/models/SpriteInfos.ts";
 import Animation from "@/components/GestionSprites/Animation.vue";
 import { gameWebSocket } from "@/views/gamewebsocket.ts";
+import type { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto.ts";
 
 const router = useRouter();
 const gameRoomId = ref<number>(0);
 const listSpritesInfos = ref<SpriteInfo[]>([]);
 const myLoadout = ref<SpriteInfo[]>([]);
 const isLocked = ref(false);
-const opponents = ref<any[]>([]);
+const opponents = ref<LoadoutUpdateDto[]>([]);
 const remainingTime = ref(60);
 
 let timerInterval: number | null = null;
@@ -149,7 +150,6 @@ onMounted(async function () {
     // Charger mon loadout existant
     await loadMyLoadout();
 
-    // Charger le statut des adversaires
     await loadOpponentsStatus();
 
     // Démarrer le timer côté serveur
@@ -182,11 +182,10 @@ onUnmounted(function () {
 async function loadMyLoadout() {
     const response = await loadoutService.getMyLoadout(gameRoomId.value);
     myLoadout.value = response.selectedUnits || [];
-    isLocked.value = response.isLocked;
 }
 
 async function loadOpponentsStatus() {
-    opponents.value = await loadoutService.getOpponentsStatus(gameRoomId.value);
+    opponents.value = await loadoutService.findOpponentStatus(gameRoomId.value);
 }
 
 async function updateTimer() {
@@ -200,7 +199,6 @@ async function updateTimer() {
 }
 
 function handleLoadoutUpdate(update: any) {
-    // Mettre à jour le statut de l'adversaire
     const opponentIndex = opponents.value.findIndex(function (o) {
         return o.playerId === update.playerId;
     });
@@ -208,7 +206,6 @@ function handleLoadoutUpdate(update: any) {
     if (opponentIndex !== -1) {
         opponents.value[opponentIndex] = update;
     } else {
-        // Si c'est une mise à jour de mon propre loadout depuis un autre onglet
         loadMyLoadout();
     }
 }
@@ -260,41 +257,24 @@ const selectUnit = (sprite: SpriteInfo): void => {
     audio.play().catch(() => {});
 };
 
-/**
- * Worker asynchrone qui vide la file d'attente une par une
- */
 const processQueue = async (): Promise<void> => {
     if (isProcessingQueue || actionQueue.length === 0) return;
-
     isProcessingQueue = true;
 
     while (actionQueue.length > 0) {
         const spriteName = actionQueue.shift();
-        if (!spriteName) continue;
-
         try {
-            // Appel API
             const res = await loadoutService.selectUnit(
                 gameRoomId.value,
-                spriteName
+                spriteName!
             );
 
-            // On met à jour la "vérité" (myLoadout)
-            myLoadout.value = [...(res.selectedUnits || [])];
-
-            // On synchronise l'optimiste avec la réalité du serveur
-            // pour corriger d'éventuels écarts après le dernier message de la queue
-            if (actionQueue.length === 0) {
-                optimisticLoadout.value = [...myLoadout.value];
-            }
+            myLoadout.value = res.selectedUnits || [];
         } catch (error) {
-            console.error("Erreur de synchronisation:", error);
-            // En cas d'échec, on réinitialise pour éviter de bloquer l'UI dans un faux état
             await loadMyLoadout();
             optimisticLoadout.value = [...myLoadout.value];
         }
     }
-
     isProcessingQueue = false;
 };
 
@@ -305,13 +285,36 @@ function isUnitSelected(spriteName: string): boolean {
     return optimisticLoadout.value.some((u) => u.name === spriteName);
 }
 
-async function lockLoadout() {
-    if (myLoadout.value.length !== 5 || isLocked.value) {
+const isLocking = ref(false);
+
+async function lockLoadout(): Promise<void> {
+    // On se base sur l'affichage (optimiste) pour la condition des 5 unités
+    if (
+        optimisticLoadout.value.length !== 5 ||
+        isLocked.value ||
+        isLocking.value
+    ) {
         return;
     }
 
-    await loadoutService.lockLoadout(gameRoomId.value);
-    isLocked.value = true;
+    isLocking.value = true;
+
+    try {
+        // Sécurité : Si l'utilisateur clique très vite sur le 5ème sprite puis sur Verrouiller,
+        // on attend que processQueue ait fini d'envoyer le 5ème sprite au serveur.
+        while (isProcessingQueue) {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+
+        await loadoutService.lockLoadout(gameRoomId.value);
+
+        // On change l'état local immédiatement après le succès API
+        isLocked.value = true;
+    } catch (error) {
+        console.error("Erreur verrouillage:", error);
+    } finally {
+        isLocking.value = false;
+    }
 }
 
 function formatTime(seconds: number): string {

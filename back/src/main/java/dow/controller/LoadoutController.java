@@ -27,8 +27,8 @@ public class LoadoutController {
     }
 
     @GetMapping("/{gameRoomId}/opponents")
-    public List<LoadoutUpdateDto> getOpponentsLoadoutStatus(@PathVariable Long gameRoomId) {
-        return loadoutService.getOpponentsLoadoutStatus(gameRoomId, utilsService.getPlayer());
+    public List<LoadoutUpdateDto> findOpponentsStatus(@PathVariable Long gameRoomId) {
+        return loadoutService.findOpponentsStatus(gameRoomId, utilsService.getPlayer());
     }
 
     @PostMapping("/{gameRoomId}/select/{spriteName}")

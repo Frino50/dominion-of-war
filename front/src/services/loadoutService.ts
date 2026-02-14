@@ -19,7 +19,7 @@ export default {
     /**
      * Récupérer le statut des loadouts des adversaires
      */
-    async getOpponentsStatus(gameRoomId: number): Promise<LoadoutUpdateDto[]> {
+    async findOpponentStatus(gameRoomId: number): Promise<LoadoutUpdateDto[]> {
         const response = await apiService.get<LoadoutUpdateDto[]>(
             `/loadout/${gameRoomId}/opponents`
         );

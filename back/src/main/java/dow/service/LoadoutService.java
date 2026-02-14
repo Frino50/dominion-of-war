@@ -42,7 +42,7 @@ public class LoadoutService {
     }
 
     @Transactional(readOnly = true)
-    public List<LoadoutUpdateDto> getOpponentsLoadoutStatus(Long gameRoomId, Player currentPlayer) {
+    public List<LoadoutUpdateDto> findOpponentsStatus(Long gameRoomId, Player currentPlayer) {
         // 1 seule requête SQL au lieu de N boucles
         return loadoutRepository.findOpponentsStatus(gameRoomId, currentPlayer.getId());
     }
@@ -78,7 +78,10 @@ public class LoadoutService {
         loadoutRepository.save(loadout);
 
         notifyLoadoutUpdate(gameRoomId, player, loadout);
-        checkAndStartGame(loadout.getGameRoom());
+
+        if (loadoutRepository.areAllPlayersLocked(gameRoomId)) {
+            startGame(loadout.getGameRoom());
+        }
     }
 
     @Transactional
@@ -171,13 +174,6 @@ public class LoadoutService {
                 "/topic/game/" + roomId + "/loadout",
                 new LoadoutUpdateDto(player.getId(), player.getPseudo(), countUnits(loadout), loadout.isLocked())
         );
-    }
-
-    private void checkAndStartGame(GameRoom gameRoom) {
-        boolean allReady = loadoutRepository.findOpponentsStatus(gameRoom.getId(), -1L) // -1L pour ne exclure personne
-                .stream().allMatch(LoadoutUpdateDto::isLocked);
-
-        if (allReady) startGame(gameRoom);
     }
 
     private void startGame(GameRoom gameRoom) {
