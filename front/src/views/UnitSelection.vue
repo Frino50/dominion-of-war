@@ -276,36 +276,13 @@ function isUnitSelected(spriteName: string): boolean {
     return optimisticListSpriteInfo.value.some((u) => u.name === spriteName);
 }
 
-const isLocking = ref(false);
-
-async function lockLoadout(): Promise<void> {
-    // On se base sur l'affichage (optimiste) pour la condition des 5 unités
-    if (
-        optimisticListSpriteInfo.value.length !== 5 ||
-        isLocked.value ||
-        isLocking.value
-    ) {
+async function lockLoadout() {
+    if (optimisticListSpriteInfo.value.length !== 5 || isLocked.value) {
         return;
     }
 
-    isLocking.value = true;
-
-    try {
-        // Sécurité : Si l'utilisateur clique très vite sur le 5ème sprite puis sur Verrouiller,
-        // on attend que processQueue ait fini d'envoyer le 5ème sprite au serveur.
-        while (isProcessingQueue) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
-        }
-
-        await loadoutService.lockLoadout(gameRoomId.value);
-
-        // On change l'état local immédiatement après le succès API
-        isLocked.value = true;
-    } catch (error) {
-        console.error("Erreur verrouillage:", error);
-    } finally {
-        isLocking.value = false;
-    }
+    await loadoutService.lockLoadout(gameRoomId.value);
+    isLocked.value = true;
 }
 
 function formatTime(seconds: number): string {
