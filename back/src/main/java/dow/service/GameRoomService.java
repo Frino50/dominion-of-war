@@ -61,7 +61,7 @@ public class GameRoomService {
                 GameStatus.IN_PROGRESS
         );
 
-        return gameRoomRepository.findAllWithCountsByStatus(activeStatuses);
+        return gameRoomRepository.listAvailableRooms(activeStatuses);
     }
 
     @Transactional

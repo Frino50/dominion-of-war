@@ -18,9 +18,9 @@ public interface GameRoomRepository extends JpaRepository<GameRoom, Long> {
 
     @Query("""
             SELECT new dow.model.dto.GameRoomInfoDto(
-                r.id, 
-                r.name, 
-                (r.password IS NOT NULL AND r.password <> ''), 
+                r.id,
+                r.name,
+                (r.password IS NOT NULL AND r.password <> ''),
                 r.status,
                 CAST(SUM(CASE WHEN p.role IN (dow.model.enumeration.ParticipantRole.PLAYER_1, dow.model.enumeration.ParticipantRole.PLAYER_2) THEN 1 ELSE 0 END) AS int),
                 CAST(SUM(CASE WHEN p.role = dow.model.enumeration.ParticipantRole.SPECTATOR THEN 1 ELSE 0 END) AS int)
@@ -30,7 +30,7 @@ public interface GameRoomRepository extends JpaRepository<GameRoom, Long> {
             WHERE r.status IN :statuses
             GROUP BY r.id, r.name, r.password, r.status
             """)
-    List<GameRoomInfoDto> findAllWithCountsByStatus(@Param("statuses") List<GameStatus> statuses);
+    List<GameRoomInfoDto> listAvailableRooms(@Param("statuses") List<GameStatus> statuses);
 
     @Query("SELECT new dow.model.dto.GameRoomLightDto(g.name, g.password) " +
             "FROM GameRoom g WHERE g.id = :id")
