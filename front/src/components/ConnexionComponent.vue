@@ -41,7 +41,7 @@ import { ref } from "vue";
 import ConnexionDto from "@/models/dtos/connexionDto.ts";
 import auth from "@/services/authService.ts";
 import LoginResponseDto from "@/models/dtos/loginResponseDto.ts";
-import router from "@/router.ts";
+import router, { resetDynamicRoutes, loadDynamicRoutes } from "@/router.ts";
 import { localStore } from "@/store/local.ts";
 
 const props = defineProps({
@@ -62,7 +62,6 @@ async function handleSubmit() {
         internalError.value = "Veuillez remplir tous les champs";
         return;
     }
-
     internalError.value = "";
     isLoading.value = true;
 
@@ -72,6 +71,8 @@ async function handleSubmit() {
         } else {
             await register();
         }
+    } catch (error: any) {
+        internalError.value = error.response?.data?.message || "Erreur serveur";
     } finally {
         isLoading.value = false;
     }
@@ -80,8 +81,13 @@ async function handleSubmit() {
 async function login() {
     const res = await auth.login(connexionDto());
     const loginResponseDto: LoginResponseDto = res.data;
-    localStore.pseudo = loginResponseDto.pseudo;
+
     localStore.token = loginResponseDto.token;
+    localStore.pseudo = loginResponseDto.pseudo;
+
+    resetDynamicRoutes();
+    await loadDynamicRoutes();
+
     await router.push("/");
 }
 
@@ -98,6 +104,7 @@ function redirection() {
     router.push(props.mode === "login" ? "/register" : "/login");
 }
 </script>
+
 <style scoped>
 .auth-page {
     display: flex;

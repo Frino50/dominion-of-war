@@ -75,6 +75,7 @@ import { useRouter } from "vue-router";
 import routeService from "@/services/routeService";
 import { localStore } from "@/store/local";
 import RouteDto from "@/models/dtos/RouteDto.ts";
+import { resetDynamicRoutes } from "@/router";
 
 const router = useRouter();
 const routes = ref<RouteDto[]>([]);
@@ -92,10 +93,12 @@ async function loadRoutes() {
 }
 
 function logout() {
-    localStore.pseudo = "";
     localStore.token = "";
-    routes.value = [];
-    routesKey.value++;
+    localStore.pseudo = "";
+
+    resetDynamicRoutes();
+
+    router.push("/login");
 }
 
 onMounted(loadRoutes);
