@@ -69,7 +69,7 @@
                         <span v-else class="slot-empty">{{ index }}</span>
                     </div>
                 </div>
-                <div v-if="opponent.isLocked" class="locked-indicator">
+                <div v-if="opponent.locked" class="locked-indicator">
                     ✓ Sélection verrouillée
                 </div>
             </div>
