@@ -117,7 +117,6 @@ public class LoadoutService {
 
             loadout.setLocked(true);
             loadoutRepository.save(loadout);
-            notifyLoadoutUpdate(gameRoomId, participant.getPlayer(), loadout);
         }
 
         startGame(gameRoom);

@@ -215,7 +215,7 @@ onMounted(async function () {
 
     gameWebSocket.subscribeToPhase(gameRoomId.value, handlePhaseChange);
 
-    timerInterval = window.setInterval(updateTimer, 1000);
+    await updateTimer();
 });
 
 onUnmounted(function () {
@@ -225,7 +225,14 @@ onUnmounted(function () {
 
 async function updateTimer() {
     remainingTime.value = await gameService.getRemainingTime(gameRoomId.value);
-    if (remainingTime.value <= 0 && timerInterval) clearInterval(timerInterval);
+
+    timerInterval = window.setInterval(() => {
+        if (remainingTime.value > 0) {
+            remainingTime.value--;
+        } else {
+            clearInterval(timerInterval!);
+        }
+    }, 1000);
 }
 
 function handleLoadoutUpdate(update: LoadoutUpdateDto) {
