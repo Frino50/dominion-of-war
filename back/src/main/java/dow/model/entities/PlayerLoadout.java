@@ -3,6 +3,7 @@ package dow.model.entities;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "player_loadout")
@@ -120,8 +121,12 @@ public class PlayerLoadout {
     }
 
     public boolean isComplete() {
-        return sprite1 != null && sprite2 != null && sprite3 != null &&
-                sprite4 != null && sprite5 != null;
+        return countUnits() == 5;
+    }
+
+    private int countUnits() {
+        return (int) Stream.of(sprite1, sprite2, sprite3, sprite4, sprite5)
+                .filter(Objects::nonNull).count();
     }
 
     @Override

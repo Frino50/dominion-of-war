@@ -47,17 +47,34 @@ public class LoadoutService {
         PlayerLoadout loadout = getOrCreateLoadoutEntity(gameRoomId, player);
 
         if (loadout.isLocked()) throw new RuntimeException("Temps écoulé");
-        if (hasSprite(loadout, spriteName)) throw new RuntimeException("Unité déjà sélectionnée");
+
+        if (hasSprite(loadout, spriteName)) {
+            removeSprite(loadout, spriteName);
+            loadoutRepository.save(loadout);
+            notifyLoadoutUpdate(loadout.getGameRoom().getId(), player, loadout);
+            return null;
+        }
 
         Sprite sprite = spriteRepository.findByName(spriteName)
                 .orElseThrow(() -> new RuntimeException("Unité introuvable: " + spriteName));
 
         fillFirstEmptySlot(loadout, sprite);
-
         loadoutRepository.save(loadout);
         notifyLoadoutUpdate(loadout.getGameRoom().getId(), player, loadout);
 
         return spriteRepository.findSpriteInfosByName(spriteName, AnimationType.IDLE);
+    }
+
+    private void removeSprite(PlayerLoadout loadout, String spriteName) {
+        if (loadout.getSprite1() != null && loadout.getSprite1().getName().equals(spriteName)) loadout.setSprite1(null);
+        else if (loadout.getSprite2() != null && loadout.getSprite2().getName().equals(spriteName))
+            loadout.setSprite2(null);
+        else if (loadout.getSprite3() != null && loadout.getSprite3().getName().equals(spriteName))
+            loadout.setSprite3(null);
+        else if (loadout.getSprite4() != null && loadout.getSprite4().getName().equals(spriteName))
+            loadout.setSprite4(null);
+        else if (loadout.getSprite5() != null && loadout.getSprite5().getName().equals(spriteName))
+            loadout.setSprite5(null);
     }
 
     @Transactional

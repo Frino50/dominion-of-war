@@ -83,7 +83,10 @@
                 class="unit-card"
                 :class="{
                     selected: isUnitSelected(sprite.name),
-                    disabled: listSpriteInfo.length >= 5 || isLocked,
+                    disabled:
+                        (listSpriteInfo.length >= 5 &&
+                            !isUnitSelected(sprite.name)) ||
+                        isLocked,
                 }"
                 @click="selectUnit(sprite)"
             >
@@ -191,8 +194,20 @@ function handlePhaseChange(data: { phase: string; duration?: number }) {
 }
 
 async function selectUnit(sprite: SpriteInfo) {
+    if (
+        isLocked.value ||
+        (listSpriteInfo.value.length >= 5 && !isUnitSelected(sprite.name))
+    )
+        return;
+
     const res = await loadoutService.selectUnit(gameRoomId.value, sprite.name);
-    listSpriteInfo.value.push(res);
+    if (res) {
+        listSpriteInfo.value.push(res);
+    } else {
+        listSpriteInfo.value = listSpriteInfo.value.filter(
+            (u) => u.name !== sprite.name
+        );
+    }
 }
 
 function isUnitSelected(spriteName: string): boolean {
