@@ -2,8 +2,8 @@ package dow.model.entities;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "player_loadout")
@@ -21,25 +21,13 @@ public class PlayerLoadout {
     @JoinColumn(name = "player_id", nullable = false)
     private Player player;
 
-    @ManyToOne
-    @JoinColumn(name = "sprite_1_id")
-    private Sprite sprite1;
-
-    @ManyToOne
-    @JoinColumn(name = "sprite_2_id")
-    private Sprite sprite2;
-
-    @ManyToOne
-    @JoinColumn(name = "sprite_3_id")
-    private Sprite sprite3;
-
-    @ManyToOne
-    @JoinColumn(name = "sprite_4_id")
-    private Sprite sprite4;
-
-    @ManyToOne
-    @JoinColumn(name = "sprite_5_id")
-    private Sprite sprite5;
+    @ManyToMany
+    @JoinTable(
+            name = "player_loadout_sprites",
+            joinColumns = @JoinColumn(name = "loadout_id"),
+            inverseJoinColumns = @JoinColumn(name = "sprite_id")
+    )
+    private List<Sprite> sprites = new ArrayList<>();
 
     @Column(name = "is_locked", nullable = false)
     private boolean locked = false;
@@ -52,6 +40,26 @@ public class PlayerLoadout {
         this.player = player;
     }
 
+    public boolean isComplete() {
+        return sprites.size() == 5;
+    }
+
+    public boolean hasSprite(String name) {
+        return sprites.stream().anyMatch(s -> s.getName().equals(name));
+    }
+
+    public void addSprite(Sprite sprite) {
+        sprites.add(sprite);
+    }
+
+    public void removeSprite(String name) {
+        sprites.removeIf(s -> s.getName().equals(name));
+    }
+
+    public int countSprites() {
+        return sprites.size();
+    }
+
     public Long getId() {
         return id;
     }
@@ -60,87 +68,27 @@ public class PlayerLoadout {
         return gameRoom;
     }
 
-    public void setGameRoom(GameRoom gameRoom) {
-        this.gameRoom = gameRoom;
+    public void setGameRoom(GameRoom g) {
+        this.gameRoom = g;
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayer(Player p) {
+        this.player = p;
     }
 
-    public Sprite getSprite1() {
-        return sprite1;
-    }
-
-    public void setSprite1(Sprite sprite1) {
-        this.sprite1 = sprite1;
-    }
-
-    public Sprite getSprite2() {
-        return sprite2;
-    }
-
-    public void setSprite2(Sprite sprite2) {
-        this.sprite2 = sprite2;
-    }
-
-    public Sprite getSprite3() {
-        return sprite3;
-    }
-
-    public void setSprite3(Sprite sprite3) {
-        this.sprite3 = sprite3;
-    }
-
-    public Sprite getSprite4() {
-        return sprite4;
-    }
-
-    public void setSprite4(Sprite sprite4) {
-        this.sprite4 = sprite4;
-    }
-
-    public Sprite getSprite5() {
-        return sprite5;
-    }
-
-    public void setSprite5(Sprite sprite5) {
-        this.sprite5 = sprite5;
+    public List<Sprite> getSprites() {
+        return sprites;
     }
 
     public boolean isLocked() {
         return locked;
     }
 
-    public void setLocked(boolean locked) {
-        this.locked = locked;
-    }
-
-    public boolean isComplete() {
-        return countUnits() == 5;
-    }
-
-    private int countUnits() {
-        return (int) Stream.of(sprite1, sprite2, sprite3, sprite4, sprite5)
-                .filter(Objects::nonNull).count();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        PlayerLoadout that = (PlayerLoadout) o;
-        return locked == that.locked &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(gameRoom, that.gameRoom) &&
-                Objects.equals(player, that.player);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, gameRoom, player, locked);
+    public void setLocked(boolean l) {
+        this.locked = l;
     }
 }

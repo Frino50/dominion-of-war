@@ -19,11 +19,7 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
     @Query("""
                 SELECT new dow.model.dto.LoadoutUpdateDto(
                     p.pseudo,
-                    (CASE WHEN pl.sprite1 IS NOT NULL THEN 1 ELSE 0 END +
-                     CASE WHEN pl.sprite2 IS NOT NULL THEN 1 ELSE 0 END +
-                     CASE WHEN pl.sprite3 IS NOT NULL THEN 1 ELSE 0 END +
-                     CASE WHEN pl.sprite4 IS NOT NULL THEN 1 ELSE 0 END +
-                     CASE WHEN pl.sprite5 IS NOT NULL THEN 1 ELSE 0 END),
+                    SIZE(pl.sprites),
                     COALESCE(pl.locked, false)
                 )
                 FROM GameParticipant gp
@@ -31,7 +27,8 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
                 LEFT JOIN PlayerLoadout pl ON pl.player = p AND pl.gameRoom = gp.gameRoom
                 WHERE gp.gameRoom.id = :gameRoomId
                 AND p.id <> :currentPlayerId
-                AND (gp.role = dow.model.enumeration.ParticipantRole.PLAYER_1 OR gp.role = dow.model.enumeration.ParticipantRole.PLAYER_2)
+                AND (gp.role = dow.model.enumeration.ParticipantRole.PLAYER_1
+                  OR gp.role = dow.model.enumeration.ParticipantRole.PLAYER_2)
             """)
     LoadoutUpdateDto getOpponent(
             @Param("gameRoomId") Long gameRoomId,

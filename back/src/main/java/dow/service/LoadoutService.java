@@ -15,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Stream;
 
 @Service
 public class LoadoutService {
@@ -48,8 +46,8 @@ public class LoadoutService {
 
         if (loadout.isLocked()) throw new RuntimeException("Temps écoulé");
 
-        if (hasSprite(loadout, spriteName)) {
-            removeSprite(loadout, spriteName);
+        if (loadout.hasSprite(spriteName)) {
+            loadout.removeSprite(spriteName);
             loadoutRepository.save(loadout);
             notifyLoadoutUpdate(loadout.getGameRoom().getId(), player, loadout);
             return null;
@@ -58,23 +56,20 @@ public class LoadoutService {
         Sprite sprite = spriteRepository.findByName(spriteName)
                 .orElseThrow(() -> new RuntimeException("Unité introuvable: " + spriteName));
 
-        fillFirstEmptySlot(loadout, sprite);
+        if (loadout.isComplete()) throw new RuntimeException("Loadout déjà plein");
+
+        loadout.addSprite(sprite);
         loadoutRepository.save(loadout);
         notifyLoadoutUpdate(loadout.getGameRoom().getId(), player, loadout);
 
         return spriteRepository.findSpriteInfosByName(spriteName, AnimationType.IDLE);
     }
 
-    private void removeSprite(PlayerLoadout loadout, String spriteName) {
-        if (loadout.getSprite1() != null && loadout.getSprite1().getName().equals(spriteName)) loadout.setSprite1(null);
-        else if (loadout.getSprite2() != null && loadout.getSprite2().getName().equals(spriteName))
-            loadout.setSprite2(null);
-        else if (loadout.getSprite3() != null && loadout.getSprite3().getName().equals(spriteName))
-            loadout.setSprite3(null);
-        else if (loadout.getSprite4() != null && loadout.getSprite4().getName().equals(spriteName))
-            loadout.setSprite4(null);
-        else if (loadout.getSprite5() != null && loadout.getSprite5().getName().equals(spriteName))
-            loadout.setSprite5(null);
+    private PlayerLoadout getOrCreateLoadoutEntity(Long gameRoomId, Player player) {
+        GameRoom room = gameRoomRepository.findById(gameRoomId)
+                .orElseThrow(() -> new RuntimeException("Room introuvable"));
+        return loadoutRepository.findByGameRoomAndPlayer(room, player)
+                .orElseGet(() -> loadoutRepository.save(new PlayerLoadout(room, player)));
     }
 
     @Transactional
@@ -113,14 +108,11 @@ public class LoadoutService {
 
             if (loadout.isLocked() && loadout.isComplete()) continue;
 
-            // Remplir les slots vides
             List<Sprite> candidates = new ArrayList<>(allSprites);
-            // On retire ceux déjà présents pour éviter les doublons
-            candidates.removeIf(s -> hasSprite(loadout, s.getName()));
+            candidates.removeIf(s -> loadout.hasSprite(s.getName()));
 
             while (!loadout.isComplete() && !candidates.isEmpty()) {
-                Sprite picked = candidates.remove(random.nextInt(candidates.size()));
-                fillFirstEmptySlot(loadout, picked);
+                loadout.addSprite(candidates.remove(random.nextInt(candidates.size())));
             }
 
             loadout.setLocked(true);
@@ -128,41 +120,14 @@ public class LoadoutService {
             notifyLoadoutUpdate(gameRoomId, participant.getPlayer(), loadout);
         }
 
-        // Comme tout le monde est forcé à locked, on démarre
         startGame(gameRoom);
     }
 
-    private PlayerLoadout getOrCreateLoadoutEntity(Long gameRoomId, Player player) {
-        GameRoom room = gameRoomRepository.findById(gameRoomId)
-                .orElseThrow(() -> new RuntimeException("Room introuvable"));
-        return loadoutRepository.findByGameRoomAndPlayer(room, player)
-                .orElseGet(() -> loadoutRepository.save(new PlayerLoadout(room, player)));
-    }
-
-    private void fillFirstEmptySlot(PlayerLoadout loadout, Sprite sprite) {
-        if (loadout.getSprite1() == null) loadout.setSprite1(sprite);
-        else if (loadout.getSprite2() == null) loadout.setSprite2(sprite);
-        else if (loadout.getSprite3() == null) loadout.setSprite3(sprite);
-        else if (loadout.getSprite4() == null) loadout.setSprite4(sprite);
-        else if (loadout.getSprite5() == null) loadout.setSprite5(sprite);
-        else throw new RuntimeException("Loadout déjà plein");
-    }
-
-    private boolean hasSprite(PlayerLoadout l, String name) {
-        return Stream.of(l.getSprite1(), l.getSprite2(), l.getSprite3(), l.getSprite4(), l.getSprite5())
-                .filter(Objects::nonNull)
-                .anyMatch(s -> s.getName().equals(name));
-    }
-
-    private int countUnits(PlayerLoadout l) {
-        return (int) Stream.of(l.getSprite1(), l.getSprite2(), l.getSprite3(), l.getSprite4(), l.getSprite5())
-                .filter(Objects::nonNull).count();
-    }
 
     private void notifyLoadoutUpdate(Long roomId, Player player, PlayerLoadout loadout) {
         messagingTemplate.convertAndSend(
                 "/topic/game/" + roomId + "/" + player.getPseudo() + "/loadout",
-                new LoadoutUpdateDto(player.getPseudo(), countUnits(loadout), loadout.isLocked())
+                new LoadoutUpdateDto(player.getPseudo(), loadout.countSprites(), loadout.isLocked())
         );
     }
 
