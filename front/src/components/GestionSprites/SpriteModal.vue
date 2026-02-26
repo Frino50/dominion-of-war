@@ -29,34 +29,50 @@
                             :key="spriteInfo.animationId"
                         >
                             <div class="card-header">
-                                <span class="badge"
-                                    >ID: {{ spriteInfo.animationId }}</span
-                                >
+                                <span class="badge">
+                                    ID: {{ spriteInfo.animationId }}
+                                </span>
                                 <span
                                     v-if="
                                         spriteInfo.hitboxX !== undefined &&
                                         spriteInfo.hitboxX !== null
                                     "
                                     class="badge badge-success"
-                                    >Hitbox définie</span
                                 >
+                                    Hitbox définie
+                                </span>
                             </div>
 
                             <div class="card-body">
                                 <div class="preview-box">
                                     <span class="label">Rendu Animation</span>
                                     <div class="animation-container">
-                                        <Animation
-                                            :key="`${spriteInfo.animationId}-${refreshTrigger}`"
-                                            :sprite-src="spriteInfo.imageUrl"
-                                            :width="spriteInfo.width"
-                                            :height="spriteInfo.height"
-                                            :frames="spriteInfo.frames"
-                                            :scale="Number(spriteInfo.scale)"
-                                            :frame-rate="
-                                                Number(spriteInfo.frameRate)
-                                            "
-                                        />
+                                        <div class="animation-wrapper">
+                                            <Animation
+                                                :key="`${spriteInfo.animationId}-${refreshTrigger}`"
+                                                :sprite-src="
+                                                    spriteInfo.imageUrl
+                                                "
+                                                :width="spriteInfo.width"
+                                                :height="spriteInfo.height"
+                                                :frames="spriteInfo.frames"
+                                                :scale="
+                                                    Number(spriteInfo.scale)
+                                                "
+                                                :frame-rate="
+                                                    Number(spriteInfo.frameRate)
+                                                "
+                                            />
+                                            <div
+                                                v-if="
+                                                    getHitboxStyle(spriteInfo)
+                                                "
+                                                class="hitbox-overlay"
+                                                :style="
+                                                    getHitboxStyle(spriteInfo)!
+                                                "
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -184,6 +200,29 @@ async function reBuildImage(animationId: number, spriteUrl: string) {
         sprite.value.width = updatedSprite.width;
     }
     refreshTrigger.value = Date.now();
+}
+
+function getHitboxStyle(spriteInfo: SpriteInfo) {
+    const { hitboxX, hitboxY, hitboxWidth, hitboxHeight, scale } = spriteInfo;
+    if (
+        hitboxX === null ||
+        hitboxX === undefined ||
+        hitboxY === null ||
+        hitboxY === undefined ||
+        hitboxWidth === null ||
+        hitboxWidth === undefined ||
+        hitboxHeight === null ||
+        hitboxHeight === undefined
+    )
+        return null;
+
+    const s = Number(scale);
+    return {
+        left: `${hitboxX * s}px`,
+        top: `${hitboxY * s}px`,
+        width: `${hitboxWidth * s}px`,
+        height: `${hitboxHeight * s}px`,
+    };
 }
 
 async function flipHorizontal(animationId: number, spriteUrl: string) {
@@ -351,6 +390,18 @@ function onHitboxSaved(hitbox: Hitbox | null) {
     justify-content: center;
     height: 100%;
     width: 100%;
+}
+
+.animation-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.hitbox-overlay {
+    position: absolute;
+    background: rgba(239, 68, 68, 0.3);
+    border: 2px solid #ff0000;
+    pointer-events: none;
 }
 
 .sheet-container {

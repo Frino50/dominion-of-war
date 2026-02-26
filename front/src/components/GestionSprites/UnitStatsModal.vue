@@ -151,6 +151,7 @@ async function saveStats() {
     await unitStatsService.createOrUpdateUnitStats(unitStats.value);
     originalStats.value = JSON.parse(JSON.stringify(unitStats.value));
     toast.show("Les stats ont été sauvegardées avec succès", "success");
+    isVisible.value = false;
 }
 </script>
 
