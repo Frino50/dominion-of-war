@@ -215,8 +215,11 @@ onMounted(async function () {
         handleLoadoutUpdate
     );
 
-    gameWebSocket.subscribeToPhase(gameRoomId.value, handlePhaseChange);
-
+    gameWebSocket.subscribeToPhase(gameRoomId.value, (data) => {
+        if (data.phase === GameStatus.IN_PROGRESS) {
+            router.push(`/game/fight`);
+        }
+    });
     await updateTimer();
 });
 
@@ -239,10 +242,6 @@ async function updateTimer() {
 
 function handleLoadoutUpdate(update: LoadoutUpdateDto) {
     opponent.value = update;
-}
-
-function handlePhaseChange(data: { phase: string; duration?: number }) {
-    if (data.phase === "FIGHT") router.push(`/game/fight/${gameRoomId.value}`);
 }
 
 async function selectUnit(sprite: SpriteInfo) {

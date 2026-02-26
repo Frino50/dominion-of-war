@@ -69,23 +69,26 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import gameService from "@/services/gameService";
 import { localStore } from "@/store/local";
 import { gameWebSocket } from "@/views/gamewebsocket.ts";
 import { GameParticipantWaitingDto } from "@/models/dtos/GameParticipantWaitingDto.ts";
 import { GameRoomDto } from "@/models/dtos/GameRoomDto.ts";
+import { GameStatus } from "@/models/enumerations/GameStatus.ts";
 
-const route = useRoute();
 const router = useRouter();
 
-const gameRoomId = Number(route.params.roomId);
+let gameRoomId = <number>0;
 const room = ref<GameRoomDto | null>(null);
 const participants = ref<GameParticipantWaitingDto[]>([]);
 const showCopiedMessage = ref(false);
 
 onMounted(async () => {
     window.addEventListener("beforeunload", handleBeforeUnload);
+    gameRoomId = await gameService.findGameRoomIdByPlayerIdAndStatus(
+        GameStatus.WAITING
+    );
     room.value = await gameService.findRoomLightDtoById(gameRoomId);
     participants.value =
         await gameService.getParticipantsWaitingDto(gameRoomId);
@@ -95,8 +98,8 @@ onMounted(async () => {
     });
 
     gameWebSocket.subscribeToPhase(gameRoomId, (data) => {
-        if (data.phase === "UNIT_SELECTION") {
-            router.push(`/game/unit-selection/${gameRoomId}`);
+        if (data.phase === GameStatus.UNIT_SELECTION) {
+            router.push(`/game/unit-selection`);
         }
     });
 });

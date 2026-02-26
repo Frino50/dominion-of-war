@@ -143,12 +143,11 @@ public class LoadoutService {
 
         String p1 = participantRepository.findPseudoByGameRoomIdAndRole(gameRoom.getId(), ParticipantRole.PLAYER_1);
         String p2 = participantRepository.findPseudoByGameRoomIdAndRole(gameRoom.getId(), ParticipantRole.PLAYER_2);
-
         gameRoom.setStatus(GameStatus.IN_PROGRESS);
         gameRoom.setStartedAt(LocalDateTime.now());
         gameRoomRepository.save(gameRoom);
         gameStateService.initGame(gameRoom, p1, p2);
-        messagingTemplate.convertAndSend("/topic/game/" + gameRoom.getId() + "/phase", "{\"phase\":\"FIGHT\"}");
+        messagingTemplate.convertAndSend("/topic/game/" + gameRoom.getId() + "/phase", "{\"phase\":\"IN_PROGRESS\"}");
     }
 
     @Transactional(readOnly = true)

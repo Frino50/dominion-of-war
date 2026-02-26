@@ -25,14 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class GameRoomService {
 
     private static final Logger log = LoggerFactory.getLogger(GameRoomService.class);
-    private static final int SELECTION_DURATION = 60;
 
     private final GameRoomRepository gameRoomRepository;
     private final GameParticipantRepository participantRepository;
@@ -103,8 +100,7 @@ public class GameRoomService {
             room = gameRoomRepository.save(room);
             participantRepository.save(new GameParticipant(room, utilsService.getPlayer(), ParticipantRole.PLAYER_2));
             broadcastRoomsUpdate();
-            messagingTemplate.convertAndSend("/topic/game/" + room.getId() + "/phase",
-                    Optional.of(Map.of("phase", "UNIT_SELECTION", "duration", SELECTION_DURATION)));
+            messagingTemplate.convertAndSend("/topic/game/" + room.getId() + "/phase", "{\"phase\":\"UNIT_SELECTION\"}");
         }
     }
 

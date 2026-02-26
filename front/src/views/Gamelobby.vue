@@ -174,7 +174,7 @@ async function createRoom() {
         name: newRoomName.value,
         password: newRoomPassword.value || undefined,
     });
-    await router.push(`/game/waiting-room/${roomId}`);
+    await router.push(`/game/waiting-room`);
 }
 
 function selectRoom(room: GameRoomInfo) {
@@ -193,7 +193,7 @@ async function joinRoom() {
     showJoinModal.value = false;
     joinPassword.value = "";
 
-    await router.push(`/game/unit-selection/${selectedRoom.value.id}`);
+    await router.push(`/game/unit-selection`);
 }
 
 function translateStatus(status: string): string {
