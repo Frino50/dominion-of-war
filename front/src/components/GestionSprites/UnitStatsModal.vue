@@ -112,6 +112,9 @@
 import { ref, computed } from "vue";
 import unitStatsService from "@/services/unitStatsService";
 import { UnitStatsDto } from "@/models/dtos/UnitStatsDto.ts";
+import { useToast } from "@/services/toast.ts";
+
+const toast = useToast();
 
 const props = defineProps<{
     spriteName: string;
@@ -147,6 +150,7 @@ async function saveStats() {
 
     await unitStatsService.createOrUpdateUnitStats(unitStats.value);
     originalStats.value = JSON.parse(JSON.stringify(unitStats.value));
+    toast.show("Les stats ont été sauvegardées avec succès", "success");
 }
 </script>
 

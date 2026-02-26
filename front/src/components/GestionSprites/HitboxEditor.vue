@@ -122,6 +122,9 @@ import { ref, onMounted, computed, watch, onUnmounted } from "vue";
 import type SpriteInfo from "@/models/SpriteInfos.ts";
 import type { Hitbox } from "@/models/SpriteInfos.ts";
 import spriteService from "@/services/spriteService.ts";
+import { useToast } from "@/services/toast.ts";
+
+const toast = useToast();
 
 const props = defineProps<{
     sprite: SpriteInfo;
@@ -455,6 +458,7 @@ async function saveHitbox() {
     await spriteService.saveHitbox(props.sprite.animationId, hitbox.value);
     emit("saved", hitbox.value);
     emit("close");
+    toast.show("La hitbox a été modifiée avec succès", "success");
 }
 
 async function deleteHitbox() {

@@ -21,6 +21,9 @@
 
 <script setup lang="ts">
 import spriteService from "@/services/spriteService.ts";
+import { useToast } from "@/services/toast.ts";
+
+const toast = useToast();
 
 const emit = defineEmits(["add-to-list"]);
 
@@ -37,6 +40,7 @@ async function onFileSelected(event: Event) {
         const newSprite = await spriteService.uploadSprite(formData);
         emit("add-to-list", newSprite.data);
     }
+    toast.show("Le sprite a été ajouté avec succès", "success");
 }
 </script>
 <style scoped>
