@@ -5,7 +5,7 @@ import java.util.List;
 public class PlayerLoadoutDto {
     private Long id;
     private Long playerId;
-    private List<SpriteInfos> selectedUnits; // Les 5 animations sélectionnées
+    private List<SpriteInfos> selectedUnits;
     private boolean isLocked;
 
     public PlayerLoadoutDto() {

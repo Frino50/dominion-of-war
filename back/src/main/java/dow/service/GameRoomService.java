@@ -93,7 +93,6 @@ public class GameRoomService {
 
         ParticipantRole role = determineRole(room);
 
-        // Notifier les participants actuels du salon
         messagingTemplate.convertAndSend("/topic/game/" + room.getId() + "/participants", getParticipantsWaitingDto(room.getId()));
 
         if (role == ParticipantRole.PLAYER_2) {
@@ -114,31 +113,25 @@ public class GameRoomService {
         GameRoom room = gameRoomRepository.findById(gameRoomId)
                 .orElseThrow(() -> new GameNotFoundException("Partie introuvable"));
 
-        // 1. Supprimer le participant et son loadout
         participantRepository.deleteByGameRoomAndPlayer(room, player);
         loadoutRepository.findByGameRoomAndPlayer(room, player).ifPresent(loadoutRepository::delete);
 
-        // On force la synchronisation avec la BDD pour que le count suivant soit juste
         participantRepository.flush();
 
         List<GameParticipant> remaining = participantRepository.findByGameRoom(room);
 
         if (remaining.isEmpty()) {
-            // 2. Suppression RÉELLE de la room si vide
             gameRoomRepository.delete(room);
             log.info("Room {} supprimée car vide", gameRoomId);
         } else {
-            // 3. Notifier les survivants
             messagingTemplate.convertAndSend("/topic/game/" + gameRoomId + "/participants", getParticipantsWaitingDto(gameRoomId));
 
-            // Si un joueur part pendant la sélection, on repasse en WAITING (manque un joueur)
             if (room.getStatus() == GameStatus.UNIT_SELECTION && remaining.size() < 2) {
                 room.setStatus(GameStatus.WAITING);
                 gameRoomRepository.save(room);
             }
         }
 
-        // 4. Mettre à jour le lobby global
         broadcastRoomsUpdate();
     }
 
@@ -163,7 +156,8 @@ public class GameRoomService {
         return gameParticipantRepository.findAllParticipantsByRoomId(gameRoomId);
     }
 
-    public Long findGameRoomIdByPlayerIdAndStatusUnitSelection() {
-        return gameParticipantRepository.findGameRoomIdByPlayerIdAndStatusUnitSelection(utilsService.getPlayer().getId());
+    public Long findGameRoomIdByPlayerIdAndStatus(String gameStatus) {
+        GameStatus status = GameStatus.valueOf(gameStatus);
+        return gameParticipantRepository.findGameRoomIdByPlayerIdAndStatus(utilsService.getPlayer().getId(), status);
     }
 }

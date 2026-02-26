@@ -5,6 +5,8 @@ import dow.model.dto.SpriteInfos;
 import dow.model.entities.*;
 import dow.model.enumeration.AnimationType;
 import dow.model.enumeration.GameStatus;
+import dow.model.enumeration.ParticipantRole;
+import dow.repository.GameParticipantRepository;
 import dow.repository.GameRoomRepository;
 import dow.repository.PlayerLoadoutRepository;
 import dow.repository.SpriteRepository;
@@ -22,17 +24,23 @@ public class LoadoutService {
 
     private final PlayerLoadoutRepository loadoutRepository;
     private final GameRoomRepository gameRoomRepository;
+    private final GameParticipantRepository participantRepository;
     private final SpriteRepository spriteRepository;
+    private final GameStateService gameStateService;
     private final SimpMessagingTemplate messagingTemplate;
 
     public LoadoutService(PlayerLoadoutRepository loadoutRepository,
                           GameRoomRepository gameRoomRepository,
                           SpriteRepository spriteRepository,
-                          SimpMessagingTemplate messagingTemplate) {
+                          GameStateService gameStateService,
+                          SimpMessagingTemplate messagingTemplate,
+                          GameParticipantRepository participantRepository) {
         this.loadoutRepository = loadoutRepository;
         this.gameRoomRepository = gameRoomRepository;
         this.spriteRepository = spriteRepository;
+        this.gameStateService = gameStateService;
         this.messagingTemplate = messagingTemplate;
+        this.participantRepository = participantRepository;
     }
 
     @Transactional(readOnly = true)
@@ -133,10 +141,18 @@ public class LoadoutService {
     private void startGame(GameRoom gameRoom) {
         if (gameRoom.getStatus() == GameStatus.IN_PROGRESS) return;
 
+        String p1 = participantRepository.findPseudoByGameRoomIdAndRole(gameRoom.getId(), ParticipantRole.PLAYER_1);
+        String p2 = participantRepository.findPseudoByGameRoomIdAndRole(gameRoom.getId(), ParticipantRole.PLAYER_2);
+
         gameRoom.setStatus(GameStatus.IN_PROGRESS);
         gameRoom.setStartedAt(LocalDateTime.now());
         gameRoomRepository.save(gameRoom);
-
+        gameStateService.initGame(gameRoom, p1, p2);
         messagingTemplate.convertAndSend("/topic/game/" + gameRoom.getId() + "/phase", "{\"phase\":\"FIGHT\"}");
+    }
+
+    @Transactional(readOnly = true)
+    public List<SpriteInfos> getMyLoadout(Long gameRoomId, Player player) {
+        return loadoutRepository.findMyLoadoutSpriteInfos(gameRoomId, player.getId());
     }
 }

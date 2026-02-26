@@ -68,9 +68,9 @@ public class GameController {
         return ResponseEntity.ok(remainingTime);
     }
 
-    @GetMapping("/room-id")
-    public ResponseEntity<Long> findGameRoomIdByPlayerIdAndStatusUnitSelection() {
-        long roomId = gameRoomService.findGameRoomIdByPlayerIdAndStatusUnitSelection();
+    @GetMapping("/room-id/{gameStatus}")
+    public ResponseEntity<Long> findGameRoomIdByPlayerIdAndStatus(@PathVariable String gameStatus) {
+        long roomId = gameRoomService.findGameRoomIdByPlayerIdAndStatus(gameStatus);
         return ResponseEntity.ok(roomId);
     }
 }

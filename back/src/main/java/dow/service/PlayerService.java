@@ -21,7 +21,7 @@ public class PlayerService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     @NonNull
-    public CustomUserDetails loadUserByUsername(String pseudo) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(@NonNull String pseudo) throws UsernameNotFoundException {
         Player player = playerRepository.findWithRolesByPseudo(pseudo)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec le pseudo: " + pseudo));
         return new CustomUserDetails(player);

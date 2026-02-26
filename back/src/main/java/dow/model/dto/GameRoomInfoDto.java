@@ -2,9 +2,6 @@ package dow.model.dto;
 
 import dow.model.enumeration.GameStatus;
 
-/**
- * DTO pour les informations d'une partie (liste des rooms)
- */
 public class GameRoomInfoDto {
     private Long id;
     private String name;
@@ -23,7 +20,6 @@ public class GameRoomInfoDto {
         this.spectatorCount = spectatorCount;
     }
 
-    // Getters & Setters
     public Long getId() {
         return id;
     }

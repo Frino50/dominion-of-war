@@ -76,8 +76,12 @@ export default {
         return response.data;
     },
 
-    async findGameRoomIdByPlayerIdAndStatusUnitSelection(): Promise<number> {
-        const response = await apiService.get<number>(`/game/room-id`);
+    async findGameRoomIdByPlayerIdAndStatus(
+        gameStatus: string
+    ): Promise<number> {
+        const response = await apiService.get<number>(
+            `/game/room-id/${gameStatus}`
+        );
         return response.data;
     },
 };

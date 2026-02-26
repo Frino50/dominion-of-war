@@ -1,6 +1,7 @@
 package dow.repository;
 
 import dow.model.dto.LoadoutUpdateDto;
+import dow.model.dto.SpriteInfos;
 import dow.model.entities.GameRoom;
 import dow.model.entities.Player;
 import dow.model.entities.PlayerLoadout;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -42,4 +44,31 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
                 AND pl.locked = true
             """)
     boolean areAllPlayersLocked(@Param("gameRoomId") Long gameRoomId);
+
+    @Query("""
+                SELECT new dow.model.dto.SpriteInfos(
+                    a.id,
+                    s.name,
+                    CONCAT(s.name, '/', a.type, '/', a.indice, '.png'),
+                    a.width,
+                    a.height,
+                    a.frames,
+                    s.scale,
+                    a.frameRate,
+                    a.hitboxX,
+                    a.hitboxY,
+                    a.hitboxWidth,
+                    a.hitboxHeight
+                )
+                FROM PlayerLoadout pl
+                JOIN pl.sprites s
+                JOIN s.animations a
+                WHERE pl.gameRoom.id = :gameRoomId
+                AND pl.player.id = :playerId
+                AND a.type = dow.model.enumeration.AnimationType.IDLE
+            """)
+    List<SpriteInfos> findMyLoadoutSpriteInfos(
+            @Param("gameRoomId") Long gameRoomId,
+            @Param("playerId") Long playerId
+    );
 }

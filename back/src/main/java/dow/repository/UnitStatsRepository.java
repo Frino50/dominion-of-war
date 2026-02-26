@@ -13,9 +13,6 @@ import java.util.Optional;
 @Repository
 public interface UnitStatsRepository extends JpaRepository<UnitStats, Long> {
 
-    /**
-     * Recherche les statistiques d'unité par sprite
-     */
     Optional<UnitStats> findBySprite(Sprite sprite);
 
     @Query("SELECT new dow.model.dto.UnitStatsDto(" +

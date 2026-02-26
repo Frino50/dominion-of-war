@@ -29,4 +29,11 @@ export default {
     async lockLoadout(gameRoomId: number): Promise<void> {
         await apiService.post(`/loadout/${gameRoomId}/lock`);
     },
+
+    async getMyLoadout(gameRoomId: number): Promise<SpriteInfo[]> {
+        const response = await apiService.get<SpriteInfo[]>(
+            `/loadout/${gameRoomId}/my-loadout`
+        );
+        return response.data;
+    },
 };

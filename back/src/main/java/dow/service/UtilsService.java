@@ -29,7 +29,6 @@ public class UtilsService {
         return authentication.getName();
     }
 
-
     public Player getPlayer() {
         String pseudo = getPseudo();
         return playerRepository.findByPseudo(pseudo)

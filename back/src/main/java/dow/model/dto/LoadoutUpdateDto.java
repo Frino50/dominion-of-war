@@ -2,7 +2,7 @@ package dow.model.dto;
 
 public class LoadoutUpdateDto {
     private String playerPseudo;
-    private int unitsSelected; // Nombre d'unités sélectionnées (1-5)
+    private int unitsSelected;
     private boolean isLocked;
 
     public LoadoutUpdateDto() {

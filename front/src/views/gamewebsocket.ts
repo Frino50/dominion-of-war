@@ -3,7 +3,13 @@ import SockJS from "sockjs-client";
 import { GameRoomInfo } from "@/models/dtos/GameRoomInfo.ts";
 import { GameParticipantWaitingDto } from "@/models/dtos/GameParticipantWaitingDto.ts";
 import { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto.ts";
-
+interface UnitInstance {
+    id: string;
+    spriteName: string;
+    ownerPseudo: string;
+    x: number;
+    speed: number;
+}
 /**
  * Service WebSocket pour le jeu en temps réel
  */
@@ -128,6 +134,15 @@ class GameWebSocketService {
 
         const subscription = this.client.subscribe(destination, callback);
         this.subscriptions.set(destination, subscription);
+    }
+
+    subscribeToGameState(
+        gameRoomId: number,
+        callback: (units: UnitInstance[]) => void
+    ): void {
+        this.subscribe(`/topic/game/${gameRoomId}/state`, (message) => {
+            callback(JSON.parse(message.body));
+        });
     }
 
     /**

@@ -65,9 +65,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:" + frontPort,
-                "http://202.15.200.35:" + frontPort,
-                "http://202.15.200.35:" + backPort,
-                "http://202.15.200.35"
+                "http://202.15.200.35:" + frontPort
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));

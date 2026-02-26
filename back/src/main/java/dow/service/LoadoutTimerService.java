@@ -24,7 +24,7 @@ public class LoadoutTimerService {
         gameRoomTimers.put(gameRoomId, LocalDateTime.now());
     }
 
-    @Scheduled(fixedRate = 1000) // Vérifie toutes les secondes
+    @Scheduled(fixedRate = 1000)
     public void checkTimers() {
         LocalDateTime now = LocalDateTime.now();
 
