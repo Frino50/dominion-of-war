@@ -1,5 +1,5 @@
 <template>
-    <div class="hitbox-editor-overlay">
+    <div class="modal-overlay" @click.self="$emit('close')">
         <div class="hitbox-editor">
             <header class="editor-header">
                 <div class="header-title">
@@ -125,6 +125,7 @@ import spriteService from "@/services/spriteService.ts";
 
 const props = defineProps<{
     sprite: SpriteInfo;
+    showHitboxEditor: boolean;
 }>();
 
 const emit = defineEmits(["close", "saved"]);
@@ -457,7 +458,6 @@ async function saveHitbox() {
 }
 
 async function deleteHitbox() {
-    if (!confirm("Supprimer la hitbox ?")) return;
     await spriteService.deleteHitbox(props.sprite.animationId);
     emit("saved", null);
     emit("close");
@@ -475,24 +475,18 @@ function resetHitbox() {
 </script>
 
 <style scoped>
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-.hitbox-editor-overlay {
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(4px);
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 1000;
+    justify-content: center;
+    z-index: 999;
 }
 
 .hitbox-editor {

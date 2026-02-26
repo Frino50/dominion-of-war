@@ -133,17 +133,13 @@
         </transition>
 
         <transition name="fade">
-            <div
+            <HitboxEditor
                 v-if="showHitboxEditor"
-                class="modal-overlay"
-                @click.self="closeHitboxEditor"
-            >
-                <HitboxEditor
-                    :sprite="currentSpriteForHitbox!"
-                    @close="closeHitboxEditor"
-                    @saved="onHitboxSaved"
-                />
-            </div>
+                :show-hitbox-editor="showHitboxEditor"
+                :sprite="currentSpriteForHitbox!"
+                @close="closeHitboxEditor"
+                @saved="onHitboxSaved"
+            />
         </transition>
     </teleport>
 </template>

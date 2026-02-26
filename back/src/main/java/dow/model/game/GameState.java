@@ -1,8 +1,8 @@
 package dow.model.game;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameState {
 
@@ -10,7 +10,7 @@ public class GameState {
     private final String player1Pseudo;
     private final String player2Pseudo;
 
-    private final List<UnitInstance> units = new CopyOnWriteArrayList<>();
+    private final List<UnitInstance> units = new ArrayList<>();
 
     public GameState(Long gameRoomId, String player1Pseudo, String player2Pseudo) {
         this.gameRoomId = gameRoomId;
@@ -45,7 +45,7 @@ public class GameState {
         return player2Pseudo;
     }
 
-    public List<UnitInstance> getUnits() {
-        return units;
+    public synchronized List<UnitInstance> getUnits() {
+        return new ArrayList<>(units);
     }
 }
