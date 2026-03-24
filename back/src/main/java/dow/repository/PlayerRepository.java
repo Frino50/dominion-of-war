@@ -14,10 +14,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     Optional<Player> findByPseudo(String pseudo);
 
     @EntityGraph(attributePaths = "roles")
-    @Query("SELECT p FROM Player p WHERE p.pseudo = :pseudo")
-    Optional<Player> findWithRolesByPseudo(String pseudo);
-
-    @EntityGraph(attributePaths = "roles")
     @Query("SELECT p FROM Player p ORDER BY p.pseudo")
     List<Player> findAllWithRoles();
 
