@@ -72,7 +72,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import gameService from "@/services/gameService";
 import { localStore } from "@/store/local";
-import { gameWebSocket } from "@/views/gamewebsocket.ts";
+import { gameWebSocket } from "@/sockets/gamewebsocket.ts";
 import { GameParticipantWaitingDto } from "@/models/dtos/GameParticipantWaitingDto.ts";
 import { GameRoomDto } from "@/models/dtos/GameRoomDto.ts";
 import { GameStatus } from "@/models/enumerations/GameStatus.ts";

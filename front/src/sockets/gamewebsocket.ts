@@ -22,9 +22,7 @@ class GameWebSocketService {
      */
     connect(token: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const socket = new SockJS(
-                "http://202.15.200.35:" + import.meta.env.VITE_BACK_URL + "/ws"
-            );
+            const socket = new SockJS(import.meta.env.VITE_SOCKET_URL);
 
             this.client = new Client({
                 webSocketFactory: () => socket,

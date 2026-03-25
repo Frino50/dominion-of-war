@@ -144,7 +144,7 @@ import { useRouter } from "vue-router";
 import gameService from "@/services/gameService";
 import type { GameRoomInfo } from "@/models/dtos/GameRoomInfo";
 import { localStore } from "@/store/local";
-import { gameWebSocket } from "@/views/gamewebsocket.ts";
+import { gameWebSocket } from "@/sockets/gamewebsocket.ts";
 
 const router = useRouter();
 

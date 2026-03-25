@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import Animation from "@/components/GestionSprites/Animation.vue";
-import { gameWebSocket } from "@/views/gamewebsocket.ts";
+import { gameWebSocket } from "@/sockets/gamewebsocket.ts";
 import fightService from "@/services/fightService.ts";
 import loadoutService from "@/services/loadoutService.ts";
 import spriteService from "@/services/spriteService.ts";

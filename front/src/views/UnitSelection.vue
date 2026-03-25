@@ -183,7 +183,7 @@ import loadoutService from "@/services/loadoutService.ts";
 import gameService from "@/services/gameService.ts";
 import SpriteInfo from "@/models/SpriteInfos.ts";
 import Animation from "@/components/GestionSprites/Animation.vue";
-import { gameWebSocket } from "@/views/gamewebsocket.ts";
+import { gameWebSocket } from "@/sockets/gamewebsocket.ts";
 import type { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto.ts";
 import { GameStatus } from "@/models/enumerations/GameStatus.ts";
 
