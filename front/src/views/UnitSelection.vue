@@ -198,9 +198,7 @@ const remainingTime = ref(60);
 let timerInterval: number | null = null;
 
 onMounted(async function () {
-    gameRoomId.value = await gameService.findGameRoomIdByPlayerIdAndStatus(
-        GameStatus.UNIT_SELECTION
-    );
+    gameRoomId.value = await gameService.findGameRoomActive();
 
     const response = await spriteService.getAllSpritesInfos();
     listSpritesInfos.value = response.data;

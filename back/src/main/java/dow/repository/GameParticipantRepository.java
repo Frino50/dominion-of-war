@@ -31,8 +31,8 @@ public interface GameParticipantRepository extends JpaRepository<GameParticipant
     @Query("SELECT p.gameRoom.id " +
             "FROM GameParticipant p " +
             "WHERE p.player.id = :playerId " +
-            "AND p.gameRoom.status = :gameStatus ")
-    Long findGameRoomIdByPlayerIdAndStatus(Long playerId, GameStatus gameStatus);
+            "AND p.gameRoom.status != :gameStatus ")
+    Long findGameRoomActive(Long playerId, GameStatus gameStatus);
 
     @Query("SELECT gp.player.pseudo FROM GameParticipant gp WHERE gp.gameRoom.id = :gameRoomId AND gp.role = :role")
     String findPseudoByGameRoomIdAndRole(@Param("gameRoomId") Long gameRoomId, @Param("role") ParticipantRole role);

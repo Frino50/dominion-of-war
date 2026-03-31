@@ -76,7 +76,6 @@ import spriteService from "@/services/spriteService.ts";
 import SpriteInfo from "@/models/SpriteInfos.ts";
 import { localStore } from "@/store/local.ts";
 import gameService from "@/services/gameService.ts";
-import { GameStatus } from "@/models/enumerations/GameStatus.ts";
 
 interface UnitInstance {
     id: string;
@@ -95,9 +94,7 @@ const allSprites = ref<SpriteInfo[]>([]);
 const activeUnits = ref<UnitInstance[]>([]);
 
 onMounted(async () => {
-    gameRoomId.value = await gameService.findGameRoomIdByPlayerIdAndStatus(
-        GameStatus.IN_PROGRESS
-    );
+    gameRoomId.value = await gameService.findGameRoomActive();
 
     const res = await spriteService.getAllSpritesInfos();
     allSprites.value = res.data;

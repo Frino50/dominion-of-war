@@ -152,8 +152,7 @@ public class GameRoomService {
         return gameParticipantRepository.findAllParticipantsByRoomId(gameRoomId);
     }
 
-    public Long findGameRoomIdByPlayerIdAndStatus(String gameStatus) {
-        GameStatus status = GameStatus.valueOf(gameStatus);
-        return gameParticipantRepository.findGameRoomIdByPlayerIdAndStatus(utilsService.getPlayer().getId(), status);
+    public Long findGameRoomActive() {
+        return gameParticipantRepository.findGameRoomActive(utilsService.getPlayer().getId(), GameStatus.FINISHED);
     }
 }

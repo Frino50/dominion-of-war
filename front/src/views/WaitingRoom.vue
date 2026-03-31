@@ -86,9 +86,7 @@ const showCopiedMessage = ref(false);
 
 onMounted(async () => {
     window.addEventListener("beforeunload", handleBeforeUnload);
-    gameRoomId = await gameService.findGameRoomIdByPlayerIdAndStatus(
-        GameStatus.WAITING
-    );
+    gameRoomId = await gameService.findGameRoomActive();
     room.value = await gameService.findRoomLightDtoById(gameRoomId);
     participants.value =
         await gameService.getParticipantsWaitingDto(gameRoomId);
