@@ -52,7 +52,7 @@ export default {
     /**
      * Récupérer les infos légères d'une room
      */
-    async findRoomProjectedById(gameRoomId: number): Promise<GameRoomDto> {
+    async findRoomLightDtoById(gameRoomId: number): Promise<GameRoomDto> {
         const response = await apiService.get<GameRoomDto>(
             `/game/room/${gameRoomId}`
         );
