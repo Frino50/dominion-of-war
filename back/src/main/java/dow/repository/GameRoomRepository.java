@@ -1,9 +1,9 @@
 package dow.repository;
 
 import dow.model.dto.GameRoomInfoDto;
-import dow.model.dto.GameRoomLightDto;
 import dow.model.entities.GameRoom;
 import dow.model.enumeration.GameStatus;
+import dow.model.projection.GameRoomLightProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,7 +32,5 @@ public interface GameRoomRepository extends JpaRepository<GameRoom, Long> {
             """)
     List<GameRoomInfoDto> listAvailableRooms(@Param("statuses") List<GameStatus> statuses);
 
-    @Query("SELECT new dow.model.dto.GameRoomLightDto(g.name, g.password) " +
-            "FROM GameRoom g WHERE g.id = :id")
-    GameRoomLightDto findRoomLightDtoById(Long id);
+    GameRoomLightProjection findRoomProjectedById(Long id);
 }

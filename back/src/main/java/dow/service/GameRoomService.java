@@ -6,13 +6,13 @@ import dow.exception.GameBadPasswordException;
 import dow.exception.GameNotFoundException;
 import dow.model.dto.GameParticipantWaitingDto;
 import dow.model.dto.GameRoomInfoDto;
-import dow.model.dto.GameRoomLightDto;
 import dow.model.entities.GameParticipant;
 import dow.model.entities.GameRoom;
 import dow.model.entities.Player;
 import dow.model.entities.PlayerLoadout;
 import dow.model.enumeration.GameStatus;
 import dow.model.enumeration.ParticipantRole;
+import dow.model.projection.GameRoomLightProjection;
 import dow.repository.GameParticipantRepository;
 import dow.repository.GameRoomRepository;
 import dow.repository.PlayerLoadoutRepository;
@@ -62,7 +62,7 @@ public class GameRoomService {
     }
 
     @Transactional
-    public Long createGameRoom(GameRoomLightDto dto) {
+    public Long createGameRoom(GameRoomLightProjection dto) {
         if (gameRoomRepository.findByName(dto.getName()).isPresent()) {
             throw new AlreadyExist("Nom de partie déjà utilisée");
         }
@@ -76,7 +76,7 @@ public class GameRoomService {
     }
 
     @Transactional
-    public void joinGameRoom(GameRoomLightDto dto, Player player) {
+    public void joinGameRoom(GameRoomLightProjection dto, Player player) {
         GameRoom room = gameRoomRepository.findByName(dto.getName())
                 .orElseThrow(() -> new GameNotFoundException("Partie introuvable"));
 
@@ -144,8 +144,8 @@ public class GameRoomService {
         return ParticipantRole.SPECTATOR;
     }
 
-    public GameRoomLightDto findRoomLightDtoById(Long gameRoomId) {
-        return gameRoomRepository.findRoomLightDtoById(gameRoomId);
+    public GameRoomLightProjection findRoomProjectedById(Long gameRoomId) {
+        return gameRoomRepository.findRoomProjectedById(gameRoomId);
     }
 
     public List<GameParticipantWaitingDto> getParticipantsWaitingDto(Long gameRoomId) {
