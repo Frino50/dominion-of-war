@@ -2,7 +2,7 @@ package dow.controller;
 
 import dow.model.dto.GameParticipantWaitingDto;
 import dow.model.dto.GameRoomInfoDto;
-import dow.model.projection.GameRoomLightProjection;
+import dow.model.dto.GameRoomLightDto;
 import dow.service.GameRoomService;
 import dow.service.LoadoutTimerService;
 import dow.service.UtilsService;
@@ -31,12 +31,12 @@ public class GameController {
     }
 
     @PostMapping("/create")
-    public Long createRoom(@RequestBody GameRoomLightProjection dto) {
+    public Long createRoom(@RequestBody GameRoomLightDto dto) {
         return gameRoomService.createGameRoom(dto);
     }
 
     @PostMapping("/join")
-    public void joinRoom(@RequestBody GameRoomLightProjection dto) {
+    public void joinRoom(@RequestBody GameRoomLightDto dto) {
         gameRoomService.joinGameRoom(dto, utilsService.getPlayer());
     }
 
@@ -52,8 +52,8 @@ public class GameController {
     }
 
     @GetMapping("/room/{gameRoomId}")
-    public GameRoomLightProjection findRoomProjectedById(@PathVariable Long gameRoomId) {
-        return gameRoomService.findRoomProjectedById(gameRoomId);
+    public GameRoomLightDto findRoomInfoLightDtoById(@PathVariable Long gameRoomId) {
+        return gameRoomService.findRoomLightDtoById(gameRoomId);
     }
 
     @PostMapping("/start-selection/{gameRoomId}")
