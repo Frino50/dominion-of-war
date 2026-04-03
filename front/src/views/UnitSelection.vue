@@ -213,10 +213,8 @@ onMounted(async function () {
         handleLoadoutUpdate
     );
 
-    gameWebSocket.subscribeToPhase(gameRoomId.value, (data) => {
-        if (data.phase === GameStatus.IN_PROGRESS) {
-            router.push(`/game/fight`);
-        }
+    gameWebSocket.subscribeToPhase(gameRoomId.value, () => {
+        router.push(`/game/fight`);
     });
     await updateTimer();
 });

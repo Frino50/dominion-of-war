@@ -75,7 +75,6 @@ import { localStore } from "@/store/local";
 import { gameWebSocket } from "@/sockets/gamewebsocket.ts";
 import { GameParticipantWaitingDto } from "@/models/dtos/GameParticipantWaitingDto.ts";
 import { GameRoomDto } from "@/models/dtos/GameRoomDto.ts";
-import { GameStatus } from "@/models/enumerations/GameStatus.ts";
 
 const router = useRouter();
 
@@ -95,10 +94,8 @@ onMounted(async () => {
         participants.value = updatedParticipants;
     });
 
-    gameWebSocket.subscribeToPhase(gameRoomId, (data) => {
-        if (data.phase === GameStatus.UNIT_SELECTION) {
-            router.push(`/game/unit-selection`);
-        }
+    gameWebSocket.subscribeToPhase(gameRoomId, () => {
+        router.push(`/game/unit-selection`);
     });
 });
 

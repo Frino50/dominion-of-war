@@ -78,13 +78,9 @@ class GameWebSocketService {
     /**
      * S'abonner aux changements de phase
      */
-    subscribeToPhase(
-        gameRoomId: number,
-        callback: (data: { phase: string }) => void
-    ): void {
-        this.subscribe(`/topic/game/${gameRoomId}/phase`, (message) => {
-            const data = JSON.parse(message.body);
-            callback(data);
+    subscribeToPhase(gameRoomId: number, callback: () => void): void {
+        this.subscribe(`/topic/game/${gameRoomId}/phase`, () => {
+            callback();
         });
     }
 

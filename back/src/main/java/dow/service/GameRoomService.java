@@ -100,7 +100,7 @@ public class GameRoomService {
             room = gameRoomRepository.save(room);
             participantRepository.save(new GameParticipant(room, utilsService.getPlayer(), ParticipantRole.PLAYER_2));
             broadcastRoomsUpdate();
-            messagingTemplate.convertAndSend("/topic/game/" + room.getId() + "/phase", "{\"phase\":\"UNIT_SELECTION\"}");
+            messagingTemplate.convertAndSend("/topic/game/" + room.getId() + "/phase", "{}");
         }
     }
 
