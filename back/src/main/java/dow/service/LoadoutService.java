@@ -28,28 +28,31 @@ public class LoadoutService {
     private final SpriteRepository spriteRepository;
     private final GameStateService gameStateService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UtilsService utilsService;
 
     public LoadoutService(PlayerLoadoutRepository loadoutRepository,
                           GameRoomRepository gameRoomRepository,
                           SpriteRepository spriteRepository,
                           GameStateService gameStateService,
                           SimpMessagingTemplate messagingTemplate,
-                          GameParticipantRepository participantRepository) {
+                          GameParticipantRepository participantRepository, UtilsService utilsService) {
         this.loadoutRepository = loadoutRepository;
         this.gameRoomRepository = gameRoomRepository;
         this.spriteRepository = spriteRepository;
         this.gameStateService = gameStateService;
         this.messagingTemplate = messagingTemplate;
         this.participantRepository = participantRepository;
+        this.utilsService = utilsService;
     }
 
     @Transactional(readOnly = true)
-    public LoadoutUpdateDto getOpponent(Long gameRoomId, Player currentPlayer) {
-        return loadoutRepository.getOpponent(gameRoomId, currentPlayer.getId());
+    public LoadoutUpdateDto getOpponent(Long gameRoomId) {
+        return loadoutRepository.getOpponent(gameRoomId, utilsService.getId());
     }
 
     @Transactional
-    public SpriteInfos selectUnit(Long gameRoomId, Player player, String spriteName) {
+    public SpriteInfos selectUnit(Long gameRoomId, String spriteName) {
+        Player player = utilsService.getPlayer();
         PlayerLoadout loadout = getOrCreateLoadoutEntity(gameRoomId, player);
 
         if (loadout.isLocked()) throw new RuntimeException("Temps écoulé");
@@ -81,7 +84,8 @@ public class LoadoutService {
     }
 
     @Transactional
-    public void lockLoadout(Long gameRoomId, Player player) {
+    public void lockLoadout(Long gameRoomId) {
+        Player player = utilsService.getPlayer();
         PlayerLoadout loadout = loadoutRepository.findByGameRoomAndPlayer(
                 gameRoomRepository.getReferenceById(gameRoomId), player
         ).orElseThrow(() -> new RuntimeException("Loadout introuvable"));
@@ -151,7 +155,7 @@ public class LoadoutService {
     }
 
     @Transactional(readOnly = true)
-    public List<SpriteInfos> getMyLoadout(Long gameRoomId, Player player) {
-        return loadoutRepository.findMyLoadoutSpriteInfos(gameRoomId, player.getId());
+    public List<SpriteInfos> getMyLoadout(Long gameRoomId) {
+        return loadoutRepository.findMyLoadoutSpriteInfos(gameRoomId, utilsService.getId());
     }
 }

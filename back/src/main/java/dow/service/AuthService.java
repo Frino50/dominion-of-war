@@ -2,7 +2,6 @@ package dow.service;
 
 import dow.exception.InvalidCredentialsException;
 import dow.exception.UsernameAlreadyTakenException;
-import dow.model.CustomUserDetails;
 import dow.model.dto.LoginDto;
 import dow.model.dto.LoginResponseDto;
 import dow.model.dto.RegisterDto;
@@ -34,13 +33,17 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UtilsService utilsService;
 
-    public AuthService(PlayerRepository playerRepository, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(PlayerRepository playerRepository, RoleRepository roleRepository,
+                       AuthenticationManager authenticationManager, JwtUtils jwtUtils,
+                       BCryptPasswordEncoder passwordEncoder, UtilsService utilsService) {
         this.playerRepository = playerRepository;
         this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
+        this.utilsService = utilsService;
     }
 
     public Player register(RegisterDto dto) {
@@ -60,7 +63,7 @@ public class AuthService {
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         Player player = new Player(null, dto.getEmail(), dto.getPseudo(), hashedPassword);
         Role playerRole = roleRepository.findByName("PLAYER")
-                .orElseGet(() -> roleRepository.save(new Role(null, "PLAYER")));
+                .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_PLAYER")));
         Set<Role> roles = new LinkedHashSet<>();
         roles.add(playerRole);
         player.setRoles(roles);
@@ -74,9 +77,8 @@ public class AuthService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
-            // Récupère le pseudo depuis le principal pour la réponse
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            return new LoginResponseDto(jwt, userDetails.getPseudo());
+
+            return new LoginResponseDto(jwt, utilsService.getPseudo());
         } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException("Email ou mot de passe incorrect.");
         }

@@ -5,7 +5,6 @@ import dow.model.dto.GameRoomInfoDto;
 import dow.model.dto.GameRoomLightDto;
 import dow.service.GameRoomService;
 import dow.service.LoadoutTimerService;
-import dow.service.UtilsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +15,10 @@ import java.util.List;
 public class GameController {
 
     private final GameRoomService gameRoomService;
-    private final UtilsService utilsService;
     private final LoadoutTimerService loadoutTimerService;
 
-    public GameController(GameRoomService gameRoomService, UtilsService utilsService, LoadoutTimerService loadoutTimerService) {
+    public GameController(GameRoomService gameRoomService, LoadoutTimerService loadoutTimerService) {
         this.gameRoomService = gameRoomService;
-        this.utilsService = utilsService;
         this.loadoutTimerService = loadoutTimerService;
     }
 
@@ -37,7 +34,7 @@ public class GameController {
 
     @PostMapping("/join")
     public void joinRoom(@RequestBody GameRoomLightDto dto) {
-        gameRoomService.joinGameRoom(dto, utilsService.getPlayer());
+        gameRoomService.joinGameRoom(dto);
     }
 
     @GetMapping("/participants/{gameRoomId}")
@@ -47,7 +44,7 @@ public class GameController {
 
     @PostMapping("/leave/{gameRoomId}")
     public ResponseEntity<Void> leaveRoom(@PathVariable Long gameRoomId) {
-        gameRoomService.leaveRoom(gameRoomId, utilsService.getPlayer());
+        gameRoomService.leaveRoom(gameRoomId);
         return ResponseEntity.ok().build();
     }
 

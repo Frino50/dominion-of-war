@@ -2,7 +2,6 @@ package dow.service;
 
 import dow.exception.AlreadyExist;
 import dow.model.dto.RouteDto;
-import dow.model.entities.Player;
 import dow.model.entities.Role;
 import dow.model.entities.Route;
 import dow.repository.RoleRepository;
@@ -31,13 +30,10 @@ public class RouteService {
     }
 
     public List<RouteDto> getAvailableRoutes() {
-        Set<Role> userRoles = new LinkedHashSet<>();
+        Set<String> userRoles = new LinkedHashSet<>();
 
         try {
-            Player player = utilsService.getPlayer();
-            if (player != null && player.getRoles() != null) {
-                userRoles = player.getRoles();
-            }
+            userRoles = utilsService.getRoles();
         } catch (Exception e) {
             // Utilisateur non connecté ou non trouvé : userRoles reste vide
         }

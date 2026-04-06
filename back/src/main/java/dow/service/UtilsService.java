@@ -5,14 +5,16 @@ import dow.model.entities.Player;
 import dow.repository.PlayerRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UtilsService {
-
     private final PlayerRepository playerRepository;
 
     public UtilsService(PlayerRepository playerRepository) {
@@ -38,8 +40,15 @@ public class UtilsService {
         return principal().getId();
     }
 
+    public Set<String> getRoles() {
+        return principal().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+    }
+
     public Player getPlayer() {
-        return playerRepository.findById(getId())
-                .orElseThrow(() -> new RuntimeException("Joueur non trouvé"));
+        String pseudo = getPseudo();
+        return playerRepository.findByPseudo(pseudo)
+                .orElseThrow(() -> new RuntimeException("Joueur non trouvé : " + pseudo));
     }
 }

@@ -76,7 +76,8 @@ public class GameRoomService {
     }
 
     @Transactional
-    public void joinGameRoom(GameRoomLightDto dto, Player player) {
+    public void joinGameRoom(GameRoomLightDto dto) {
+        Player player = utilsService.getPlayer();
         GameRoom room = gameRoomRepository.findByName(dto.getName())
                 .orElseThrow(() -> new GameNotFoundException("Partie introuvable"));
 
@@ -105,7 +106,8 @@ public class GameRoomService {
     }
 
     @Transactional
-    public void leaveRoom(Long gameRoomId, Player player) {
+    public void leaveRoom(Long gameRoomId) {
+        Player player = utilsService.getPlayer();
         GameRoom room = gameRoomRepository.findById(gameRoomId)
                 .orElseThrow(() -> new GameNotFoundException("Partie introuvable"));
 

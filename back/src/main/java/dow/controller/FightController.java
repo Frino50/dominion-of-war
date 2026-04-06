@@ -1,7 +1,6 @@
 package dow.controller;
 
 import dow.service.GameStateService;
-import dow.service.UtilsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,17 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class FightController {
 
     private final GameStateService gameStateService;
-    private final UtilsService utilsService;
 
-    public FightController(GameStateService gameStateService, UtilsService utilsService) {
+    public FightController(GameStateService gameStateService) {
         this.gameStateService = gameStateService;
-        this.utilsService = utilsService;
     }
 
     @PostMapping("/{gameRoomId}/spawn/{spriteName}")
     public ResponseEntity<Void> spawnUnit(@PathVariable Long gameRoomId,
                                           @PathVariable String spriteName) {
-        gameStateService.spawnUnit(gameRoomId, utilsService.getPlayer().getPseudo(), spriteName);
+        gameStateService.spawnUnit(gameRoomId, spriteName);
         return ResponseEntity.ok().build();
     }
 }

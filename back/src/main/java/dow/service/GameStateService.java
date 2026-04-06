@@ -14,9 +14,11 @@ public class GameStateService {
 
     private final Map<Long, GameState> activeGames = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate messagingTemplate;
+    private final UtilsService utilsService;
 
-    public GameStateService(SimpMessagingTemplate messagingTemplate) {
+    public GameStateService(SimpMessagingTemplate messagingTemplate, UtilsService utilsService) {
         this.messagingTemplate = messagingTemplate;
+        this.utilsService = utilsService;
     }
 
     public void initGame(GameRoom gameRoom, String p1Pseudo, String p2Pseudo) {
@@ -24,7 +26,8 @@ public class GameStateService {
         activeGames.put(gameRoom.getId(), state);
     }
 
-    public void spawnUnit(Long gameRoomId, String ownerPseudo, String spriteName) {
+    public void spawnUnit(Long gameRoomId, String spriteName) {
+        String ownerPseudo = utilsService.getPseudo();
         GameState state = activeGames.get(gameRoomId);
         if (state == null) return;
         boolean isPlayer1 = ownerPseudo.equals(state.getPlayer1Pseudo());

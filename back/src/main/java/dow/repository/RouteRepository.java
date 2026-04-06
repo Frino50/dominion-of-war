@@ -1,7 +1,6 @@
 package dow.repository;
 
 import dow.model.dto.RouteDto;
-import dow.model.entities.Role;
 import dow.model.entities.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,9 +24,9 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
             "LEFT JOIN r.role role " +
             "WHERE r.needAuth = false " +
             "OR (r.needAuth = true AND r.role IS NULL) " +
-            "OR (r.needAuth = true AND r.role IN :userRoles) " +
+            "OR (r.needAuth = true AND role.name IN :userRoles) " +
             "ORDER BY r.id")
-    List<RouteDto> findAvailableRoutesAsDto(@Param("userRoles") Set<Role> userRoles);
+    List<RouteDto> findAvailableRoutesAsDto(@Param("userRoles") Set<String> userRoles);
 
     boolean existsByName(String name);
 
