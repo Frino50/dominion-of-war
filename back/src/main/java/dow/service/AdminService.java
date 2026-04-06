@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,7 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    public PlayerRolesDto updatePlayerRoles(Long playerId, List<String> updateDto) {
+    public PlayerRolesDto updatePlayerRoles(UUID playerId, List<String> updateDto) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable"));
 

@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -56,7 +57,7 @@ public class AdminController {
 
     @PutMapping("/players/{id}/roles")
     public ResponseEntity<PlayerRolesDto> updatePlayerRoles(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody List<String> body) {
         return ResponseEntity.ok(adminService.updatePlayerRoles(id, body));
     }

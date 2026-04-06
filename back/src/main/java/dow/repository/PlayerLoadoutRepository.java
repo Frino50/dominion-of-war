@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Long> {
@@ -34,7 +35,7 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
             """)
     LoadoutUpdateDto getOpponent(
             @Param("gameRoomId") Long gameRoomId,
-            @Param("currentPlayerId") Long currentPlayerId
+            @Param("currentPlayerId") UUID currentPlayerId
     );
 
     @Query("""
@@ -69,6 +70,6 @@ public interface PlayerLoadoutRepository extends JpaRepository<PlayerLoadout, Lo
             """)
     List<SpriteInfos> findMyLoadoutSpriteInfos(
             @Param("gameRoomId") Long gameRoomId,
-            @Param("playerId") Long playerId
+            @Param("playerId") UUID playerId
     );
 }

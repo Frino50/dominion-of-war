@@ -16,9 +16,8 @@ public class UtilsService {
         this.playerRepository = playerRepository;
     }
 
-    public String getPseudo() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+    private String getEmailFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null
                 || !authentication.isAuthenticated()
@@ -30,8 +29,8 @@ public class UtilsService {
     }
 
     public Player getPlayer() {
-        String pseudo = getPseudo();
-        return playerRepository.findByPseudo(pseudo)
+        String pseudo = getEmailFromToken();
+        return playerRepository.findByEmail(pseudo)
                 .orElseThrow(() -> new RuntimeException("Joueur non trouvé : " + pseudo));
     }
 }

@@ -1,12 +1,13 @@
-import ConnexionDto from "@/models/dtos/connexionDto.ts";
+import RegisterDto from "@/models/dtos/registerDto.ts";
+import LoginDto from "@/models/dtos/loginDto.ts";
 import apiService from "@/services/apiService.ts";
 
 export default {
-    async register(connexion: ConnexionDto) {
-        return await apiService.post("/auth/register", connexion);
+    async register(dto: RegisterDto) {
+        return await apiService.post("/auth/register", dto);
     },
 
-    async login(connexion: ConnexionDto) {
-        return await apiService.post("/auth/login", connexion);
+    async login(dto: LoginDto) {
+        return await apiService.post("/auth/login", dto);
     },
 };

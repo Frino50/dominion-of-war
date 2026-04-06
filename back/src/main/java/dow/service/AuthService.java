@@ -2,8 +2,10 @@ package dow.service;
 
 import dow.exception.InvalidCredentialsException;
 import dow.exception.UsernameAlreadyTakenException;
-import dow.model.dto.ConnexionDto;
+import dow.model.CustomUserDetails;
+import dow.model.dto.LoginDto;
 import dow.model.dto.LoginResponseDto;
+import dow.model.dto.RegisterDto;
 import dow.model.entities.Player;
 import dow.model.entities.Role;
 import dow.repository.PlayerRepository;
@@ -23,6 +25,10 @@ import java.util.Set;
 @Service
 public class AuthService {
 
+    private static final String EMAIL_REGEX =
+            "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$";
+    private static final String PSEUDO_REGEX =
+            "^[a-zA-Z0-9_\\-]{3,20}$";
     private final PlayerRepository playerRepository;
     private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
@@ -37,31 +43,42 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Player register(ConnexionDto connexionDto) {
-        if (playerRepository.findByPseudo(connexionDto.getPseudo()).isPresent()) {
-            throw new UsernameAlreadyTakenException("Le pseudo est déjà utilisé");
+    public Player register(RegisterDto dto) {
+        if (!dto.getEmail().matches(EMAIL_REGEX)) {
+            throw new InvalidCredentialsException("Format d'email invalide.");
         }
-        String hashedPassword = passwordEncoder.encode(connexionDto.getPassword());
-        Player player = new Player(null, connexionDto.getPseudo(), hashedPassword);
-        Role playerRole = roleRepository.findByName("PLAYER").orElseGet(() -> roleRepository.save(new Role(null, "PLAYER")));
+        if (!dto.getPseudo().matches(PSEUDO_REGEX)) {
+            throw new InvalidCredentialsException("Le pseudo doit faire 3 à 20 caractères (lettres, chiffres, _ ou -).");
+        }
+        if (playerRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new UsernameAlreadyTakenException("Cet email est déjà utilisé.");
+        }
+        if (playerRepository.findByPseudo(dto.getPseudo()).isPresent()) {
+            throw new UsernameAlreadyTakenException("Ce pseudo est déjà utilisé.");
+        }
+
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+        Player player = new Player(null, dto.getEmail(), dto.getPseudo(), hashedPassword);
+        Role playerRole = roleRepository.findByName("PLAYER")
+                .orElseGet(() -> roleRepository.save(new Role(null, "PLAYER")));
         Set<Role> roles = new LinkedHashSet<>();
         roles.add(playerRole);
         player.setRoles(roles);
         return playerRepository.save(player);
     }
 
-    public LoginResponseDto login(ConnexionDto connexionDto) {
+    public LoginResponseDto login(LoginDto dto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(connexionDto.getPseudo(), connexionDto.getPassword())
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
             );
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
-
-            return new LoginResponseDto(jwt, connexionDto.getPseudo());
+            // Récupère le pseudo depuis le principal pour la réponse
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            return new LoginResponseDto(jwt, userDetails.getPseudo());
         } catch (BadCredentialsException e) {
-            throw new InvalidCredentialsException("Pseudo ou mot de passe incorrect.");
+            throw new InvalidCredentialsException("Email ou mot de passe incorrect.");
         }
     }
 }

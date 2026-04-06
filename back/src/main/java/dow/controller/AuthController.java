@@ -1,7 +1,8 @@
 package dow.controller;
 
-import dow.model.dto.ConnexionDto;
+import dow.model.dto.LoginDto;
 import dow.model.dto.LoginResponseDto;
+import dow.model.dto.RegisterDto;
 import dow.model.entities.Player;
 import dow.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +21,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Player register(@RequestBody ConnexionDto connexionDto) {
-        return authService.register(connexionDto);
+    public Player register(@RequestBody RegisterDto registerDto) {
+        return authService.register(registerDto);
     }
 
     @PostMapping("/login")
-    public LoginResponseDto login(@RequestBody ConnexionDto connexionDto) {
-        return authService.login(connexionDto);
+    public LoginResponseDto login(@RequestBody LoginDto loginDto) {
+        return authService.login(loginDto);
     }
 }

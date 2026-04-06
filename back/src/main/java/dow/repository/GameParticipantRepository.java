@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface GameParticipantRepository extends JpaRepository<GameParticipant, Long> {
@@ -32,7 +33,7 @@ public interface GameParticipantRepository extends JpaRepository<GameParticipant
             "FROM GameParticipant p " +
             "WHERE p.player.id = :playerId " +
             "AND p.gameRoom.status != :gameStatus ")
-    Long findGameRoomActive(Long playerId, GameStatus gameStatus);
+    Long findGameRoomActive(UUID playerId, GameStatus gameStatus);
 
     @Query("SELECT gp.player.pseudo FROM GameParticipant gp WHERE gp.gameRoom.id = :gameRoomId AND gp.role = :role")
     String findPseudoByGameRoomIdAndRole(@Param("gameRoomId") Long gameRoomId, @Param("role") ParticipantRole role);

@@ -5,16 +5,20 @@ import jakarta.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "player")
 public class Player {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String pseudo;
+
+    @Column(unique = true, nullable = false)
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -28,13 +32,14 @@ public class Player {
     public Player() {
     }
 
-    public Player(Long id, String pseudo, String hashedPassword) {
+    public Player(UUID id, String email, String pseudo, String hashedPassword) {
         this.id = id;
+        this.email = email;
         this.pseudo = pseudo;
         this.password = hashedPassword;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -58,15 +63,23 @@ public class Player {
         this.roles = roles;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(id, player.id) && Objects.equals(pseudo, player.pseudo) && Objects.equals(password, player.password) && Objects.equals(roles, player.roles);
+        return Objects.equals(id, player.id) && Objects.equals(pseudo, player.pseudo) && Objects.equals(email, player.email) && Objects.equals(password, player.password) && Objects.equals(roles, player.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pseudo, password, roles);
+        return Objects.hash(id, pseudo, email, password, roles);
     }
 }

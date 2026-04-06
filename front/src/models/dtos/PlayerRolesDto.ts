@@ -1,5 +1,5 @@
 export default interface PlayerRolesDto {
-    id: number;
+    id: string;
     pseudo: string;
     roleNames: string[];
     editRoles: string[];

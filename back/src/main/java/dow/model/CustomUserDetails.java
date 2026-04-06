@@ -8,10 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
@@ -49,7 +46,15 @@ public class CustomUserDetails implements UserDetails {
     @Override
     @NonNull
     public String getUsername() {
+        return player.getEmail();
+    }
+
+    public String getPseudo() {
         return player.getPseudo();
+    }
+
+    public UUID getId() {
+        return player.getId();
     }
 
     @Override

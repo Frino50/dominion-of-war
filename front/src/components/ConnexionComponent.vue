@@ -5,10 +5,27 @@
 
             <div class="input-group">
                 <input
-                    v-model="pseudo"
-                    placeholder="Pseudo"
+                    v-model="email"
+                    placeholder="Email"
+                    type="email"
                     @keyup.enter="handleSubmit"
+                    :class="{ 'input-error': errors.email }"
                 />
+                <p v-if="errors.email" class="field-error">
+                    {{ errors.email }}
+                </p>
+            </div>
+
+            <div v-if="props.mode === 'register'" class="input-group">
+                <input
+                    v-model="pseudo"
+                    placeholder="Pseudo (3 à 20 caractères)"
+                    @keyup.enter="handleSubmit"
+                    :class="{ 'input-error': errors.pseudo }"
+                />
+                <p v-if="errors.pseudo" class="field-error">
+                    {{ errors.pseudo }}
+                </p>
             </div>
 
             <div class="input-group">
@@ -17,7 +34,11 @@
                     placeholder="Mot de passe"
                     type="password"
                     @keyup.enter="handleSubmit"
+                    :class="{ 'input-error': errors.password }"
                 />
+                <p v-if="errors.password" class="field-error">
+                    {{ errors.password }}
+                </p>
             </div>
 
             <button class="btn-primary" @click="handleSubmit">
@@ -37,12 +58,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import ConnexionDto from "@/models/dtos/connexionDto.ts";
+import { ref, reactive } from "vue";
+import RegisterDto from "@/models/dtos/registerDto.ts";
+import LoginDto from "@/models/dtos/loginDto.ts";
 import auth from "@/services/authService.ts";
 import LoginResponseDto from "@/models/dtos/loginResponseDto.ts";
 import router, { resetDynamicRoutes, loadDynamicRoutes } from "@/router.ts";
 import { localStore } from "@/store/local.ts";
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+const PSEUDO_REGEX = /^[a-zA-Z0-9_\-]{3,20}$/;
 
 const props = defineProps({
     title: String,
@@ -52,16 +77,49 @@ const props = defineProps({
     mode: String,
 });
 
+const email = ref("");
 const pseudo = ref("");
 const password = ref("");
 const internalError = ref("");
 const isLoading = ref(false);
+const errors = reactive({ email: "", pseudo: "", password: "" });
+
+function validate(): boolean {
+    errors.email = "";
+    errors.pseudo = "";
+    errors.password = "";
+
+    let valid = true;
+
+    if (!email.value) {
+        errors.email = "L'email est requis.";
+        valid = false;
+    } else if (!EMAIL_REGEX.test(email.value)) {
+        errors.email = "Format d'email invalide.";
+        valid = false;
+    }
+
+    if (props.mode === "register") {
+        if (!pseudo.value) {
+            errors.pseudo = "Le pseudo est requis.";
+            valid = false;
+        } else if (!PSEUDO_REGEX.test(pseudo.value)) {
+            errors.pseudo = "3 à 20 caractères : lettres, chiffres, _ ou -.";
+            valid = false;
+        }
+    }
+
+    if (!password.value) {
+        errors.password = "Le mot de passe est requis.";
+        valid = false;
+    }
+
+    return valid;
+}
 
 async function handleSubmit() {
-    if (!pseudo.value || !password.value) {
-        internalError.value = "Veuillez remplir tous les champs";
-        return;
-    }
+    if (!validate()) return;
+
     internalError.value = "";
     isLoading.value = true;
 
@@ -79,7 +137,7 @@ async function handleSubmit() {
 }
 
 async function login() {
-    const res = await auth.login(connexionDto());
+    const res = await auth.login(new LoginDto(email.value, password.value));
     const loginResponseDto: LoginResponseDto = res.data;
 
     localStore.token = loginResponseDto.token;
@@ -87,17 +145,14 @@ async function login() {
 
     resetDynamicRoutes();
     await loadDynamicRoutes();
-
     await router.push("/");
 }
 
 async function register() {
-    await auth.register(connexionDto());
+    await auth.register(
+        new RegisterDto(email.value, pseudo.value, password.value)
+    );
     await router.push("/login");
-}
-
-function connexionDto(): ConnexionDto {
-    return new ConnexionDto(pseudo.value, password.value);
 }
 
 function redirection() {
@@ -136,6 +191,16 @@ function redirection() {
     margin-bottom: 1rem;
     width: 100%;
     z-index: 1;
+}
+
+.input-error {
+    border-color: var(--danger) !important;
+}
+
+.field-error {
+    margin-top: 0.25rem;
+    color: var(--danger);
+    font-size: 0.8rem;
 }
 
 .alt-button {

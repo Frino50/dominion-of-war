@@ -1,26 +1,27 @@
 package dow.model.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerRolesDto {
-    private Long id;
+    private UUID id;
     private String pseudo;
     private List<String> roleNames;
 
     public PlayerRolesDto() {
     }
 
-    public PlayerRolesDto(Long id, String pseudo, List<String> roleNames) {
+    public PlayerRolesDto(UUID id, String pseudo, List<String> roleNames) {
         this.id = id;
         this.pseudo = pseudo;
         this.roleNames = roleNames;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

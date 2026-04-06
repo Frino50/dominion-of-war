@@ -8,8 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface PlayerRepository extends JpaRepository<Player, Long> {
+public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     Optional<Player> findByPseudo(String pseudo);
 
@@ -19,5 +20,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     @EntityGraph(attributePaths = "roles")
     @Query("SELECT p FROM Player p WHERE p.id = :id")
-    Optional<Player> findByIdWithRoles(@Param("id") Long id);
+    Optional<Player> findByIdWithRoles(@Param("id") UUID id);
+
+    Optional<Player> findByEmail(String email);
 }

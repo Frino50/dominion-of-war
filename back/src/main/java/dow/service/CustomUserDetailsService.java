@@ -26,8 +26,8 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     @NullMarked
-    public UserDetails loadUserByUsername(String pseudo) throws UsernameNotFoundException {
-        Player player = playerRepository.findByPseudo(pseudo)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Player player = playerRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable"));
         return new CustomUserDetails(player);
     }
