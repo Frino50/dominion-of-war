@@ -42,7 +42,7 @@
             </div>
 
             <div v-if="rooms.length === 0" class="empty-state">
-                Aucune partie disponible. Créez-en une !
+                Aucune partie en cours.
             </div>
         </div>
 
@@ -60,9 +60,8 @@
                             <label for="room-name">Nom de la partie</label>
                             <input
                                 id="room-name"
-                                v-model="newRoomName"
+                                v-model="roomName"
                                 type="text"
-                                placeholder="Ma partie épique"
                                 required
                                 maxlength="50"
                             />
@@ -73,9 +72,9 @@
                             >
                             <input
                                 id="room-password"
-                                v-model="newRoomPassword"
+                                v-model="roomPassword"
                                 type="password"
-                                placeholder="Laissez vide pour une partie publique"
+                                placeholder="Laisser vide pour une partie publique"
                             />
                         </div>
                         <div class="modal-actions">
@@ -153,8 +152,8 @@ const showCreateModal = ref(false);
 const showJoinModal = ref(false);
 const selectedRoom = ref<GameRoomInfo | null>(null);
 
-const newRoomName = ref("");
-const newRoomPassword = ref("");
+const roomName = ref("");
+const roomPassword = ref("");
 const joinPassword = ref("");
 
 onMounted(async () => {
@@ -167,12 +166,13 @@ onMounted(async () => {
     gameWebSocket.subscribeToRooms((updatedRooms) => {
         rooms.value = updatedRooms;
     });
+    roomName.value = localStore.pseudo;
 });
 
 async function createRoom() {
-    const roomId = await gameService.createRoom({
-        name: newRoomName.value,
-        password: newRoomPassword.value || undefined,
+    await gameService.createRoom({
+        name: roomName.value,
+        password: roomPassword.value || undefined,
     });
     await router.push(`/game/waiting-room`);
 }
