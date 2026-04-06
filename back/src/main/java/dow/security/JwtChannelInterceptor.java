@@ -34,8 +34,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
         switch (command) {
             case CONNECT -> handleConnect(accessor, sessionId);
-            case DISCONNECT -> handleDisconnect(sessionId);
-            default -> handleOtherCommand(accessor, sessionId, command);
+            case DISCONNECT -> sessionUserMap.remove(sessionId);
+            default -> restoreUser(accessor, sessionId);
         }
         return message;
     }
@@ -46,28 +46,15 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             UsernamePasswordAuthenticationToken auth = jwtUtils.getAuthenticationFromToken(jwt);
             accessor.setUser(auth);
             sessionUserMap.put(sessionId, auth);
-            System.out.println("STOMP CONNECT de l'utilisateur : " + auth.getName());
         } catch (JwtAuthenticationException e) {
-            System.out.println("STOMP CONNECT refusé : JWT invalide ou absent");
+            throw new JwtAuthenticationException("INVALID_OR_EXPIRED_TOKEN");
         }
     }
 
-    private void handleDisconnect(String sessionId) {
-        Principal user = sessionUserMap.remove(sessionId);
-        if (user != null) System.out.println("Session STOMP déconnectée pour : " + user.getName());
-    }
-
-    private void handleOtherCommand(StompHeaderAccessor accessor, String sessionId, StompCommand command) {
-        Principal user = accessor.getUser();
-        if (user == null) {
-            user = sessionUserMap.get(sessionId);
+    private void restoreUser(StompHeaderAccessor accessor, String sessionId) {
+        if (accessor.getUser() == null) {
+            Principal user = sessionUserMap.get(sessionId);
             if (user != null) accessor.setUser(user);
-        }
-        if (user == null) {
-            System.out.println("Commande STOMP " + command + " bloquée : utilisateur non authentifié");
-        } else {
-            System.out.println("STOMP " + command + " de l'utilisateur : " + user.getName()
-                    + " sur " + accessor.getDestination());
         }
     }
 }
