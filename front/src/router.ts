@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import { localStore } from "@/store/local";
-import routeService from "@/services/routeService";
+import routeService from "@/services/routeService.ts";
+import RouteDto from "@/models/dtos/RouteDto.ts";
 
-const viewModules = import.meta.glob("/src/views/**/*.vue");
-
-const staticRoutes: RouteRecordRaw[] = [
+const routes: RouteRecordRaw[] = [
     {
         path: "/",
         name: "Home",
@@ -20,23 +18,22 @@ const staticRoutes: RouteRecordRaw[] = [
         name: "Register",
         component: () => import("@/views/Register.vue"),
     },
+    {
+        path: "/:pathMatch(.*)*",
+        name: "NotFound",
+        redirect: "/",
+    },
 ];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes: staticRoutes,
+    routes,
 });
 
-let dynamicRoutesLoaded = false;
-const addedRouteNames = new Set<string>();
+const viewModules = import.meta.glob("/src/views/**/*.vue");
+const listRoutesNames = new Set<string>();
 
-function resolveComponentPath(componentPath: string): string {
-    return "/src/views/" + componentPath.trim();
-}
-
-async function loadDynamicRoutes() {
-    if (dynamicRoutesLoaded) return;
-
+async function loadDynamicRoutes(): Promise<RouteDto[]> {
     const routes = await routeService.getAvailableRoutes();
 
     routes.forEach((route) => {
@@ -60,55 +57,24 @@ async function loadDynamicRoutes() {
                 requiresAuth: route.needAuth,
             },
         });
-
-        addedRouteNames.add(route.name);
+        listRoutesNames.add(route.name);
     });
-
-    dynamicRoutesLoaded = true;
+    return routes;
 }
 
 function resetDynamicRoutes() {
-    addedRouteNames.forEach((name) => {
+    listRoutesNames.forEach((name) => {
         if (router.hasRoute(name)) {
             router.removeRoute(name);
         }
     });
 
-    addedRouteNames.clear();
-    dynamicRoutesLoaded = false;
+    listRoutesNames.clear();
 }
 
-router.beforeEach(async (to, _from, next) => {
-    const isAuthenticated = !!localStore.token;
-
-    if (isAuthenticated && !dynamicRoutesLoaded) {
-        try {
-            await loadDynamicRoutes();
-            return next({ ...to, replace: true });
-        } catch (error) {
-            console.error("Erreur chargement routes dynamiques", error);
-            resetDynamicRoutes();
-            localStore.token = "";
-            return next("/");
-        }
-    }
-
-    if (to.matched.length === 0) {
-        return next("/");
-    }
-
-    if (to.meta.requiresAuth && !isAuthenticated) {
-        resetDynamicRoutes();
-        return next("/");
-    }
-
-    next();
-});
-
-router.addRoute({
-    path: "/:pathMatch(.*)*",
-    redirect: "/",
-});
+function resolveComponentPath(componentPath: string): string {
+    return "/src/views/" + componentPath.trim();
+}
 
 export { loadDynamicRoutes, resetDynamicRoutes };
 export default router;

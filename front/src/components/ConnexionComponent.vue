@@ -63,7 +63,7 @@ import RegisterDto from "@/models/dtos/registerDto.ts";
 import LoginDto from "@/models/dtos/loginDto.ts";
 import auth from "@/services/authService.ts";
 import LoginResponseDto from "@/models/dtos/loginResponseDto.ts";
-import router, { resetDynamicRoutes, loadDynamicRoutes } from "@/router.ts";
+import router from "@/router.ts";
 import { localStore } from "@/store/local.ts";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
@@ -143,8 +143,6 @@ async function login() {
     localStore.token = loginResponseDto.token;
     localStore.pseudo = loginResponseDto.pseudo;
 
-    resetDynamicRoutes();
-    await loadDynamicRoutes();
     await router.push("/");
 }
 

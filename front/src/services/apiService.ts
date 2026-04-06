@@ -1,6 +1,6 @@
 import axios from "axios";
 import { localStore, LocalState } from "@/store/local.ts";
-import router from "@/router";
+import router, { resetDynamicRoutes } from "@/router";
 import { useToast } from "@/services/toast.ts";
 
 const toast = useToast();
@@ -86,6 +86,8 @@ function handleInvalidToken(localstore: LocalState) {
     isTokenExpiredToastShown = true;
     localstore.pseudo = "";
     localstore.token = "";
+
+    resetDynamicRoutes();
 
     router.push("/login").catch(() => {});
     showError("Session expirée, veuillez vous reconnecter.");

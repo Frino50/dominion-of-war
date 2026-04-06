@@ -72,10 +72,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import routeService from "@/services/routeService";
+import { loadDynamicRoutes, resetDynamicRoutes } from "@/router";
 import { localStore } from "@/store/local";
 import RouteDto from "@/models/dtos/RouteDto.ts";
-import { resetDynamicRoutes } from "@/router";
 
 const router = useRouter();
 const routes = ref<RouteDto[]>([]);
@@ -87,7 +86,7 @@ function normalizePath(name: string) {
 }
 
 async function loadRoutes() {
-    routes.value = await routeService.getAvailableRoutes();
+    routes.value = await loadDynamicRoutes();
     await router.isReady();
     routesKey.value++;
 }
@@ -95,9 +94,7 @@ async function loadRoutes() {
 function logout() {
     localStore.token = "";
     localStore.pseudo = "";
-
     resetDynamicRoutes();
-
     router.push("/login");
 }
 
