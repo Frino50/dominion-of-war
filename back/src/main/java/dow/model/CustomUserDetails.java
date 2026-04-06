@@ -21,6 +21,11 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = buildAuthorities(player.getRoles());
     }
 
+    public CustomUserDetails(Player player, List<GrantedAuthority> authorities) {
+        this.player = player;
+        this.authorities = authorities;
+    }
+
     private static List<GrantedAuthority> buildAuthorities(Set<Role> roles) {
         return roles.stream()
                 .filter(Objects::nonNull)

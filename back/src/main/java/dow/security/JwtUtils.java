@@ -2,6 +2,7 @@ package dow.security;
 
 import dow.exception.JwtAuthenticationException;
 import dow.model.CustomUserDetails;
+import dow.model.entities.Player;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -11,8 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -20,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +46,8 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(userPrincipal.getUsername())
                 .claim("roles", roles)
+                .claim("pseudo", userPrincipal.getPseudo())
+                .claim("id", userPrincipal.getId().toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(jwtExpirationMs)))
                 .signWith(key())
@@ -87,17 +89,20 @@ public class JwtUtils {
                 .parseSignedClaims(token)
                 .getPayload();
 
-        String username = claims.getSubject();
+        String email = claims.getSubject();
+        String pseudo = claims.get("pseudo", String.class);
+        UUID id = UUID.fromString(claims.get("id", String.class));
 
         List<?> rawRoles = claims.get("roles", List.class);
         List<GrantedAuthority> authorities = rawRoles == null
                 ? List.of()
                 : rawRoles.stream()
-                .filter(r -> r instanceof String)
-                .map(r -> new SimpleGrantedAuthority((String) r))
-                .collect(Collectors.toList());
+                  .filter(r -> r instanceof String)
+                  .map(r -> new SimpleGrantedAuthority((String) r))
+                  .collect(Collectors.toList());
 
-        UserDetails userDetails = new User(username, "", authorities);
+        Player player = new Player(id, email, pseudo, "");
+        CustomUserDetails userDetails = new CustomUserDetails(player, authorities);
         return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 }
