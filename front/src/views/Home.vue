@@ -87,7 +87,7 @@ function normalizePath(name: string) {
 }
 
 async function loadRoutes() {
-    routes.value = await routeService.getAvailable();
+    routes.value = await routeService.getAvailableRoutes();
     await router.isReady();
     routesKey.value++;
 }

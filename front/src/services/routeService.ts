@@ -2,7 +2,7 @@ import api from "@/services/apiService";
 import RouteDto from "@/models/dtos/RouteDto.ts";
 
 export default {
-    async getAvailable(): Promise<RouteDto[]> {
+    async getAvailableRoutes(): Promise<RouteDto[]> {
         const { data } = await api.get<RouteDto[]>("/routes/available");
         return data;
     },

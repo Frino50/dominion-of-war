@@ -26,7 +26,7 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
             "OR (r.needAuth = true AND r.role IS NULL) " +
             "OR (r.needAuth = true AND role.name IN :userRoles) " +
             "ORDER BY r.id")
-    List<RouteDto> findAvailableRoutesAsDto(@Param("userRoles") Set<String> userRoles);
+    List<RouteDto> getAvailableRoutes(@Param("userRoles") Set<String> userRoles);
 
     boolean existsByName(String name);
 

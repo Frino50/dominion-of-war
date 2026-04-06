@@ -37,7 +37,7 @@ function resolveComponentPath(componentPath: string): string {
 async function loadDynamicRoutes() {
     if (dynamicRoutesLoaded) return;
 
-    const routes = await routeService.getAvailable();
+    const routes = await routeService.getAvailableRoutes();
 
     routes.forEach((route) => {
         const routePath = route.name.startsWith("/")

@@ -28,7 +28,7 @@ public class RouteService {
     }
 
     public List<RouteDto> getAvailableRoutes() {
-        return routeRepository.findAvailableRoutesAsDto(utilsService.getRoles());
+        return routeRepository.getAvailableRoutes(utilsService.getRoles());
     }
 
     public List<RouteDto> getAll() {
