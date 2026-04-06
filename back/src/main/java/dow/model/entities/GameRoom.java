@@ -35,8 +35,9 @@ public class GameRoom {
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
 
-    @Column(name = "winner_id")
-    private Long winnerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "winner_id")
+    private Player winner;
 
     @Column(name = "base_health", nullable = false)
     private int baseHealth = 1000;
@@ -106,12 +107,12 @@ public class GameRoom {
         this.finishedAt = finishedAt;
     }
 
-    public Long getWinnerId() {
-        return winnerId;
+    public Player getWinner() {
+        return winner;
     }
 
-    public void setWinnerId(Long winnerId) {
-        this.winnerId = winnerId;
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 
     public int getBaseHealth() {
@@ -130,13 +131,11 @@ public class GameRoom {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         GameRoom gameRoom = (GameRoom) o;
-        return baseHealth == gameRoom.baseHealth &&
-                Objects.equals(id, gameRoom.id) &&
-                Objects.equals(name, gameRoom.name);
+        return baseHealth == gameRoom.baseHealth && Objects.equals(id, gameRoom.id) && Objects.equals(name, gameRoom.name) && Objects.equals(password, gameRoom.password) && status == gameRoom.status && Objects.equals(createdAt, gameRoom.createdAt) && Objects.equals(startedAt, gameRoom.startedAt) && Objects.equals(finishedAt, gameRoom.finishedAt) && Objects.equals(winner, gameRoom.winner) && Objects.equals(participants, gameRoom.participants);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, baseHealth);
+        return Objects.hash(id, name, password, status, createdAt, startedAt, finishedAt, winner, baseHealth, participants);
     }
 }
