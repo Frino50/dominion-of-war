@@ -42,15 +42,19 @@ public class UtilsService {
     }
 
     public Set<String> getRoles() {
-        CustomUserDetails principal = principal();
+        try {
+            CustomUserDetails principal = principal();
 
-        if (principal == null) {
+            if (principal == null) {
+                return Collections.emptySet();
+            }
+
+            return principal.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toSet());
+        } catch (IllegalStateException e) {
             return Collections.emptySet();
         }
-
-        return principal.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
     }
 
     public Player getPlayer() {
