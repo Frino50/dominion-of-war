@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -30,15 +28,7 @@ public class RouteService {
     }
 
     public List<RouteDto> getAvailableRoutes() {
-        Set<String> userRoles = new LinkedHashSet<>();
-
-        try {
-            userRoles = utilsService.getRoles();
-        } catch (Exception e) {
-            // Utilisateur non connecté ou non trouvé : userRoles reste vide
-        }
-
-        return routeRepository.findAvailableRoutesAsDto(userRoles);
+        return routeRepository.findAvailableRoutesAsDto(utilsService.getRoles());
     }
 
     public List<RouteDto> getAll() {

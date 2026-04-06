@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,7 +42,13 @@ public class UtilsService {
     }
 
     public Set<String> getRoles() {
-        return principal().getAuthorities().stream()
+        CustomUserDetails principal = principal();
+
+        if (principal == null) {
+            return Collections.emptySet();
+        }
+
+        return principal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
     }

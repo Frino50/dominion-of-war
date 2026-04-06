@@ -62,7 +62,7 @@ public class AuthService {
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         Player player = new Player(null, dto.getEmail(), dto.getPseudo(), hashedPassword);
-        Role playerRole = roleRepository.findByName("PLAYER")
+        Role playerRole = roleRepository.findByName("ROLE_PLAYER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "ROLE_PLAYER")));
         Set<Role> roles = new LinkedHashSet<>();
         roles.add(playerRole);
