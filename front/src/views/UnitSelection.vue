@@ -185,7 +185,6 @@ import SpriteInfo from "@/models/SpriteInfos.ts";
 import Animation from "@/components/GestionSprites/Animation.vue";
 import { gameWebSocket } from "@/sockets/gamewebsocket.ts";
 import type { LoadoutUpdateDto } from "@/models/dtos/LoadoutUpdateDto.ts";
-import { GameStatus } from "@/models/enumerations/GameStatus.ts";
 
 const router = useRouter();
 const gameRoomId = ref<number>(0);
