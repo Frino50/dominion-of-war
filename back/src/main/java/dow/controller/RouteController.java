@@ -25,26 +25,26 @@ public class RouteController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<RouteDto>> getAll() {
-        return ResponseEntity.ok(routeService.getAll());
+    public ResponseEntity<List<RouteDto>> getAllRoutes() {
+        return ResponseEntity.ok(routeService.getAllRoutes());
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RouteDto> create(@RequestBody RouteDto dto) {
-        return ResponseEntity.ok(routeService.create(dto));
+    public ResponseEntity<RouteDto> createRoute(@RequestBody RouteDto dto) {
+        return ResponseEntity.ok(routeService.createRoute(dto));
     }
 
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RouteDto> update(@RequestBody RouteDto dto) {
-        return ResponseEntity.ok(routeService.update(dto));
+    public ResponseEntity<RouteDto> updateRoute(@RequestBody RouteDto dto) {
+        return ResponseEntity.ok(routeService.updateRoute(dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        routeService.delete(id);
+    public ResponseEntity<Void> deleteRoute(@PathVariable Long id) {
+        routeService.deleteRoute(id);
         return ResponseEntity.noContent().build();
     }
 }

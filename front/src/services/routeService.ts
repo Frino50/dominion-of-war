@@ -7,22 +7,22 @@ export default {
         return data;
     },
 
-    async getAll(): Promise<RouteDto[]> {
+    async getAllRoutes(): Promise<RouteDto[]> {
         const { data } = await api.get<RouteDto[]>("/routes");
         return data;
     },
 
-    async create(payload: RouteDto): Promise<RouteDto> {
+    async createRoute(payload: RouteDto): Promise<RouteDto> {
         const { data } = await api.post<RouteDto>("/routes", payload);
         return data;
     },
 
-    async update(payload: RouteDto): Promise<RouteDto> {
+    async updateRoute(payload: RouteDto): Promise<RouteDto> {
         const { data } = await api.put<RouteDto>(`/routes`, payload);
         return data;
     },
 
-    async remove(id: number): Promise<void> {
+    async deleteRoute(id: number): Promise<void> {
         await api.delete(`/routes/${id}`);
     },
 };

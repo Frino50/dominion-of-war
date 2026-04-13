@@ -153,7 +153,7 @@
                                     </button>
                                     <button
                                         class="btn-icon"
-                                        @click="remove(r)"
+                                        @click="deleteRoute(r)"
                                         title="Supprimer"
                                     >
                                         🗑️
@@ -221,8 +221,8 @@ const viewOptions = computed(() => {
 });
 
 async function loadData() {
-    roles.value = await roleService.getAll();
-    routes.value = await routeService.getAll();
+    roles.value = await roleService.getAllRoleNames();
+    routes.value = await routeService.getAllRoutes();
 }
 
 async function submit() {
@@ -232,19 +232,27 @@ async function submit() {
     }
 
     if (editing.value && editingId.value) {
-        await routeService.update(form.value);
+        const updatedRoute = await routeService.updateRoute(form.value);
+
+        const index = routes.value.findIndex((r) => r.id === updatedRoute.id);
+        if (index !== -1) {
+            routes.value[index] = updatedRoute;
+        }
+
         toast.show("Route mise à jour", "success");
     } else {
-        await routeService.create(form.value);
+        const newRoute = await routeService.createRoute(form.value);
+
+        routes.value.push(newRoute);
+
         toast.show("Route créée avec succès", "success");
     }
 
     cancelEdit();
-    await loadRoutes();
 }
 
 async function loadRoutes() {
-    routes.value = await routeService.getAll();
+    routes.value = await routeService.getAllRoutes();
 }
 
 function startEdit(r: RouteDto) {
@@ -269,8 +277,8 @@ function cancelEdit() {
     };
 }
 
-async function remove(r: RouteDto) {
-    await routeService.remove(r.id!);
+async function deleteRoute(r: RouteDto) {
+    await routeService.deleteRoute(r.id!);
     toast.show("Route supprimée", "success");
     await loadRoutes();
 }

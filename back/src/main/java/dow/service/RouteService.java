@@ -31,11 +31,11 @@ public class RouteService {
         return routeRepository.getAvailableRoutes(utilsService.getRoles());
     }
 
-    public List<RouteDto> getAll() {
+    public List<RouteDto> getAllRoutes() {
         return routeRepository.findAllRoutesAsDto();
     }
 
-    public RouteDto create(RouteDto dto) {
+    public RouteDto createRoute(RouteDto dto) {
         validateUniqueRouteName(dto.getName(), null);
 
         Route route = buildRouteFromDto(new Route(), dto);
@@ -43,7 +43,7 @@ public class RouteService {
         return toDto(route);
     }
 
-    public RouteDto update(RouteDto dto) {
+    public RouteDto updateRoute(RouteDto dto) {
         Route route = routeRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Route introuvable"));
 
@@ -56,7 +56,7 @@ public class RouteService {
         return toDto(route);
     }
 
-    public void delete(Long id) {
+    public void deleteRoute(Long id) {
         if (!routeRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route introuvable");
         }
