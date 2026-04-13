@@ -123,7 +123,6 @@ function getSpriteInfo(spriteName: string): SpriteInfo | undefined {
 }
 
 async function spawnUnit(sprite: SpriteInfo) {
-    console.log(sprite.name);
     await fightService.spawnUnit(gameRoomId.value, sprite.name);
 }
 </script>
