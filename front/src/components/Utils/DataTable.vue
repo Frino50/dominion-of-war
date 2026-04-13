@@ -197,6 +197,6 @@ watchEffect(() => {
 
 :global(.data-table tbody tr.editing) {
     background-color: rgba(59, 130, 246, 0.1);
-    border-left: 3px solid var(--primary);
+    box-shadow: inset 3px 0 0 var(--primary);
 }
 </style>
