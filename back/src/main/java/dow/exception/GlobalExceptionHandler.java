@@ -12,15 +12,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UsernameAlreadyTakenException.class)
-    public ResponseEntity<Map<String, String>> handleUsernameAlreadyTaken(UsernameAlreadyTakenException ex) {
-        Map<String, String> body = new HashMap<>();
-        body.put("error", "USERNAME_ALREADY_TAKEN");
-        body.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
-    }
-
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleInvalidCredentials(InvalidCredentialsException ex) {
         Map<String, String> body = new HashMap<>();
@@ -32,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExist.class)
     public ResponseEntity<Map<String, String>> handleSpriteNameAlreadyExist(AlreadyExist ex) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", "ALREADY_EXIST");
+        body.put("error", HttpStatus.CONFLICT.name());
         body.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }

@@ -1,7 +1,7 @@
 package dow.service;
 
+import dow.exception.AlreadyExist;
 import dow.exception.InvalidCredentialsException;
-import dow.exception.UsernameAlreadyTakenException;
 import dow.model.dto.LoginDto;
 import dow.model.dto.LoginResponseDto;
 import dow.model.dto.RegisterDto;
@@ -54,10 +54,10 @@ public class AuthService {
             throw new InvalidCredentialsException("Le pseudo doit faire 3 à 20 caractères (lettres, chiffres, _ ou -).");
         }
         if (playerRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new UsernameAlreadyTakenException("Cet email est déjà utilisé.");
+            throw new AlreadyExist("Cet email est déjà utilisé.");
         }
         if (playerRepository.findByPseudo(dto.getPseudo()).isPresent()) {
-            throw new UsernameAlreadyTakenException("Ce pseudo est déjà utilisé.");
+            throw new AlreadyExist("Ce pseudo est déjà utilisé.");
         }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
