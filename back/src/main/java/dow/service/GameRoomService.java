@@ -3,7 +3,7 @@ package dow.service;
 import dow.exception.AlreadyExist;
 import dow.exception.GameAlreadyInException;
 import dow.exception.GameBadPasswordException;
-import dow.exception.GameNotFoundException;
+import dow.exception.NotFoundException;
 import dow.model.dto.GameParticipantWaitingDto;
 import dow.model.dto.GameRoomInfoDto;
 import dow.model.dto.GameRoomLightDto;
@@ -79,7 +79,7 @@ public class GameRoomService {
     public void joinGameRoom(GameRoomLightDto dto) {
         Player player = utilsService.getPlayer();
         GameRoom room = gameRoomRepository.findByName(dto.getName())
-                .orElseThrow(() -> new GameNotFoundException("Partie introuvable"));
+                .orElseThrow(() -> new NotFoundException("Partie introuvable"));
 
         if (room.hasPassword() && !room.getPassword().equals(dto.getPassword())) {
             throw new GameBadPasswordException("Mot de passe incorrect");
@@ -109,7 +109,7 @@ public class GameRoomService {
     public void leaveRoom(Long gameRoomId) {
         Player player = utilsService.getPlayer();
         GameRoom room = gameRoomRepository.findById(gameRoomId)
-                .orElseThrow(() -> new GameNotFoundException("Partie introuvable"));
+                .orElseThrow(() -> new NotFoundException("Partie introuvable"));
 
         participantRepository.deleteByGameRoomAndPlayer(room, player);
         loadoutRepository.findByGameRoomAndPlayer(room, player).ifPresent(loadoutRepository::delete);
