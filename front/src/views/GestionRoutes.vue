@@ -21,7 +21,7 @@
                         <label for="routeName">Nom</label>
                         <input
                             id="routeName"
-                            v-model="form.name"
+                            v-model="editingRoute.name"
                             required
                             placeholder="Entrez le nom de la route"
                         />
@@ -31,7 +31,7 @@
                         <label for="compPath">Page</label>
                         <select
                             id="compPath"
-                            v-model="form.componentPath"
+                            v-model="editingRoute.componentPath"
                             required
                         >
                             <option disabled value="">Choisir une page</option>
@@ -49,7 +49,10 @@
                 <div class="form-row">
                     <div class="form-group checkbox-group">
                         <label class="switch">
-                            <input type="checkbox" v-model="form.needAuth" />
+                            <input
+                                type="checkbox"
+                                v-model="editingRoute.needAuth"
+                            />
                             <span class="slider round"></span>
                         </label>
                         <span class="label-text">Authentification requise</span>
@@ -59,14 +62,16 @@
                         <label for="roleName">Rôle</label>
                         <select
                             id="roleName"
-                            v-model="form.roleName"
-                            :required="form.needAuth"
-                            :disabled="!form.needAuth"
-                            :class="{ 'disabled-field': !form.needAuth }"
+                            v-model="editingRoute.roleName"
+                            :required="editingRoute.needAuth"
+                            :disabled="!editingRoute.needAuth"
+                            :class="{
+                                'disabled-field': !editingRoute.needAuth,
+                            }"
                         >
                             <option disabled value="">
                                 {{
-                                    form.needAuth
+                                    editingRoute.needAuth
                                         ? "Sélectionner un rôle"
                                         : "Auth. requise pour sélectionner"
                                 }}
@@ -106,69 +111,69 @@
             <div class="card-header">
                 <h3>Routes existantes</h3>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="col-id">ID</th>
-                            <th>Nom</th>
-                            <th>Page</th>
-                            <th>Rôle</th>
-                            <th class="col-center">Auth</th>
-                            <th class="col-actions">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="r in routes" :key="r.id!">
-                            <td class="col-id">#{{ r.id }}</td>
-                            <td class="font-bold">{{ r.name }}</td>
-                            <td class="text-small component-path">
-                                {{ r.componentPath }}
-                            </td>
-                            <td>
-                                <span
-                                    class="badge badge-primary"
-                                    v-if="r.roleName"
-                                >
-                                    {{ r.roleName }}
-                                </span>
-                                <span class="text-muted" v-else>-</span>
-                            </td>
-                            <td class="col-center">
-                                <span
-                                    :class="[
-                                        'status-dot',
-                                        r.needAuth ? 'active' : '',
-                                    ]"
-                                ></span>
-                            </td>
-                            <td class="col-actions">
-                                <div class="action-buttons">
-                                    <button
-                                        class="btn-icon"
-                                        @click="startEdit(r)"
-                                        title="Modifier"
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
-                                        class="btn-icon"
-                                        @click="deleteRoute(r)"
-                                        title="Supprimer"
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr v-if="routes.length === 0">
-                            <td colspan="6" class="empty-state">
-                                Aucune route configurée.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+            <DataTable
+                :data="routes"
+                row-key="id"
+                empty-text="Aucune route configurée."
+                :row-editing="(row) => editing && editingRoute?.id === row.id"
+            >
+                <Column field="id" header="ID" width="80px">
+                    <template #body="{ value }">
+                        <span class="col-id">#{{ value }}</span>
+                    </template>
+                </Column>
+
+                <Column field="name" header="Nom">
+                    <template #body="{ value }">
+                        <span class="font-bold">{{ value }}</span>
+                    </template>
+                </Column>
+
+                <Column field="componentPath" header="Page">
+                    <template #body="{ value }">
+                        <span class="component-path">{{ value }}</span>
+                    </template>
+                </Column>
+
+                <Column field="roleName" header="Rôle">
+                    <template #body="{ value }">
+                        <span v-if="value" class="badge badge-primary">
+                            {{ value }}
+                        </span>
+                        <span v-else class="text-muted">-</span>
+                    </template>
+                </Column>
+
+                <Column
+                    field="needAuth"
+                    header="Auth"
+                    width="80px"
+                    header-class="col-center"
+                    body-class="col-center"
+                >
+                    <template #body="{ value }">
+                        <span :class="['status-dot', value ? 'active' : '']" />
+                    </template>
+                </Column>
+
+                <template #actions="{ row }">
+                    <button
+                        class="btn-icon"
+                        @click="startEdit(row)"
+                        title="Modifier"
+                    >
+                        ✏️
+                    </button>
+                    <button
+                        class="btn-icon"
+                        @click="deleteRoute(row)"
+                        title="Supprimer"
+                    >
+                        🗑️
+                    </button>
+                </template>
+            </DataTable>
         </div>
     </div>
 </template>
@@ -179,23 +184,23 @@ import roleService from "@/services/roleService";
 import routeService from "@/services/routeService";
 import { useToast } from "@/services/toast";
 import RouteDto from "@/models/dtos/RouteDto.ts";
+import DataTable from "@/components/Utils/DataTable.vue";
+import Column from "@/components/Utils/Column.vue";
 
 const toast = useToast();
 
 const modules = import.meta.glob(["/src/views/**/*.vue", "@/views/**/*.vue"]);
 const allViewPaths = Object.keys(modules);
 const roles = ref<string[]>([]);
-
-const form = ref<RouteDto>({
+const routes = ref<RouteDto[]>([]);
+const editing = ref(false);
+const editingRoute = ref<RouteDto>({
     id: null,
     name: "",
     componentPath: "",
     needAuth: false,
     roleName: "",
 });
-const routes = ref<RouteDto[]>([]);
-const editing = ref(false);
-const editingId = ref<number | null>(null);
 
 const viewOptions = computed(() => {
     const options = allViewPaths
@@ -226,13 +231,13 @@ async function loadData() {
 }
 
 async function submit() {
-    if (!form.value.name.trim() || !form.value.componentPath) {
+    if (!editingRoute.value.name.trim() || !editingRoute.value.componentPath) {
         toast.show("Le nom et le composant sont obligatoires.", "error");
         return;
     }
 
-    if (editing.value && editingId.value) {
-        const updatedRoute = await routeService.updateRoute(form.value);
+    if (editing.value && editingRoute.value.id) {
+        const updatedRoute = await routeService.updateRoute(editingRoute.value);
 
         const index = routes.value.findIndex((r) => r.id === updatedRoute.id);
         if (index !== -1) {
@@ -241,7 +246,7 @@ async function submit() {
 
         toast.show("Route mise à jour", "success");
     } else {
-        const newRoute = await routeService.createRoute(form.value);
+        const newRoute = await routeService.createRoute(editingRoute.value);
 
         routes.value.push(newRoute);
 
@@ -257,18 +262,16 @@ async function loadRoutes() {
 
 function startEdit(r: RouteDto) {
     editing.value = true;
-    editingId.value = r.id;
-    form.value.id = r.id;
-    form.value.name = r.name;
-    form.value.componentPath = r.componentPath;
-    form.value.needAuth = r.needAuth;
-    form.value.roleName = r.roleName || "";
+    editingRoute.value.id = r.id;
+    editingRoute.value.name = r.name;
+    editingRoute.value.componentPath = r.componentPath;
+    editingRoute.value.needAuth = r.needAuth;
+    editingRoute.value.roleName = r.roleName || "";
 }
 
 function cancelEdit() {
     editing.value = false;
-    editingId.value = null;
-    form.value = {
+    editingRoute.value = {
         id: null,
         name: "",
         componentPath: "",
@@ -421,12 +424,7 @@ input:checked + .slider:before {
     margin-top: 1rem;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-}
-
 .col-id {
-    width: 80px;
     color: var(--text-secondary);
     font-family: monospace;
 }
@@ -449,19 +447,5 @@ input:checked + .slider:before {
 .status-dot.active {
     background-color: var(--success);
     box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
-}
-
-.col-center {
-    text-align: center;
-}
-
-.col-actions {
-    width: 120px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
 }
 </style>

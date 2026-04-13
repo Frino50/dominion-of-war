@@ -53,75 +53,66 @@
                 </div>
             </div>
 
-            <!-- Liste des utilisateurs -->
             <div class="card list-card">
                 <div class="card-header">
                     <h3>Utilisateurs existants</h3>
                 </div>
-                <div class="table-wrapper">
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Pseudo</th>
-                                <th>Email</th>
-                                <th>Rôles</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="user in users"
-                                :key="user.id"
-                                :class="{
-                                    editing:
-                                        editing && editingUser?.id === user.id,
-                                }"
-                            >
-                                <td class="col-id">#{{ user.id }}</td>
-                                <td class="column-style">
-                                    {{ user.pseudo }}
-                                </td>
-                                <td class="column-style">
-                                    {{ user.email }}
-                                </td>
-                                <td class="current-roles">
-                                    <div
-                                        v-if="user.roleNames.length > 0"
-                                        class="role-badges"
-                                    >
-                                        <span
-                                            v-for="role in user.roleNames"
-                                            :key="role"
-                                            class="badge badge-primary"
-                                        >
-                                            {{ role }}
-                                        </span>
-                                    </div>
-                                    <span v-else class="text-muted"
-                                        >Aucun rôle</span
-                                    >
-                                </td>
-                                <td class="col-actions">
-                                    <div class="action-buttons">
-                                        <button
-                                            class="btn-icon"
-                                            @click="startEdit(user)"
-                                            title="Modifier les rôles"
-                                        >
-                                            ✏️
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr v-if="users.length === 0">
-                                <td colspan="4" class="empty-state">
-                                    Aucun utilisateur.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+
+                <DataTable
+                    :data="users"
+                    row-key="id"
+                    empty-text="Aucun utilisateur."
+                    :row-editing="
+                        (row) => editing && editingUser?.id === row.id
+                    "
+                >
+                    <Column field="id" header="ID" width="80px">
+                        <template #body="{ value }">
+                            <span class="col-id">#{{ value }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="pseudo" header="Pseudo">
+                        <template #body="{ value }">
+                            <span class="column-style">{{ value }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="email" header="Email">
+                        <template #body="{ value }">
+                            <span class="column-style">{{ value }}</span>
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="roleNames"
+                        header="Rôles"
+                        body-class="current-roles"
+                    >
+                        <template #body="{ value }">
+                            <div v-if="value.length > 0" class="role-badges">
+                                <span
+                                    v-for="role in value"
+                                    :key="role"
+                                    class="badge badge-primary"
+                                >
+                                    {{ role }}
+                                </span>
+                            </div>
+                            <span v-else class="text-muted">Aucun rôle</span>
+                        </template>
+                    </Column>
+
+                    <template #actions="{ row }">
+                        <button
+                            class="btn-icon"
+                            @click="startEdit(row)"
+                            title="Modifier les rôles"
+                        >
+                            ✏️
+                        </button>
+                    </template>
+                </DataTable>
             </div>
         </div>
     </div>
@@ -133,6 +124,8 @@ import roleService from "@/services/roleService";
 import playerService from "@/services/playerService";
 import { useToast } from "@/services/toast";
 import PlayerRolesDto from "@/models/dtos/PlayerRolesDto.ts";
+import DataTable from "@/components/Utils/DataTable.vue";
+import Column from "@/components/Utils/Column.vue";
 
 const toast = useToast();
 const roles = ref<string[]>([]);
@@ -294,17 +287,7 @@ onMounted(load);
     margin-top: 1rem;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-}
-
-.users-table tbody tr.editing {
-    background-color: rgba(59, 130, 246, 0.1);
-    border-left: 3px solid var(--primary);
-}
-
 .col-id {
-    width: 80px;
     color: var(--text-secondary);
     font-weight: 500;
     font-family: monospace;
@@ -325,18 +308,8 @@ onMounted(load);
     gap: 0.5rem;
 }
 
-.col-actions {
-    width: 100px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-}
-
 @media (max-width: 1200px) {
-    .users-table {
+    :deep(.data-table) {
         font-size: 0.85rem;
     }
 

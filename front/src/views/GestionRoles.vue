@@ -21,7 +21,7 @@
                             <label for="roleName">Nom du rôle</label>
                             <input
                                 id="roleName"
-                                v-model="form.name"
+                                v-model="editingRole.name"
                                 required
                                 placeholder="Entrez le nom du rôle"
                             />
@@ -52,48 +52,43 @@
                     <h3>Rôles existants</h3>
                 </div>
 
-                <div class="table-wrapper">
-                    <table class="roles-table">
-                        <thead>
-                            <tr>
-                                <th class="col-id">ID</th>
-                                <th>Nom</th>
-                                <th class="col-actions">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="r in roles" :key="r.id!">
-                                <td class="col-id">#{{ r.id }}</td>
-                                <td>
-                                    <span class="role-name">{{ r.name }}</span>
-                                </td>
-                                <td class="col-actions">
-                                    <div class="action-buttons">
-                                        <button
-                                            class="btn-icon"
-                                            @click="startEdit(r)"
-                                            title="Modifier"
-                                        >
-                                            ✏️
-                                        </button>
-                                        <button
-                                            class="btn-icon"
-                                            @click="remove(r)"
-                                            title="Supprimer"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr v-if="roles.length === 0">
-                                <td colspan="3" class="empty-state">
-                                    Aucun rôle configuré.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <DataTable
+                    :data="roles"
+                    row-key="id"
+                    empty-text="Aucun rôle configuré."
+                    :row-editing="
+                        (row) => editing && editingRole?.id === row.id
+                    "
+                >
+                    <Column field="id" header="ID" width="80px">
+                        <template #body="{ value }">
+                            <span class="col-id">#{{ value }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="name" header="Nom">
+                        <template #body="{ value }">
+                            <span class="role-name">{{ value }}</span>
+                        </template>
+                    </Column>
+
+                    <template #actions="{ row }">
+                        <button
+                            class="btn-icon"
+                            @click="startEdit(row)"
+                            title="Modifier"
+                        >
+                            ✏️
+                        </button>
+                        <button
+                            class="btn-icon"
+                            @click="remove(row)"
+                            title="Supprimer"
+                        >
+                            🗑️
+                        </button>
+                    </template>
+                </DataTable>
             </div>
         </div>
     </div>
@@ -104,11 +99,13 @@ import { onMounted, ref } from "vue";
 import roleService from "@/services/roleService";
 import { useToast } from "@/services/toast";
 import RoleDto from "@/models/dtos/RoleDto";
+import Column from "@/components/Utils/Column.vue";
+import DataTable from "@/components/Utils/DataTable.vue";
 
 const toast = useToast();
 
 const roles = ref<RoleDto[]>([]);
-const form = ref<RoleDto>({ id: null, name: "" });
+const editingRole = ref<RoleDto>({ id: null, name: "" });
 const editing = ref(false);
 
 async function loadRoles() {
@@ -117,23 +114,23 @@ async function loadRoles() {
 
 function startEdit(r: RoleDto) {
     editing.value = true;
-    form.value = { id: r.id, name: r.name };
+    editingRole.value = { id: r.id, name: r.name };
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function cancelEdit() {
-    form.value = { id: null, name: "" };
+    editingRole.value = { id: null, name: "" };
     editing.value = false;
 }
 
 async function submit() {
-    if (!form.value.name) {
+    if (!editingRole.value.name) {
         toast.show("Le nom du rôle est obligatoire.", "error");
         return;
     }
 
-    if (editing.value && form.value.id) {
-        const updatedRole = await roleService.updateRole(form.value);
+    if (editing.value && editingRole.value.id) {
+        const updatedRole = await roleService.updateRole(editingRole.value);
 
         const index = roles.value.findIndex((r) => r.id === updatedRole.id);
         if (index !== -1) {
@@ -142,7 +139,7 @@ async function submit() {
 
         toast.show("Rôle mis à jour avec succès", "success");
     } else {
-        const newRole = await roleService.createRole(form.value.name);
+        const newRole = await roleService.createRole(editingRole.value.name);
 
         roles.value.push(newRole);
 
@@ -217,16 +214,7 @@ onMounted(loadRoles);
     margin-top: 1rem;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-}
-
-.roles-table {
-    width: 100%;
-}
-
 .col-id {
-    width: 80px;
     color: var(--text-secondary);
     font-weight: 500;
     font-family: monospace;
@@ -235,16 +223,6 @@ onMounted(loadRoles);
 .role-name {
     font-weight: 600;
     color: var(--text-bright);
-}
-
-.col-actions {
-    width: 120px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
