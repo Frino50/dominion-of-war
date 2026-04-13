@@ -6,14 +6,16 @@ import java.util.UUID;
 public class PlayerRolesDto {
     private UUID id;
     private String pseudo;
+    private String email;
     private List<String> roleNames;
 
     public PlayerRolesDto() {
     }
 
-    public PlayerRolesDto(UUID id, String pseudo, List<String> roleNames) {
+    public PlayerRolesDto(UUID id, String pseudo, String email, List<String> roleNames) {
         this.id = id;
         this.pseudo = pseudo;
+        this.email = email;
         this.roleNames = roleNames;
     }
 
@@ -31,6 +33,14 @@ public class PlayerRolesDto {
 
     public void setPseudo(String pseudo) {
         this.pseudo = pseudo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public List<String> getRoleNames() {

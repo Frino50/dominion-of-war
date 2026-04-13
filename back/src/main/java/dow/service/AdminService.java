@@ -64,6 +64,6 @@ public class AdminService {
                 .map(Role::getName)
                 .collect(Collectors.toList());
 
-        return new PlayerRolesDto(player.getId(), player.getPseudo(), roleNames);
+        return new PlayerRolesDto(player.getId(), player.getPseudo(), player.getEmail(), roleNames);
     }
 }

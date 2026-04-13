@@ -62,10 +62,11 @@
                     <table class="users-table">
                         <thead>
                             <tr>
-                                <th class="col-id">ID</th>
+                                <th>ID</th>
                                 <th>Pseudo</th>
+                                <th>Email</th>
                                 <th>Rôles</th>
-                                <th class="col-actions">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -78,10 +79,11 @@
                                 }"
                             >
                                 <td class="col-id">#{{ user.id }}</td>
-                                <td class="user-pseudo">
-                                    <span class="pseudo-text">{{
-                                        user.pseudo
-                                    }}</span>
+                                <td class="column-style">
+                                    {{ user.pseudo }}
+                                </td>
+                                <td class="column-style">
+                                    {{ user.email }}
                                 </td>
                                 <td class="current-roles">
                                     <div
@@ -301,15 +303,9 @@ onMounted(load);
     font-family: monospace;
 }
 
-.user-pseudo {
+.column-style {
     font-weight: 600;
     color: var(--text-bright);
-}
-
-.pseudo-text {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 .current-roles {
