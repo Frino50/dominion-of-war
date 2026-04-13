@@ -112,7 +112,7 @@ const form = ref<RoleDto>({ id: null, name: "" });
 const editing = ref(false);
 
 async function loadRoles() {
-    roles.value = await roleService.getAllAdmin();
+    roles.value = await roleService.getAllRoles();
 }
 
 function startEdit(r: RoleDto) {

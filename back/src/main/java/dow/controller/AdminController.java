@@ -51,7 +51,7 @@ public class AdminController {
     }
 
     @GetMapping("/players")
-    public ResponseEntity<List<PlayerRolesDto>> getPlayers() {
+    public ResponseEntity<List<PlayerRolesDto>> getAllPlayers() {
         return ResponseEntity.ok(adminService.getAllPlayers());
     }
 

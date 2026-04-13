@@ -42,11 +42,11 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    public PlayerRolesDto updatePlayerRoles(UUID playerId, List<String> updateDto) {
+    public PlayerRolesDto updatePlayerRoles(UUID playerId, List<String> listNewRoles) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable"));
 
-        List<String> roleNames = updateDto != null ? updateDto : List.of();
+        List<String> roleNames = listNewRoles != null ? listNewRoles : List.of();
 
         Set<Role> roles = new LinkedHashSet<>(roleRepository.findByNameIn(roleNames));
         player.setRoles(roles);

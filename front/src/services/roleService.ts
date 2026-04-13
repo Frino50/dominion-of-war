@@ -2,12 +2,12 @@ import api from "@/services/apiService";
 import RoleDto from "@/models/dtos/RoleDto";
 
 export default {
-    async getAll(): Promise<string[]> {
+    async getAllRoleNames(): Promise<string[]> {
         const { data } = await api.get<string[]>("/roles");
         return data;
     },
 
-    async getAllAdmin(): Promise<RoleDto[]> {
+    async getAllRoles(): Promise<RoleDto[]> {
         const { data } = await api.get<RoleDto[]>("/roles/all");
         return data;
     },

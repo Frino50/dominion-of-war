@@ -140,15 +140,8 @@ const editing = ref(false);
 const editingUser = ref<PlayerRolesDto | null>(null);
 
 async function load() {
-    const players = await playerService.getAll();
-    roles.value = await roleService.getAll();
-    users.value = players.map((user: PlayerRolesDto) => ({
-        id: user.id,
-        pseudo: user.pseudo,
-        roleNames: user.roleNames || [],
-        editRoles: [...(user.roleNames || [])],
-        isEditing: false,
-    }));
+    users.value = await playerService.getAllPlayers();
+    roles.value = await roleService.getAllRoleNames();
 }
 
 function startEdit(user: PlayerRolesDto) {
