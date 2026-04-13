@@ -171,16 +171,23 @@ async function save() {
 
     saving.value = true;
     try {
-        await playerService.updateRoles(
+        const updatedUser = await playerService.updatePlayerRoles(
             editingUser.value.id,
             editingUser.value.editRoles
         );
+
+        const index = users.value.findIndex((u) => u.id === updatedUser.id);
+
+        if (index !== -1) {
+            users.value[index] = updatedUser;
+        }
+
         toast.show(
             `Rôles de ${editingUser.value.pseudo} mis à jour avec succès`,
             "success"
         );
+
         cancelEdit();
-        await load();
     } finally {
         saving.value = false;
     }

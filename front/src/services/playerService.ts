@@ -7,7 +7,10 @@ export default {
         return data;
     },
 
-    async updateRoles(id: string, body: string[]): Promise<PlayerRolesDto> {
+    async updatePlayerRoles(
+        id: string,
+        body: string[]
+    ): Promise<PlayerRolesDto> {
         const { data } = await api.put<PlayerRolesDto>(
             `/players/${id}/roles`,
             body
