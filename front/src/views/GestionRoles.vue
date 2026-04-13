@@ -127,21 +127,29 @@ function cancelEdit() {
 }
 
 async function submit() {
-    const name = form.value.name.trim();
-    if (!name) {
+    if (!form.value.name) {
         toast.show("Le nom du rôle est obligatoire.", "error");
         return;
     }
 
     if (editing.value && form.value.id) {
-        await roleService.update(form.value.id, { name });
+        const updatedRole = await roleService.updateRole(form.value);
+
+        const index = roles.value.findIndex((r) => r.id === updatedRole.id);
+        if (index !== -1) {
+            roles.value[index] = updatedRole;
+        }
+
         toast.show("Rôle mis à jour avec succès", "success");
     } else {
-        await roleService.create({ name });
+        const newRole = await roleService.createRole(form.value.name);
+
+        roles.value.push(newRole);
+
         toast.show("Rôle créé avec succès", "success");
     }
+
     cancelEdit();
-    await loadRoles();
 }
 
 async function remove(r: RoleDto) {

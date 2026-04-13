@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExist.class)
     public ResponseEntity<Map<String, String>> handleSpriteNameAlreadyExist(AlreadyExist ex) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", "SPRITE_NAME_ALREADY_EXIST");
+        body.put("error", "ALREADY_EXIST");
         body.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
-    
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> RuntimeException(RuntimeException ex) {
         Map<String, String> body = new HashMap<>();

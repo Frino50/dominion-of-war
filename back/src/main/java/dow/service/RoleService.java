@@ -1,5 +1,6 @@
 package dow.service;
 
+import dow.exception.AlreadyExist;
 import dow.model.dto.RoleDto;
 import dow.model.entities.Role;
 import dow.repository.RoleRepository;
@@ -25,12 +26,11 @@ public class RoleService {
         return roleRepository.findAllAsDto();
     }
 
-    public RoleDto createRole(RoleDto dto) {
-        validateRoleDto(dto);
-        String trimmedName = dto.getName().trim();
+    public RoleDto createRole(String name) {
+        String trimmedName = validateRoleDto(name);
 
         if (roleRepository.existsByName(trimmedName)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Le nom de rôle est déjà pris");
+            roleConflictNameThrow();
         }
 
         Role role = new Role(null, trimmedName);
@@ -38,22 +38,24 @@ public class RoleService {
         return toDto(saved);
     }
 
-    public RoleDto updateRole(Long id, RoleDto dto) {
-        validateRoleDto(dto);
+    public RoleDto updateRole(RoleDto roledto) {
+        String trimmedName = validateRoleDto(roledto.getName());
 
-        Role existing = roleRepository.findById(id)
+        Role existing = roleRepository.findById(roledto.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rôle introuvable"));
 
-        String trimmedName = dto.getName().trim();
-
         if (!existing.getName().equals(trimmedName) &&
-                roleRepository.existsByNameAndIdNot(trimmedName, id)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Le nom de rôle est déjà pris");
+                roleRepository.existsByNameAndIdNot(trimmedName, roledto.getId())) {
+            roleConflictNameThrow();
         }
 
         existing.setName(trimmedName);
         Role saved = roleRepository.save(existing);
         return toDto(saved);
+    }
+
+    private void roleConflictNameThrow() {
+        throw new AlreadyExist("Le nom de rôle est déjà pris");
     }
 
     public void deleteRole(Long id) {
@@ -63,15 +65,12 @@ public class RoleService {
         roleRepository.deleteById(id);
     }
 
-    private void validateRoleDto(RoleDto dto) {
-        if (dto == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les données du rôle sont manquantes");
-        }
-
-        String name = dto.getName();
+    private String validateRoleDto(String name) {
         if (name == null || name.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le nom du rôle est obligatoire");
         }
+
+        return name.trim();
     }
 
     private RoleDto toDto(Role role) {

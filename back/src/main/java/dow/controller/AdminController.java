@@ -34,14 +34,14 @@ public class AdminController {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    @PostMapping("/roles")
-    public ResponseEntity<RoleDto> createRole(@RequestBody RoleDto body) {
-        return ResponseEntity.ok(roleService.createRole(body));
+    @PostMapping("/roles/{name}")
+    public ResponseEntity<RoleDto> createRole(@PathVariable String name) {
+        return ResponseEntity.ok(roleService.createRole(name));
     }
 
-    @PutMapping("/roles/{id}")
-    public ResponseEntity<RoleDto> updateRole(@PathVariable Long id, @RequestBody RoleDto body) {
-        return ResponseEntity.ok(roleService.updateRole(id, body));
+    @PutMapping("/roles")
+    public ResponseEntity<RoleDto> updateRole(@RequestBody RoleDto roledto) {
+        return ResponseEntity.ok(roleService.updateRole(roledto));
     }
 
     @DeleteMapping("/roles/{id}")

@@ -12,13 +12,13 @@ export default {
         return data;
     },
 
-    async create(payload: { name: string }): Promise<RoleDto> {
-        const { data } = await api.post<RoleDto>("/roles", payload);
+    async createRole(name: string): Promise<RoleDto> {
+        const { data } = await api.post<RoleDto>(`/roles/${name}`);
         return data;
     },
 
-    async update(id: number, payload: { name: string }): Promise<RoleDto> {
-        const { data } = await api.put<RoleDto>(`/roles/${id}`, payload);
+    async updateRole(roleDto: RoleDto): Promise<RoleDto> {
+        const { data } = await api.put<RoleDto>(`/roles`, roleDto);
         return data;
     },
 
